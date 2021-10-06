@@ -14,6 +14,7 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 ScottishTaxBenefitModel = "a734f2ee-4b7f-478f-84ca-797081d39f6e"
 
 [compat]
+Plots = "1"
 julia = "1"
 
 [extras]
