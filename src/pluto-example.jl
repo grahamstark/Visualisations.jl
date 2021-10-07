@@ -10,18 +10,19 @@ begin
 	
 	Pkg.add( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
 	using ScottishTaxBenefitModel
+	using Plots
 	
 end
 
-# ╔═╡ 0935685c-0d38-47fc-8f53-ff8aaa895f05
+# ╔═╡ dd1d1115-41b3-4f3f-8cf9-6d97d944b9fa
 begin
-	using Plots
 	using .ExampleHouseholdGetter
 	using .STBParameters
 	using .BCCalcs
 	using .ModelHousehold
 	using .Utils
 	using .Definitions
+	using .SingleHouseholdCalculations
 	using .RunSettings
 end
 
@@ -76,11 +77,21 @@ begin
 end
 
 # ╔═╡ 2108b252-cb89-434b-811a-f222be16bbf3
-lbc
+begin
+	
+	println( lbc[16:17, [:gross,:label]])
+	println( lbc[16,:].label)
+	println( lbc[17,:].label)
+	head.income[wages]=484.797
+	hres = do_one_calc( hh, sys, settings1 )
+	hres.bus[1].pers[head.pid].it
+	# head.income[wages]=484.797
+	
+end
 
 # ╔═╡ Cell order:
 # ╠═8954681e-273b-11ec-344d-9326e736c69f
-# ╠═0935685c-0d38-47fc-8f53-ff8aaa895f05
+# ╠═dd1d1115-41b3-4f3f-8cf9-6d97d944b9fa
 # ╠═6b4b41a4-2475-4d5d-8ea8-aef6d409c1e6
 # ╠═a68d4508-8749-41fa-ab49-157a18bc04fa
 # ╠═f32a80f9-37df-4a36-90f5-8f83f6e3551e
