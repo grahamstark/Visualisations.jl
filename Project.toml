@@ -16,6 +16,7 @@ ScottishTaxBenefitModel = "a734f2ee-4b7f-478f-84ca-797081d39f6e"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
+Makie = "0.15"
 julia = "1"
 
 [extras]
