@@ -29,14 +29,16 @@ end
 # ╔═╡ 6b4b41a4-2475-4d5d-8ea8-aef6d409c1e6
 begin
 	ExampleHouseholdGetter.initialise()
-	hh = get_household("example_hh1")
+	hh = get_household("single_parent_1")
 	# MODEL_PARAMS_DIR
 	
 	# head.age
 	spouse = get_spouse(hh)
 	head = get_head(hh)
 	empty!( head.income )
-	empty!( spouse.income )
+	if spouse !== nothing
+		empty!( spouse.income )
+	end
 	hh
 end
 
