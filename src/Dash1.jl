@@ -73,10 +73,6 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 	p
 end
 
-
-
-dcc_markdown()
-
 function generate_table(df :: DataFrame)
 	rows = []
 	for r in eachrow(df)
@@ -96,8 +92,11 @@ end
 
 hhnames = ExampleHouseholdGetter.initialise()
 d = []
+push!(d, Dict("label"=>"Couple, 2 children", "value" => "example_hh1"))
+push!(d, Dict("label"=>"Lone Parent, 2 Children", "value" => "example_hh1"))
+
 for n in hhnames
-	push!(d, Dict("label"=>String(n), "value" => String(n)))
+	
 	# println(n)
 end
 hh = get_household("example_hh1")
