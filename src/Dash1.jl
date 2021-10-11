@@ -67,7 +67,7 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 		yaxis_range=[0, 1_200],
 		
 		width=800, 
-		height=800)
+		height=650)
 	p = PlotlyJS.plot( [gn, bl, bu], layout)
 	println(typeof(p))
 	p
@@ -118,8 +118,8 @@ lbc, ubc = getbc(hh,sys,settings)
 # app.layout = html_div() do
 app.layout = html_div(style = Dict("columnCount" => 2)) do
 
-    html_h1("Hello Dash"),
-    html_div("Dash: A web application framework for Julia"),
+    html_h1("Budget Constraint Example"),
+    html_div(""),
     
 	html_label("Family"),
     dcc_dropdown(options = d, value = "example_hh1"),
@@ -127,7 +127,21 @@ app.layout = html_div(style = Dict("columnCount" => 2)) do
 	dcc_graph(
         id = "bc-1",
 		figure=bcplot( lbc, ubc )
-    )
+    ),
+	
+	dcc_markdown(
+	"Created with [Julia](https://julialang.org/) | 
+	[Dash](https://dash-julia.plotly.com/) | 
+	[Plotly](https://plotly.com/julia/) | 
+	[Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl)"),
+	dcc_markdown(
+		"Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl).
+		"),
+	dcc_markdown(
+		"This is Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE).
+		[Source Code](https://github.com/grahamstark/Visualisations.jl)"
+	)
+
 end
 
 run_server(app, "0.0.0.0", debug=true)
