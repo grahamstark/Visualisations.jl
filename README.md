@@ -2,9 +2,9 @@
 
 This is where interactive visualisations of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl) will live.
 
-This is a seperate repository so as to keep all the messy web stuff away from the model itself.
+This is a separate repository so as to keep all the messy web stuff away from the model itself.
 
-I don't plan on there being a full blown web user interface for all the model's hundreds of parameters, as it's very boring to write those and no-one actually uses them - for detailed work something reproducable like [Dr. Watson]() is likely a better bet. Instead, I'm going to make a series of small, single screen, interfaces in [Pluto](https://plutojl.org/) and [Dash](https://dash-julia.plotly.com/) on particular topics.
+I don't plan on there being a full blown web user interface for all the model's hundreds of parameters. Interfaces like that are very boring to write (I've [done a few](https://virtual-worlds.biz/).. ), and no-one actually uses them - for detailed work a reproducable environment like [Dr. Watson](https://juliadynamics.github.io/DrWatson.jl/dev/) is likely a better bet. Instead, I'm going to make a series of small, single screen, interfaces in [Pluto](https://plutojl.org/) and [Dash](https://dash-julia.plotly.com/) on particular topics.
 
 ![BC Demo](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/docs/bc1.gif)
 
