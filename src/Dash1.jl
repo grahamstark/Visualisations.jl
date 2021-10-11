@@ -129,13 +129,31 @@ weeklyise!( sys )
 
 app = dash()
 app.layout = html_div() do
-		html_h1("BCs: Legacy vs UC Examples")
+		html_h1("BCs: Legacy vs UC Examples"),
     	html_div(
 			children = [
-				html_h3( "col1"),
+				html_h3( "Controls"),
 				html_label("Family"),
 				dcc_dropdown(options = d, value = "example_hh1", id = "famchoice"),
 				# generate_table( lbc ),
+				dcc_markdown(
+	"""
+	### h3
+
+	stuff
+
+	**mot**
+
+	nnn
+	
+	1. th
+	2. is
+	   - ooo
+	   - www
+	   - nnn
+	"""
+	),
+
 				dcc_markdown(
 					"Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl)"),
 				dcc_markdown(
@@ -146,10 +164,7 @@ app.layout = html_div() do
 				style=(width="30%", display="inline-block")
 			),
 		html_div( 
-			children = [
-				dcc_graph(
-					id = "bc-1" )
-				],
+			children = [dcc_graph( id = "bc-1" )],
 				style=(width="69%", display="inline-block", float="right")
 			)
 end
@@ -163,3 +178,21 @@ callback!(
 
 
 run_server(app, "0.0.0.0", debug=true)
+
+
+#=
+dcc_markdown(
+	"""
+	## h3
+
+	### h4
+
+	stuff
+
+	* maybe
+	* a 
+	* list
+	"""
+	),
+
+=#
