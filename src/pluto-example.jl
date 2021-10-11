@@ -11,7 +11,9 @@ begin
 	Pkg.add( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
 	using ScottishTaxBenefitModel
 	using Plots
-	
+	using PlotlyJS
+	Pkg.add( "DataFrames" )
+	using DataFrames
 end
 
 # ╔═╡ dd1d1115-41b3-4f3f-8cf9-6d97d944b9fa
@@ -29,7 +31,7 @@ end
 # ╔═╡ 6b4b41a4-2475-4d5d-8ea8-aef6d409c1e6
 begin
 	ExampleHouseholdGetter.initialise()
-	hh = get_household("single_parent_1")
+	hh = get_household("example_hh1")
 	# MODEL_PARAMS_DIR
 	
 	# head.age
@@ -91,6 +93,28 @@ begin
 	
 end
 
+# ╔═╡ fb9b81a5-91c5-4f9a-b26a-930ae74b07fc
+begin
+	
+function bcplot( lbc:: DataFrame, ubc :: DataFrame )
+	bl = PlotlyJS.scatter(
+           lbc, x=:gross, y=:net, 
+           mode="line", name="Legacy"
+       )
+	bu = PlotlyJS.scatter(
+		ubc, x=:gross, y=:net, 
+		mode="line", name="UC"
+	)
+	layout = PlotlyJS.Layout(title="BC leg vs uc",
+        xaxis_title="Gross",
+        yaxis_title="Net")
+	PlotlyJS.plot( [bl, bu], layout)
+end
+
+bcplot( lbc, ubc )
+	
+end
+
 # ╔═╡ Cell order:
 # ╠═8954681e-273b-11ec-344d-9326e736c69f
 # ╠═dd1d1115-41b3-4f3f-8cf9-6d97d944b9fa
@@ -99,3 +123,4 @@ end
 # ╠═f32a80f9-37df-4a36-90f5-8f83f6e3551e
 # ╠═49f2e5eb-71c1-48f0-909b-d85e2670e5f5
 # ╠═2108b252-cb89-434b-811a-f222be16bbf3
+# ╠═fb9b81a5-91c5-4f9a-b26a-930ae74b07fc
