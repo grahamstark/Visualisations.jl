@@ -93,12 +93,11 @@ end
 hhnames = ExampleHouseholdGetter.initialise()
 d = []
 push!(d, Dict("label"=>"Couple, 2 children", "value" => "example_hh1"))
-push!(d, Dict("label"=>"Lone Parent, 2 Children", "value" => "example_hh1"))
+push!(d, Dict("label"=>"Lone Parent, 2 Children", "value" => "single_parent_1"))
+push!(d, Dict("label"=>"Single Person", "value" => "mel_c2"))
 
-for n in hhnames
-	
-	# println(n)
-end
+
+
 hh = get_household("example_hh1")
 head = get_head(hh)
 empty!( head.income )
@@ -106,6 +105,8 @@ spouse = get_spouse( hh )
 if spouse !== nothing
 	empty!( spouse.income )
 end
+
+
 
 sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
