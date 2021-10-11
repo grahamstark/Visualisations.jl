@@ -73,11 +73,11 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 
 	gn["marker"] = Dict(:color => "#ccc",
                         :line => Dict(:color=> "#ccc",
-                                         :width=> 0.5))
+                        :width=> 0.5))
 	layout = Layout(
 		title="Budget Constraint: Legacy Benefits vs Universal Credit",
         xaxis_title="Person's Gross Earnings £p.w.",
-        yaxis_title="Household Net Income £p.w.",
+        yaxis_title="Household Net Income After Housing Costs £p.w.",
 		xaxis_range=[0, 1_200],
 		yaxis_range=[0, 1_200],
 		legend=attr(x=0.01, y=0.95),
@@ -86,6 +86,14 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 	p = PlotlyJS.plot( [gn, bl, bu], layout)
 	println(typeof(p))
 	p
+end
+
+function doplot( famname :: AbstractString )
+	hh = get_hh( famname )
+	settings = Settings()
+	lbc, ubc = getbc(hh,sys,settings)
+	figure=bcplot( lbc, ubc )
+	return figure 
 end
 
 function generate_table(df :: DataFrame)
@@ -107,44 +115,51 @@ end
 
 hhnames = ExampleHouseholdGetter.initialise()
 d = []
-push!(d, Dict("label"=>"Couple, 2 children", "value" => "example_hh1"))
-push!(d, Dict("label"=>"Lone Parent, 2 Children", "value" => "single_parent_1"))
-push!(d, Dict("label"=>"Single Person", "value" => "mel_c2"))
+push!(d, Dict("label"=>"Couple, 2 children, Owner-Occupier.", "value" => "example_hh1"))
+push!(d, Dict("label"=>"Lone Parent, 2 Children, £75pw rent.", "value" => "single_parent_1"))
+push!(d, Dict("label"=>"Single Person £77.25pw rent.", "value" => "mel_c2"))
 
 
-hh = get_hh( "example_hh1" )
 sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 # println( "weeklyise start wpm=$PWPM wpy=52")
 weeklyise!( sys )
-settings = Settings()
-lbc, ubc = getbc(hh,sys,settings)
-println( lbc.simplelabel )
 
 # app.layout = html_div() do
 
 app = dash()
-app.layout = html_div(style = Dict("columnCount" => 2)) do
-
-    html_h1("Budget Constraint Example"),	
-	# html_div(style=Dict( "column_width"=>0.6 )),
-		html_h3( "col1")
-		html_label("Family"),
-		dcc_dropdown(options = d, value = "example_hh1"),
-		# generate_table( lbc ),
-		dcc_markdown(
-			"Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl)"),
-		dcc_markdown(
-			"Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl)."),
-		dcc_markdown(
-			"This is Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl)",
-		),
-	# html_div( style=Dict( "column_width"=>0.39 )),
-		dcc_graph(
-			id = "bc-1",
-			figure=bcplot( lbc, ubc )
-		)
-	
+app.layout = html_div() do
+		html_h1("BCs: Legacy vs UC Examples")
+    	html_div(
+			children = [
+				html_h3( "col1"),
+				html_label("Family"),
+				dcc_dropdown(options = d, value = "example_hh1", id = "famchoice"),
+				# generate_table( lbc ),
+				dcc_markdown(
+					"Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl)"),
+				dcc_markdown(
+					"Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl)."),
+				dcc_markdown(
+					"This is Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl)")
+				],
+				style=(width="30%", display="inline-block")
+			),
+		html_div( 
+			children = [
+				dcc_graph(
+					id = "bc-1" )
+				],
+				style=(width="69%", display="inline-block", float="right")
+			)
 end
+
+callback!(
+    app,
+    Output("bc-1", "figure"),
+	Input( "famchoice", "value")) do famname
+		return doplot( famname )
+	end
+
 
 run_server(app, "0.0.0.0", debug=true)
