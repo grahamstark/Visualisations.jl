@@ -39,7 +39,7 @@ function get_hh( name :: String )
 	if name == "single_parent_1"
 		head.age = 30 # 18 in spreadsheet
 	elseif name == "example_hh1"
-		hh.mortgage_interest = 80.0
+		hh.mortgage_interest = hh.mortgage_payment = 80.0
 	end
 	set_wage!( head, 0, 10 )
 	spouse = get_spouse( hh )
@@ -54,6 +54,7 @@ function get_hh( name :: String )
 end
 
 function bcplot( lbc:: DataFrame, ubc :: DataFrame )
+	# legacy
 	bl = scatter(
            lbc, 
 		   x=:gross, 
@@ -95,6 +96,7 @@ end
 
 function doplot( famname :: AbstractString )
 	hh = get_hh( famname )
+	println(to_md_table(hh))
 	settings = Settings()
 	lbc, ubc = getbc(hh,sys,settings)
 	figure=bcplot( lbc, ubc )
@@ -120,52 +122,46 @@ end
 
 hhnames = ExampleHouseholdGetter.initialise()
 d = []
-push!(d, Dict("label"=>"Couple 28, 29; 2 children; Owner-Occupier, £80pw mortgage interest.", "value" => "example_hh1"))
-push!(d, Dict("label"=>"Lone Parent, age 30; 2 Children; £75pw rent.", "value" => "single_parent_1"))
-push!(d, Dict("label"=>"Single Person, Age 21; £77.25pw rent.", "value" => "mel_c2"))
+push!(d, Dict("label"=>"Couple 28, 29; 2 children; £80pw mortgage.", "value" => "example_hh1"))
+push!(d, Dict("label"=>"Lone Parent, age 30; 2 Children; £103pw rent.", "value" => "single_parent_1"))
+push!(d, Dict("label"=>"Single Person, Age 21; £103pw rent.", "value" => "mel_c2"))
 
 
 sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
-# println( "weeklyise start wpm=$PWPM wpy=52")
 weeklyise!( sys )
-
-# app.layout = html_div() do
 
 app = dash()
 app.layout = html_div() do
-		html_h1("BCs: Legacy vs UC Examples"),
+		html_h1("Household Budget Constraints: Legacy vs UC Examples"),
     	html_div(
 			children = [
-				html_h3( "Controls"),
-				html_label("Family"),
-				dcc_dropdown(options = d, value = "example_hh1", id = "famchoice"),
+				html_label("Choose a Family:"; htmlFor="famchoice"),
+				dcc_dropdown( options = d, value = "example_hh1", id = "famchoice"),
 				# generate_table( lbc ),
 				dcc_markdown(
 	"""
-	### h3
+This illustrates how net the net income of a household (i.e. after deducting taxes and housing costs, then adding benefits)
+varies with gross earnings, under the new Universal Credit benefit system and the old
+'legacy' tax-credit system. 
 
-	stuff
+For simplicity, we assume:
 
-	**mot**
+* only one person in the household works;
+* there are no other sources of income;
+* the working person faces a fixed £10 hourly wage and can work any hours at that wage.
 
-	nnn
-	
-	1. th
-	2. is
-	   - ooo
-	   - www
-	   - nnn
-	"""
-	),
+You'll see that the graphs are complicated enough even with those simplifications.
 
-				dcc_markdown(
-					"Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl)"),
-				dcc_markdown(
-					"Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl)."),
-				dcc_markdown(
-					"This is Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl)")
-				],
+Choose one of the three example families above. Move your mouse over the 'kink points' in the graph for a detailed calculation.
+
+See [here](https://stb.virtual-worlds.scot/bc-intro.html) for more on the ideas behind budget constraints.
+
+* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl);
+* Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
+* Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
+	"""	)
+	],
 				style=(width="30%", display="inline-block")
 			),
 		html_div( 
@@ -182,22 +178,4 @@ callback!(
 	end
 
 
-run_server(app, "0.0.0.0", debug=false)
-
-
-#=
-dcc_markdown(
-	"""
-	## h3
-
-	### h4
-
-	stuff
-
-	* maybe
-	* a 
-	* list
-	"""
-	),
-
-=#
+run_server(app, "0.0.0.0", debug=true)
