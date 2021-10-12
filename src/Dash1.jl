@@ -36,6 +36,11 @@ end
 function get_hh( name :: String )
 	hh = get_household( name )
 	head = get_head(hh)
+	if name == "single_parent_1"
+		head.age = 30 # 18 in spreadsheet
+	elseif name == "example_hh1"
+		hh.mortgage_interest = 80.0
+	end
 	set_wage!( head, 0, 10 )
 	spouse = get_spouse( hh )
 	if spouse !== nothing
@@ -115,9 +120,9 @@ end
 
 hhnames = ExampleHouseholdGetter.initialise()
 d = []
-push!(d, Dict("label"=>"Couple, 2 children, Owner-Occupier.", "value" => "example_hh1"))
-push!(d, Dict("label"=>"Lone Parent, 2 Children, £75pw rent.", "value" => "single_parent_1"))
-push!(d, Dict("label"=>"Single Person £77.25pw rent.", "value" => "mel_c2"))
+push!(d, Dict("label"=>"Couple 28, 29; 2 children; Owner-Occupier, £80pw mortgage interest.", "value" => "example_hh1"))
+push!(d, Dict("label"=>"Lone Parent, age 30; 2 Children; £75pw rent.", "value" => "single_parent_1"))
+push!(d, Dict("label"=>"Single Person, Age 21; £77.25pw rent.", "value" => "mel_c2"))
 
 
 sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
@@ -177,7 +182,7 @@ callback!(
 	end
 
 
-run_server(app, "0.0.0.0", debug=true)
+run_server(app, "0.0.0.0", debug=false)
 
 
 #=
