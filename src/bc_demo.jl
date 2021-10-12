@@ -54,7 +54,7 @@ function get_hh( name :: String )
 		set_wage!( spouse, 0, 10 )
 	end
 	for (pid,pers) in hh.people
-		println( "age=$(pers.age) empstat=$(pers.employment_status) " )
+		# println( "age=$(pers.age) empstat=$(pers.employment_status) " )
 		empty!( pers.income )
 	end
 	return hh
@@ -100,8 +100,8 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 		width=700, 
 		height=700)
 	p = PlotlyJS.plot( [gn, bl, bu], layout)
-	println(typeof(p))
-	p
+	# (typeof(p))
+	return p
 end
 
 """
@@ -109,7 +109,7 @@ Create the whole plot for the named household.
 """
 function doplot( famname :: AbstractString )
 	hh = get_hh( famname )
-	println(to_md_table(hh))
+	# println(to_md_table(hh))
 	settings = Settings()
 	lbc, ubc = getbc(hh,sys,settings)
 	figure=bcplot( lbc, ubc )
