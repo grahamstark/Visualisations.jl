@@ -17,6 +17,9 @@ using .STBParameters
 using Markdown
 using DataFrames
 
+"""
+Generate a pair of budget constraints (as Dataframes) for the given household.
+"""
 function getbc( 
 	hh  :: Household, 
 	sys :: TaxBenefitSystem, 
@@ -33,6 +36,10 @@ function getbc(
     (lbc,ubc)
 end
 
+"""
+Retrieve one of the model's example households & overwrite a few fields
+to make things simpler.
+"""
 function get_hh( name :: String )
 	hh = get_household( name )
 	head = get_head(hh)
@@ -53,6 +60,9 @@ function get_hh( name :: String )
 	return hh
 end
 
+"""
+Plot two budget constraints (contained in dataframes) - legacy & universal credit.
+"""
 function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 	# legacy
 	bl = scatter(
@@ -94,6 +104,9 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 	p
 end
 
+"""
+Create the whole plot for the named household. 
+"""
 function doplot( famname :: AbstractString )
 	hh = get_hh( famname )
 	println(to_md_table(hh))
@@ -103,6 +116,9 @@ function doplot( famname :: AbstractString )
 	return figure 
 end
 
+"""
+an experimental html table. Not actually used.
+"""
 function generate_table(df :: DataFrame)
 	rows = []
 	for r in eachrow(df)
