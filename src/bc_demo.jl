@@ -52,6 +52,8 @@ function get_hh(
 	hh = get_example( single_hh )
 	head = get_head(hh)
 	head.age = 30
+	sp = get_spouse(hh)
+	enable!(head) # clear dla stuff from example
 	hh.tenure = if tenure == "private"
 		Private_Rented_Unfurnished
 	elseif tenure == "council"
@@ -70,6 +72,8 @@ function get_hh(
 	if adults == 2
 		sex = head.sex == Male ? Female : Male # hetero ..
 		add_spouse!( hh, 30, sex )
+		sp = get_spouse(hh)
+		enable!(sp)
 	end
 	age = 0
 	for ch in 1:chu5
@@ -91,6 +95,7 @@ function get_hh(
 	for (pid,pers) in hh.people
 		# println( "age=$(pers.age) empstat=$(pers.employment_status) " )
 		empty!( pers.income )
+		empty!( pers.assets )
 	end
 	return hh
 end
