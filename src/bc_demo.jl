@@ -107,11 +107,17 @@ end
 """
 Create the whole plot for the named household. 
 """
-function doplot( famname :: AbstractString )
+function doplot( famname :: AbstractString, bedrooms::Integer, hcost::Real, adults::Integer, chu5::Integer, ch5p::Integer )
 	hh = get_hh( famname )
+	hh.bedrooms = bedrooms
+	if hh.tenure == Mortgaged_Or_Shared
+		hh.mortgage_payment = mortgage_interest = hcost
+	else
+		hh.gross_rent = hcost
+	end
 	# println(to_md_table(hh))
 	settings = Settings()
-	lbc, ubc = getbc(hh,sys,settings)
+	lbc, ubc = getbc( hh,sys,settings)
 	figure=bcplot( lbc, ubc )
 	return figure 
 end
@@ -154,6 +160,53 @@ app.layout = html_div() do
 			children = [
 				html_label("Choose a Family:"; htmlFor="famchoice"),
 				dcc_dropdown( options = d, value = "example_hh1", id = "famchoice"),
+				# tenure todo
+				html_label("Adults"; htmlFor="adults"),
+				dcc_slider(
+					id = "adults",
+					min = 1,
+					max = 2,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:2]),
+					value = 1,
+					step = 1
+    			),
+				html_label("Children aged under 5"; htmlFor="chu5"),
+				dcc_slider(
+					id = "chu5",
+					min = 1,
+					max = 5,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
+					value = 0,
+					step = 1
+    			),
+				html_label("Children aged 5+"; htmlFor="ch5p"),
+				dcc_slider(
+					id = "ch5p",
+					min = 1,
+					max = 8,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:8]),
+					value = 0,
+					step = 1
+    			),
+				html_label("Bedrooms"; htmlFor="bedrooms"),
+				dcc_slider(
+					id = "bedrooms",
+					min = 1,
+					max = 5,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
+					value = 2,
+					step = 1
+    			),
+				html_label("Housing Costs £pw"; htmlFor="hcost"),
+				dcc_slider(
+					id = "hcost",
+					min = 0,
+					max = 300,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:100:300]),
+					value = 100,
+					step = 1
+    			),
+
 				# generate_table( lbc ),
 				dcc_markdown(
 	"""
@@ -189,8 +242,14 @@ end
 callback!(
     app,
     Output("bc-1", "figure"),
-	Input( "famchoice", "value")) do famname
-		return doplot( famname )
+	Input( "famchoice", "value"),
+	Input( "adults", "value"),
+	Input( "chu5", "value"),
+	Input( "ch5p", "value"),
+	Input( "bedrooms", "value"),
+	Input( "hcost", "value" )
+	) do famname, adults, chu5, ch5p,  bedrooms, hcost
+		return doplot( famname, bedrooms, hcost, adults, chu5, ch5p)
 	end
 
 
