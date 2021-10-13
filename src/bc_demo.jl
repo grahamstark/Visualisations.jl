@@ -3,6 +3,7 @@ using Dash
 # using DashHtmlComponents
 # using DashCoreComponents
 using PlotlyJS
+# using DashBootstrapComponents
 
 #, DashHtmlComponents, DashCoreComponents
 using ScottishTaxBenefitModel
@@ -14,6 +15,7 @@ using .SingleHouseholdCalculations
 using .RunSettings
 using .ExampleHouseholdGetter
 using .STBParameters
+using .ExampleHelpers
 using Markdown
 using DataFrames
 
@@ -40,13 +42,46 @@ end
 Retrieve one of the model's example households & overwrite a few fields
 to make things simpler.
 """
-function get_hh( name :: String )
-	hh = get_household( name )
+function get_hh( 
+	tenure    :: AbstractString,
+	bedrooms  :: Integer, 
+	hcost     :: Real, 
+	adults    :: Integer, 
+	chu5      :: Integer, 
+	ch5p      :: Integer ) :: Household
+	hh = get_example( single_hh )
 	head = get_head(hh)
-	if name == "single_parent_1"
-		head.age = 30 # 18 in spreadsheet
-	elseif name == "example_hh1"
-		hh.mortgage_interest = hh.mortgage_payment = 80.0
+	head.age = 30
+	hh.tenure = if tenure == "private"
+		Private_Rented_Unfurnished
+	elseif tenure == "council"
+		Council_Rented
+	elseif tenure == "owner"
+		Mortgaged_Or_Shared
+	else
+		@assert false "$tenure not recognised"
+	end
+	hh.bedrooms = bedrooms
+	if hh.tenure == Mortgaged_Or_Shared
+		hh.mortgage_payment = mortgage_interest = hcost
+	else
+		hh.gross_rent = hcost
+	end
+	if adults == 2
+		sex = head.sex == Male ? Female : Male # hetero ..
+		add_spouse!( hh, 30, sex )
+	end
+	age = 0
+	for ch in 1:chu5
+		sex = ch % 1 == 0 ? Male : Female
+		age += 1
+		add_child!( hh, age, sex )
+	end
+	age = 7
+	for ch in 1:ch5p
+		sex = ch % 1 == 0 ? Male : Female
+		age += 1
+		add_child!( hh, age, sex )
 	end
 	set_wage!( head, 0, 10 )
 	spouse = get_spouse( hh )
@@ -108,29 +143,13 @@ end
 Create the whole plot for the named household. 
 """
 function doplot( 
-	famname :: AbstractString, 
 	tenure :: AbstractString,
 	bedrooms::Integer, 
 	hcost::Real, 
 	adults::Integer, 
 	chu5::Integer, 
 	ch5p::Integer )
-	hh = get_hh( famname )
-	hh.tenure = if tenure == "private"
-		Private_Rented_Unfurnished
-	elseif tenure == "council"
-		Council_Rented
-	elseif tenure == "owner"
-		Mortgaged_Or_Shared
-	else
-		@assert false "$tenure not recognised"
-	end
-	hh.bedrooms = bedrooms
-	if hh.tenure == Mortgaged_Or_Shared
-		hh.mortgage_payment = mortgage_interest = hcost
-	else
-		hh.gross_rent = hcost
-	end
+	hh = get_hh( tenure, bedrooms, hcost, adults, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
 	lbc, ubc = getbc( hh,sys,settings)
@@ -170,23 +189,20 @@ sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 weeklyise!( sys )
 
-app = dash()
+app = dash(external_stylesheets= [])
 app.layout = html_div() do
 		html_h1("Household Budget Constraints: Legacy vs UC Examples"),
     	html_div(
 			children = [
-				html_label("Choose a Family:"; htmlFor="famchoice"),
-				dcc_dropdown( options = d, value = "example_hh1", id = "famchoice"),
 				html_label("Tenure:"; htmlFor="tenure"),
 				dcc_radioitems(
 					id = "tenure",
 					options = [(value = "owner", label= "Owner Occupier"),
 					           (value = "private", label="Private Rented"),
-							   (value = "council", label="Council or Housing Association")],
+							   (value = "council", label="Council/HA")],
 					value = "private"
 				),
 				
-				# tenure todo
 				html_label("Adults"; htmlFor="adults"),
 				dcc_slider(
 					id = "adults",
@@ -199,18 +215,18 @@ app.layout = html_div() do
 				html_label("Children aged under 5"; htmlFor="chu5"),
 				dcc_slider(
 					id = "chu5",
-					min = 1,
+					min = 0,
 					max = 5,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:5]),
 					value = 0,
 					step = 1
     			),
 				html_label("Children aged 5+"; htmlFor="ch5p"),
 				dcc_slider(
 					id = "ch5p",
-					min = 1,
+					min = 0,
 					max = 8,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:8]),
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:8]),
 					value = 0,
 					step = 1
     			),
@@ -268,15 +284,15 @@ end
 callback!(
     app,
     Output("bc-1", "figure"),
-	Input( "famchoice", "value"),
+	# Input( "famchoice", "value"),
 	Input( "tenure", "value"),
 	Input( "adults", "value"),
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
 	Input( "bedrooms", "value"),
 	Input( "hcost", "value" )
-	) do famchoice, tenure, adults, chu5, ch5p,  bedrooms, hcost
-		return doplot( famchoice, tenure, bedrooms, hcost, adults, chu5, ch5p)
+	) do tenure, adults, chu5, ch5p,  bedrooms, hcost
+		return doplot( tenure, bedrooms, hcost, adults, chu5, ch5p )
 	end
 
 
