@@ -107,8 +107,24 @@ end
 """
 Create the whole plot for the named household. 
 """
-function doplot( famname :: AbstractString, bedrooms::Integer, hcost::Real, adults::Integer, chu5::Integer, ch5p::Integer )
+function doplot( 
+	famname :: AbstractString, 
+	tenure :: AbstractString,
+	bedrooms::Integer, 
+	hcost::Real, 
+	adults::Integer, 
+	chu5::Integer, 
+	ch5p::Integer )
 	hh = get_hh( famname )
+	hh.tenure = if tenure == "private"
+		Private_Rented_Unfurnished
+	elseif tenure == "council"
+		Council_Rented
+	elseif tenure == "owner"
+		Mortgaged_Or_Shared
+	else
+		@assert false "$tenure not recognised"
+	end
 	hh.bedrooms = bedrooms
 	if hh.tenure == Mortgaged_Or_Shared
 		hh.mortgage_payment = mortgage_interest = hcost
@@ -149,6 +165,7 @@ push!(d, Dict("label"=>"Lone Parent, age 30; 2 Children; £103pw rent.", "value"
 push!(d, Dict("label"=>"Single Person, Age 21; £103pw rent.", "value" => "mel_c2"))
 
 
+
 sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 weeklyise!( sys )
@@ -160,6 +177,15 @@ app.layout = html_div() do
 			children = [
 				html_label("Choose a Family:"; htmlFor="famchoice"),
 				dcc_dropdown( options = d, value = "example_hh1", id = "famchoice"),
+				html_label("Tenure:"; htmlFor="tenure"),
+				dcc_radioitems(
+					id = "tenure",
+					options = [(value = "owner", label= "Owner Occupier"),
+					           (value = "private", label="Private Rented"),
+							   (value = "council", label="Council or Housing Association")],
+					value = "private"
+				),
+				
 				# tenure todo
 				html_label("Adults"; htmlFor="adults"),
 				dcc_slider(
@@ -243,13 +269,14 @@ callback!(
     app,
     Output("bc-1", "figure"),
 	Input( "famchoice", "value"),
+	Input( "tenure", "value"),
 	Input( "adults", "value"),
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
 	Input( "bedrooms", "value"),
 	Input( "hcost", "value" )
-	) do famname, adults, chu5, ch5p,  bedrooms, hcost
-		return doplot( famname, bedrooms, hcost, adults, chu5, ch5p)
+	) do famchoice, tenure, adults, chu5, ch5p,  bedrooms, hcost
+		return doplot( famchoice, tenure, bedrooms, hcost, adults, chu5, ch5p)
 	end
 
 
