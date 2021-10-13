@@ -46,7 +46,7 @@ function get_hh(
 	tenure    :: AbstractString,
 	bedrooms  :: Integer, 
 	hcost     :: Real, 
-	adults    :: Integer, 
+	marrstat    :: AbstractString, 
 	chu5      :: Integer, 
 	ch5p      :: Integer ) :: Household
 	hh = get_example( single_hh )
@@ -69,11 +69,12 @@ function get_hh(
 	else
 		hh.gross_rent = hcost
 	end
-	if adults == 2
+	if marrstat == "couple"
 		sex = head.sex == Male ? Female : Male # hetero ..
 		add_spouse!( hh, 30, sex )
 		sp = get_spouse(hh)
 		enable!(sp)
+		set_wage!( sp, 0, 10 )
 	end
 	age = 0
 	for ch in 1:chu5
@@ -88,10 +89,6 @@ function get_hh(
 		add_child!( hh, age, sex )
 	end
 	set_wage!( head, 0, 10 )
-	spouse = get_spouse( hh )
-	if spouse !== nothing
-		set_wage!( spouse, 0, 10 )
-	end
 	for (pid,pers) in hh.people
 		# println( "age=$(pers.age) empstat=$(pers.employment_status) " )
 		empty!( pers.income )
@@ -151,7 +148,7 @@ function doplot(
 	tenure :: AbstractString,
 	bedrooms::Integer, 
 	hcost::Real, 
-	adults::Integer, 
+	marrstat::AbstractString, 
 	chu5::Integer, 
 	ch5p::Integer )
 	hh = get_hh( tenure, bedrooms, hcost, adults, chu5, ch5p )
@@ -207,8 +204,31 @@ app.layout = html_div() do
 							   (value = "council", label="Council/HA")],
 					value = "private"
 				),
-				
-				html_label("Adults"; htmlFor="adults"),
+				html_label("Bedrooms"; htmlFor="bedrooms"),
+				dcc_slider(
+					id = "bedrooms",
+					min = 1,
+					max = 5,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
+					value = 2,
+					step = 1
+    			),
+				html_label("Housing Costs £pw"; htmlFor="hcost"),
+				dcc_slider(
+					id = "hcost",
+					min = 0,
+					max = 300,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:100:300]),
+					value = 100,
+					step = 1
+    			),				
+				html_label("Adults"; htmlFor="marrstat"),
+				dcc_checklist(
+					id = "marrstat",
+					options = [(value = "single", label= "Single"),
+							   (value="couple", label="Couple")],
+					value = []
+				),
 				dcc_slider(
 					id = "adults",
 					min = 1,
@@ -235,25 +255,6 @@ app.layout = html_div() do
 					value = 0,
 					step = 1
     			),
-				html_label("Bedrooms"; htmlFor="bedrooms"),
-				dcc_slider(
-					id = "bedrooms",
-					min = 1,
-					max = 5,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
-					value = 2,
-					step = 1
-    			),
-				html_label("Housing Costs £pw"; htmlFor="hcost"),
-				dcc_slider(
-					id = "hcost",
-					min = 0,
-					max = 300,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:100:300]),
-					value = 100,
-					step = 1
-    			),
-
 				# generate_table( lbc ),
 				dcc_markdown(
 	"""
@@ -291,13 +292,12 @@ callback!(
     Output("bc-1", "figure"),
 	# Input( "famchoice", "value"),
 	Input( "tenure", "value"),
-	Input( "adults", "value"),
-	Input( "chu5", "value"),
-	Input( "ch5p", "value"),
 	Input( "bedrooms", "value"),
-	Input( "hcost", "value" )
-	) do tenure, adults, chu5, ch5p,  bedrooms, hcost
-		return doplot( tenure, bedrooms, hcost, adults, chu5, ch5p )
+	Input( "hcost", "value" ),
+	Input( "marrstat", "value"),
+	Input( "chu5", "value"),
+	Input( "ch5p", "value")) do tenure, bedrooms, hcost, marrstat, chu5, ch5p
+		return doplot( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	end
 
 
