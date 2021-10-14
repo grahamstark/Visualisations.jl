@@ -151,7 +151,7 @@ function doplot(
 	marrstat::AbstractString, 
 	chu5::Integer, 
 	ch5p::Integer )
-	hh = get_hh( tenure, bedrooms, hcost, adults, chu5, ch5p )
+	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
 	lbc, ubc = getbc( hh,sys,settings)
@@ -202,9 +202,10 @@ app.layout = html_div() do
 					options = [(value = "owner", label= "Owner Occupier"),
 					           (value = "private", label="Private Rented"),
 							   (value = "council", label="Council/HA")],
-					value = "private"
+					value = "private",
+					labelStyle=Dict("display" => "list")
 				),
-				html_label("Bedrooms"; htmlFor="bedrooms"),
+				html_label("Bedrooms:"; htmlFor="bedrooms"),
 				dcc_slider(
 					id = "bedrooms",
 					min = 1,
@@ -213,7 +214,7 @@ app.layout = html_div() do
 					value = 2,
 					step = 1
     			),
-				html_label("Housing Costs £pw"; htmlFor="hcost"),
+				html_label("Housing Costs £pw:"; htmlFor="hcost"),
 				dcc_slider(
 					id = "hcost",
 					min = 0,
@@ -222,22 +223,15 @@ app.layout = html_div() do
 					value = 100,
 					step = 1
     			),				
-				html_label("Adults"; htmlFor="marrstat"),
-				dcc_checklist(
+				html_label("Adults:"; htmlFor="marrstat"),
+				dcc_radioitems(
 					id = "marrstat",
 					options = [(value = "single", label= "Single"),
 							   (value="couple", label="Couple")],
-					value = []
+					value = "single",
+					labelStyle=Dict("display" => "list")
 				),
-				dcc_slider(
-					id = "adults",
-					min = 1,
-					max = 2,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:2]),
-					value = 1,
-					step = 1
-    			),
-				html_label("Children aged under 5"; htmlFor="chu5"),
+				html_label("Children aged under 5:"; htmlFor="chu5"),
 				dcc_slider(
 					id = "chu5",
 					min = 0,
@@ -246,7 +240,7 @@ app.layout = html_div() do
 					value = 0,
 					step = 1
     			),
-				html_label("Children aged 5+"; htmlFor="ch5p"),
+				html_label("Children aged 5+:"; htmlFor="ch5p"),
 				dcc_slider(
 					id = "ch5p",
 					min = 0,
