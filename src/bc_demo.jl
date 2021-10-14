@@ -65,7 +65,8 @@ function get_hh(
 	end
 	hh.bedrooms = bedrooms
 	if hh.tenure == Mortgaged_Or_Shared
-		hh.mortgage_payment = mortgage_interest = hcost
+		hh.mortgage_payment = hcost
+		hh.mortgage_interest = hcost
 	else
 		hh.gross_rent = hcost
 	end
