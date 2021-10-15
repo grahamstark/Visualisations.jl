@@ -67,7 +67,10 @@ function get_hh(
 	if hh.tenure == Mortgaged_Or_Shared
 		hh.mortgage_payment = hcost
 		hh.mortgage_interest = hcost
+		hh.gross_rent = 0
 	else
+		hh.mortgage_payment = 0
+		hh.mortgage_interest = 0
 		hh.gross_rent = hcost
 	end
 	if marrstat == "couple"
@@ -179,7 +182,7 @@ function generate_table(df :: DataFrame)
         html_tbody(rows)])
 end
 
-
+# not used either
 hhnames = ExampleHouseholdGetter.initialise()
 d = []
 push!(d, Dict("label"=>"Couple 28, 29; 2 children; £80pw mortgage.", "value" => "example_hh1"))
