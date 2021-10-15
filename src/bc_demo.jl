@@ -64,6 +64,7 @@ function get_hh(
 		@assert false "$tenure not recognised"
 	end
 	hh.bedrooms = bedrooms
+	hh.other_housing_charges = hh.water_and_sewerage = 0
 	if hh.tenure == Mortgaged_Or_Shared
 		hh.mortgage_payment = hcost
 		hh.mortgage_interest = hcost
