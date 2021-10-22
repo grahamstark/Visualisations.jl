@@ -228,7 +228,7 @@ function doplot(
 	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
-	target = target_str == "ahc_hh" ? ahc_hh : bch_hh # forgot how to covert
+	target = target_str == "ahc_hh" ? ahc_hh : bhc_hh # forgot how to covert
 	lbc, ubc = getbc( hh, sys, wage, settings, target )
 	if view == "l_vs_l"
 		figure=econ_bcplot( lbc, ubc, wage )
@@ -349,11 +349,10 @@ app.layout = html_div() do
 				dcc_radioitems(
 					id = "target",
 					options = [(value = "ahc_hh", label= "After Housing Costs"),
-					options = [(value = "bhc_hh", label= "Before Housing Costs")],
-					value = "g_vs_n",
+					           (value = "bhc_hh", label= "Before Housing Costs")],
+					value = "ahc_hh",
 					labelStyle=Dict("display" => "list")
 				),
-				# generate_table( lbc ),
 				dcc_markdown(
 	"""
 This illustrates how net the net income of a household (i.e. after deducting taxes and housing costs, then adding benefits)
@@ -396,8 +395,8 @@ callback!(
 	Input( "marrstat", "value"),
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
-	Input( "target", "value")
-	Input( "view", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target
+	Input( "view", "value"),
+	Input( "target", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target
 		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target )
 	end
 
