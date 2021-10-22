@@ -1,10 +1,7 @@
 
 using Dash
-# using DashHtmlComponents
-# using DashCoreComponents
 using PlotlyJS
 # using DashBootstrapComponents
-
 #, DashHtmlComponents, DashCoreComponents
 using ScottishTaxBenefitModel
 using .BCCalcs
@@ -25,14 +22,15 @@ Generate a pair of budget constraints (as Dataframes) for the given household.
 function getbc( 
 	hh  :: Household, 
 	sys :: TaxBenefitSystem, 
+	wage :: Real,
 	settings :: Settings)::Tuple
 	defroute = settings.means_tested_routing
 	
 	settings.means_tested_routing = lmt_full 
-	lbc = BCCalcs.makebc( hh, sys, settings )
+	lbc = BCCalcs.makebc( hh, sys, settings, wage )
 
 	settings.means_tested_routing = uc_full 
-	ubc = BCCalcs.makebc( hh, sys, settings )
+	ubc = BCCalcs.makebc( hh, sys, settings, wage )
 
 	settings.means_tested_routing = defroute
     (lbc,ubc)
@@ -102,6 +100,72 @@ function get_hh(
 	return hh
 end
 
+const MAX_HRS = 120
+
+function gross_to_leisure!( bc :: DataFrame, wage::Real)
+	gross = bc[:,:gross]
+	l = MAX_HRS .- (gross ./ wage)
+	# println(l)
+	bc.leisure = l
+	# some nice way
+	p = 0
+	for r in eachrow(bc)
+		p += 1
+		if r.leisure < 0
+			break 
+		end
+	end
+	bc = bc[1:p,:]
+end
+
+"""
+Plot two budget constraints (contained in dataframes) - legacy & universal credit.
+"""
+function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real )
+	# legacy
+	gross_to_leisure!(lbc, wage )
+	bl = scatter(
+           lbc, 
+		   x=:leisure, 
+		   y=:net, 
+           mode="line", 
+		   name="Legacy Benefits", 
+		   text=:simplelabel,
+		   hoverinfo="text"
+       )
+	# uc
+	gross_to_leisure!(ubc, wage )
+	bu = scatter(
+		ubc, 
+		x=:leisure, 
+		y=:net, 
+		mode="line", 
+		name="Universal Credit", 
+		text=:simplelabel,
+		hoverinfo="text"
+	)
+	#= 45% line
+	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
+
+	gn["marker"] = Dict(:color => "#ccc",
+                        :line => Dict(:color=> "#ccc",
+                        :width=> 0.5))
+	=#
+	layout = Layout(
+		title="Budget Constraint: Legacy Benefits vs Universal Credit",
+        xaxis_title="Leisure (hours p.w.)",
+        yaxis_title="Household Net Income After Housing Costs £p.w.",
+		xaxis_range=[0, 120],
+		yaxis_range=[0, 1_200],
+		legend=attr(x=0.01, y=0.95),
+		width=700, 
+		height=700)
+	p = PlotlyJS.plot( [gn, bl, bu], layout)
+	# (typeof(p))
+	return p
+end
+
+
 """
 Plot two budget constraints (contained in dataframes) - legacy & universal credit.
 """
@@ -150,6 +214,7 @@ end
 Create the whole plot for the named household. 
 """
 function doplot( 
+	wage :: Real,
 	tenure :: AbstractString,
 	bedrooms::Integer, 
 	hcost::Real, 
@@ -159,8 +224,8 @@ function doplot(
 	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
-	lbc, ubc = getbc( hh,sys,settings)
-	figure=bcplot( lbc, ubc )
+	lbc, ubc = getbc( hh, sys, wage, settings )
+	figure=econ_bcplot( lbc, ubc, wage )
 	return figure 
 end
 
@@ -201,6 +266,15 @@ app.layout = html_div() do
 		html_h1("Household Budget Constraints: Legacy vs UC Examples"),
     	html_div(
 			children = [
+				html_label("Hourly Wage:"; htmlFor="wage"),
+				dcc_slider(
+					id = "wage",
+					min = 1,
+					max = 100,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
+					value = 10.0,
+					step = 1
+    			),
 				html_label("Tenure:"; htmlFor="tenure"),
 				dcc_radioitems(
 					id = "tenure",
@@ -290,13 +364,14 @@ callback!(
     app,
     Output("bc-1", "figure"),
 	# Input( "famchoice", "value"),
+	Input( "wage", "value"),
 	Input( "tenure", "value"),
 	Input( "bedrooms", "value"),
 	Input( "hcost", "value" ),
 	Input( "marrstat", "value"),
 	Input( "chu5", "value"),
-	Input( "ch5p", "value")) do tenure, bedrooms, hcost, marrstat, chu5, ch5p
-		return doplot( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
+	Input( "ch5p", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p
+		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	end
 
 
