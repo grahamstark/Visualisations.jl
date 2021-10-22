@@ -23,14 +23,15 @@ function getbc(
 	hh  :: Household, 
 	sys :: TaxBenefitSystem, 
 	wage :: Real,
-	settings :: Settings)::Tuple
+	settings :: Settings,
+	target :: TargetIncomes )::Tuple
 	defroute = settings.means_tested_routing
 	
 	settings.means_tested_routing = lmt_full 
-	lbc = BCCalcs.makebc( hh, sys, settings, wage )
+	lbc = BCCalcs.makebc( hh, sys, settings, wage, target )
 
 	settings.means_tested_routing = uc_full 
-	ubc = BCCalcs.makebc( hh, sys, settings, wage )
+	ubc = BCCalcs.makebc( hh, sys, settings, wage, target )
 
 	settings.means_tested_routing = defroute
     (lbc,ubc)
@@ -144,6 +145,7 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real )
 		text=:simplelabel,
 		hoverinfo="text"
 	)
+
 	#= 45% line
 	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
 
@@ -221,11 +223,13 @@ function doplot(
 	marrstat::AbstractString, 
 	chu5::Integer, 
 	ch5p::Integer,
-	view :: AbstractString )
+	view :: AbstractString,
+	target_str :: AbstractString )
 	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
-	lbc, ubc = getbc( hh, sys, wage, settings )
+	target = target_str == "ahc_hh" ? ahc_hh : bch_hh # forgot how to covert
+	lbc, ubc = getbc( hh, sys, wage, settings, target )
 	if view == "l_vs_l"
 		figure=econ_bcplot( lbc, ubc, wage )
 	else
@@ -341,6 +345,14 @@ app.layout = html_div() do
 					value = "g_vs_n",
 					labelStyle=Dict("display" => "list")
 				),
+				html_label("Income Measure:"; htmlFor="target"),
+				dcc_radioitems(
+					id = "target",
+					options = [(value = "ahc_hh", label= "After Housing Costs"),
+					options = [(value = "bhc_hh", label= "Before Housing Costs")],
+					value = "g_vs_n",
+					labelStyle=Dict("display" => "list")
+				),
 				# generate_table( lbc ),
 				dcc_markdown(
 	"""
@@ -384,8 +396,9 @@ callback!(
 	Input( "marrstat", "value"),
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
-	Input( "view", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view
-		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view )
+	Input( "target", "value")
+	Input( "view", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target
+		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target )
 	end
 
 
