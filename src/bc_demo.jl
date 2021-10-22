@@ -100,7 +100,7 @@ function get_hh(
 	return hh
 end
 
-const MAX_HRS = 120
+const MAX_HRS = 80
 
 function gross_to_leisure!( bc :: DataFrame, wage::Real)
 	gross = bc[:,:gross]
@@ -155,12 +155,12 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real )
 		title="Budget Constraint: Legacy Benefits vs Universal Credit",
         xaxis_title="Leisure (hours p.w.)",
         yaxis_title="Household Net Income After Housing Costs £p.w.",
-		xaxis_range=[0, 120],
+		xaxis_range=[0, MAX_HRS ],
 		yaxis_range=[0, 1_200],
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.plot( [gn, bl, bu], layout)
+	p = PlotlyJS.plot( [bl, bu], layout)
 	# (typeof(p))
 	return p
 end
@@ -220,12 +220,17 @@ function doplot(
 	hcost::Real, 
 	marrstat::AbstractString, 
 	chu5::Integer, 
-	ch5p::Integer )
+	ch5p::Integer,
+	view :: AbstractString )
 	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
 	lbc, ubc = getbc( hh, sys, wage, settings )
-	figure=econ_bcplot( lbc, ubc, wage )
+	if view == "l_vs_l"
+		figure=econ_bcplot( lbc, ubc, wage )
+	else
+		figure = bcplot( lbc, ubc )
+	end
 	return figure 
 end
 
@@ -270,7 +275,7 @@ app.layout = html_div() do
 				dcc_slider(
 					id = "wage",
 					min = 1,
-					max = 100,
+					max = 40,
 					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
 					value = 10.0,
 					step = 1
@@ -328,6 +333,14 @@ app.layout = html_div() do
 					value = 0,
 					step = 1
     			),
+				html_label("View:"; htmlFor="view"),
+				dcc_radioitems(
+					id = "view",
+					options = [(value = "g_vs_n", label= "Gross vs Net Income"),
+					           (value = "l_vs_l", label="Labour/Leisure")],
+					value = "g_vs_n",
+					labelStyle=Dict("display" => "list")
+				),
 				# generate_table( lbc ),
 				dcc_markdown(
 	"""
@@ -370,8 +383,9 @@ callback!(
 	Input( "hcost", "value" ),
 	Input( "marrstat", "value"),
 	Input( "chu5", "value"),
-	Input( "ch5p", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p
-		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p )
+	Input( "ch5p", "value"),
+	Input( "view", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view
+		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view )
 	end
 
 
