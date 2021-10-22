@@ -158,7 +158,7 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real )
         xaxis_title="Leisure (hours p.w.)",
         yaxis_title="Household Net Income After Housing Costs £p.w.",
 		xaxis_range=[0, MAX_HRS ],
-		yaxis_range=[0, 1_200],
+		yaxis_range=[0, 1_500],
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
@@ -193,7 +193,7 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame )
 		hoverinfo="text"
 	)
 	# 45% line
-	gn = scatter(y=[0,1200], x=[0,1200], showlegend=false, name="")
+	gn = scatter(y=[0,1500], x=[0,1500], showlegend=false, name="")
 
 	gn["marker"] = Dict(:color => "#ccc",
                         :line => Dict(:color=> "#ccc",
