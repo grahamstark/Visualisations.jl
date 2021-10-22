@@ -228,7 +228,15 @@ function doplot(
 	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
-	target = target_str == "ahc_hh" ? ahc_hh : bhc_hh # forgot how to covert
+	target = if target_str == "ahc_hh" 
+		 ahc_hh 
+		elseif target_str == "bhc_hh"
+			bhc_hh 
+		elseif target_str == "total_bens" 
+			total_bens 
+		elseif target_str == "total_taxes"
+			total_taxes 
+		end # forgot how to covert
 	lbc, ubc = getbc( hh, sys, wage, settings, target )
 	if view == "l_vs_l"
 		figure=econ_bcplot( lbc, ubc, wage )
@@ -349,7 +357,9 @@ app.layout = html_div() do
 				dcc_radioitems(
 					id = "target",
 					options = [(value = "ahc_hh", label= "After Housing Costs"),
-					           (value = "bhc_hh", label= "Before Housing Costs")],
+					           (value = "bhc_hh", label= "Before Housing Costs"),
+							   (value = "total_bens", label="Total Benefits Received"),
+							   (value = "total_taxes", label="Total Taxes Paid") ],
 					value = "ahc_hh",
 					labelStyle=Dict("display" => "list")
 				),
