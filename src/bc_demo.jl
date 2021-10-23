@@ -16,6 +16,11 @@ using .ExampleHelpers
 using Markdown
 using DataFrames
 
+const FORM_EXTRA =Dict(
+	"border-bottom"=>"1px dashed #aaaaaa", 
+	"margin-bottom"=>"5px",
+	"margin-top"=>"5px")
+
 const INFO = """
 This illustrates how net the net income of a household (i.e. after deducting taxes and housing costs, then adding benefits)
 varies with gross earnings, under the new Universal Credit benefit system and the old
@@ -268,6 +273,7 @@ function doplot(
 	return figure 
 end
 
+# .row: border-bottom 1px hashed #aaaaaa;
 function get_input_block()
 	return dbc_form(
 		
@@ -285,7 +291,7 @@ function get_input_block()
 					value = 10.0,
 					step = 1
 				)) # 
-		]),
+		], style=FORM_EXTRA),
 		dbc_row([
 			dbc_col(
 				dbc_label("Tenure:"; html_for="tenure"), width=3
@@ -299,7 +305,7 @@ function get_input_block()
 					value = "private"
 				)
 			)
-		]),
+		], style=FORM_EXTRA),
 		dbc_row([
 			dbc_col(
 				dbc_label("Bedrooms:"; html_for="bedrooms"), width=3
@@ -314,7 +320,7 @@ function get_input_block()
 					step = 1
     			)
 			)
-		]), # row
+		], style=FORM_EXTRA), # row
 		dbc_row([
 			dbc_col(
 				dbc_label("Housing Costs £pw:"; html_for="hcost"), width=3
@@ -329,7 +335,7 @@ function get_input_block()
 					step = 1
     			)
 			)
-		]), # row
+		], style=FORM_EXTRA), # row
 		dbc_row([
 			dbc_col(
 				dbc_label("Adults:"; html_for="marrstat"), width=3
@@ -342,7 +348,7 @@ function get_input_block()
 					value = "single"
 				)
 			)	
-		]), # row
+		], style=FORM_EXTRA), # row
 		dbc_row([
 			dbc_col(
 				dbc_label("Children aged under 5:"; html_for="chu5"), width=3
@@ -357,7 +363,7 @@ function get_input_block()
 					step = 1
     			)
 			)
-		]),
+		], style=FORM_EXTRA),
 		dbc_row([
 			dbc_col(
 				dbc_label("Children aged 5+:"; html_for="ch5p"), width=3
@@ -372,7 +378,7 @@ function get_input_block()
 					step = 1
     			)
 			)
-		]), # row
+		], style=FORM_EXTRA), # row
 		dbc_row([
 			dbc_col(
 				dbc_label("Graph type:"; html_for="view"), width=3
@@ -384,7 +390,7 @@ function get_input_block()
 					           (value = "l_vs_l", label="Labour/Leisure")],
 					value = "g_vs_n")
 			)
-		]), # row
+		], style=FORM_EXTRA), # row
 		dbc_row([
 			dbc_col(
 				dbc_label("Income Measure:"; html_for="target"), width=3
@@ -398,7 +404,7 @@ function get_input_block()
 							   (value = "total_taxes", label="Total Taxes Paid") ],
 					value = "ahc_hh")
 			)
-		])
+		], style=FORM_EXTRA)
 	])
 end 
 
@@ -452,6 +458,8 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	
 
 end
+
+
 
 callback!(
     app,
