@@ -25,7 +25,7 @@ const PREAMBLE = """
 Regardless of politics, I imagine most people an agree on the outlines of what
 our taxation and benefit system should do. Give some support to people who haven't got much,
 (depending who you ask, maybe take that support away from better off people); as you
-get better off, pay a bit (or a lot) more in tax. But that's not always what the system(s) 
+get better off, pay a bit (or a lot) more in tax. But that's not always what the systems
 we have do. Here's a simulation showing how the rules of the tax and benefit system 
 interact to make it almost impossible for households to make sensible choices about
 whether it's worth taking a job, working a bit more, or going for a promotion.  Using the
@@ -150,8 +150,10 @@ const MAX_HRS = 80
 function gross_to_leisure!( bc :: DataFrame, wage::Real)
 	gross = bc[:,:gross]
 	l = MAX_HRS .- (gross ./ wage)
+	w = MAX_HRS .- l
 	# println(l)
 	bc.leisure = l
+	bc.ls = w
 	# some nice way
 	p = 0
 	for r in eachrow(bc)
@@ -189,14 +191,21 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle ::
 		text=:simplelabel,
 		hoverinfo="text"
 	)
-
+	ls = scatter(
+		ubc, 
+		x=:ls, 
+		y=:net, 
+		mode="line", 
+		showlegend=false, 
+		name=""
+	)
 	#= 45% line
 	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
-
-	gn["marker"] = Dict(:color => "#ccc",
-                        :line => Dict(:color=> "#ccc",
-                        :width=> 0.5))
 	=#
+	ls["marker"] = Dict(:color => "#fff",
+						:line => Dict(:color=> "#fff",
+                        :width=> 0))
+	
 	layout = Layout(
 		title="Budget Constraint: Legacy Benefits vs Universal Credit",
         xaxis_title="Leisure (hours p.w.)",
@@ -206,7 +215,7 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle ::
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.plot( [bl, bu], layout)
+	p = PlotlyJS.plot( [ls, bl, bu], layout)
 	# (typeof(p))
 	return p
 end
