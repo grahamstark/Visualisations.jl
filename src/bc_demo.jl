@@ -1,7 +1,7 @@
 
 using Dash
 using PlotlyJS
-# using DashBootstrapComponents
+using DashBootstrapComponents
 #, DashHtmlComponents, DashCoreComponents
 using ScottishTaxBenefitModel
 using .BCCalcs
@@ -15,6 +15,28 @@ using .STBParameters
 using .ExampleHelpers
 using Markdown
 using DataFrames
+
+const INFO = """
+This illustrates how net the net income of a household (i.e. after deducting taxes and housing costs, then adding benefits)
+varies with gross earnings, under the new Universal Credit benefit system and the old
+'legacy' tax-credit system. 
+
+For simplicity, we assume:
+
+* only one person in the household works;
+* there are no other sources of income;
+* the working person faces a fixed £10 hourly wage and can work any hours at that wage.
+
+You'll see that the graphs are complicated enough even with those simplifications.
+
+Choose one of the three example families above. Move your mouse over the 'kink points' in the graph for a detailed calculation.
+
+See [here](https://stb.virtual-worlds.scot/bc-intro.html) for more on the ideas behind budget constraints.
+
+* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl);
+* Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
+* Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
+"""
 
 """
 Generate a pair of budget constraints (as Dataframes) for the given household.
@@ -246,6 +268,140 @@ function doplot(
 	return figure 
 end
 
+function get_input_block()
+	return dbc_form(
+		
+		[
+		dbc_row([
+			dbc_col(
+				dbc_label("Wage (£ per hour)"; html_for="wage"), width=3
+			),
+			dbc_col(
+				dcc_slider(
+					id = "wage",
+					min = 1,
+					max = 40,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
+					value = 10.0,
+					step = 1
+				)) # 
+		]),
+		dbc_row([
+			dbc_col(
+				dbc_label("Tenure:"; html_for="tenure"), width=3
+			),
+			dbc_col(
+				dbc_radioitems(
+					id = "tenure",
+					options = [(value = "owner", label= "Owner Occupier"),
+					           (value = "private", label="Private Rented"),
+							   (value = "council", label="Council/Housing Association")],
+					value = "private"
+				)
+			)
+		]),
+		dbc_row([
+			dbc_col(
+				dbc_label("Bedrooms:"; html_for="bedrooms"), width=3
+			),
+			dbc_col(
+				dcc_slider(
+					id = "bedrooms",
+					min = 1,
+					max = 5,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
+					value = 2,
+					step = 1
+    			)
+			)
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("Housing Costs £pw:"; html_for="hcost"), width=3
+			),
+			dbc_col(
+				dcc_slider(
+					id = "hcost",
+					min = 0,
+					max = 300,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:100:300]),
+					value = 100,
+					step = 1
+    			)
+			)
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("Adults:"; html_for="marrstat"), width=3
+			),
+			dbc_col(
+				dbc_radioitems(
+					id = "marrstat",
+					options = [(value = "single", label= "Single"),
+							   (value="couple", label="Couple")],
+					value = "single"
+				)
+			)	
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("Children aged under 5:"; html_for="chu5"), width=3
+			),
+			dbc_col(
+				dcc_slider(
+					id = "chu5",
+					min = 0,
+					max = 5,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:5]),
+					value = 0,
+					step = 1
+    			)
+			)
+		]),
+		dbc_row([
+			dbc_col(
+				dbc_label("Children aged 5+:"; html_for="ch5p"), width=3
+			),
+			dbc_col(
+				dcc_slider(
+					id = "ch5p",
+					min = 0,
+					max = 8,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:8]),
+					value = 0,
+					step = 1
+    			)
+			)
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("Graph type:"; html_for="view"), width=3
+			),
+			dbc_col(
+				dbc_radioitems(
+					id = "view",
+					options = [(value = "g_vs_n", label= "Gross vs Net Income"),
+					           (value = "l_vs_l", label="Labour/Leisure")],
+					value = "g_vs_n")
+			)
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("Income Measure:"; html_for="target"), width=3
+			),
+			dbc_col(
+				dbc_radioitems(
+					id = "target",
+					options = [(value = "ahc_hh", label= "After Housing Costs"),
+					           (value = "bhc_hh", label= "Before Housing Costs"),
+							   (value = "total_bens", label="Total Benefits Received"),
+							   (value = "total_taxes", label="Total Taxes Paid") ],
+					value = "ahc_hh")
+			)
+		])
+	])
+end 
+
 """
 an experimental html table. Not actually used.
 """
@@ -278,120 +434,23 @@ sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 weeklyise!( sys )
 
-app = dash(external_stylesheets= [])
-app.layout = html_div() do
-		html_h1("Household Budget Constraints: Legacy vs UC Examples"),
-    	html_div(
-			children = [
-				html_label("Hourly Wage:"; htmlFor="wage"),
-				dcc_slider(
-					id = "wage",
-					min = 1,
-					max = 40,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
-					value = 10.0,
-					step = 1
-    			),
-				html_label("Tenure:"; htmlFor="tenure"),
-				dcc_radioitems(
-					id = "tenure",
-					options = [(value = "owner", label= "Owner Occupier"),
-					           (value = "private", label="Private Rented"),
-							   (value = "council", label="Council/HA")],
-					value = "private",
-					labelStyle=Dict("display" => "list")
-				),
-				html_label("Bedrooms:"; htmlFor="bedrooms"),
-				dcc_slider(
-					id = "bedrooms",
-					min = 1,
-					max = 5,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 1:5]),
-					value = 2,
-					step = 1
-    			),
-				html_label("Housing Costs £pw:"; htmlFor="hcost"),
-				dcc_slider(
-					id = "hcost",
-					min = 0,
-					max = 300,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:100:300]),
-					value = 100,
-					step = 1
-    			),				
-				html_label("Adults:"; htmlFor="marrstat"),
-				dcc_radioitems(
-					id = "marrstat",
-					options = [(value = "single", label= "Single"),
-							   (value="couple", label="Couple")],
-					value = "single",
-					labelStyle=Dict("display" => "list")
-				),
-				html_label("Children aged under 5:"; htmlFor="chu5"),
-				dcc_slider(
-					id = "chu5",
-					min = 0,
-					max = 5,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:5]),
-					value = 0,
-					step = 1
-    			),
-				html_label("Children aged 5+:"; htmlFor="ch5p"),
-				dcc_slider(
-					id = "ch5p",
-					min = 0,
-					max = 8,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:8]),
-					value = 0,
-					step = 1
-    			),
-				html_label("View:"; htmlFor="view"),
-				dcc_radioitems(
-					id = "view",
-					options = [(value = "g_vs_n", label= "Gross vs Net Income"),
-					           (value = "l_vs_l", label="Labour/Leisure")],
-					value = "g_vs_n",
-					labelStyle=Dict("display" => "list")
-				),
-				html_label("Income Measure:"; htmlFor="target"),
-				dcc_radioitems(
-					id = "target",
-					options = [(value = "ahc_hh", label= "After Housing Costs"),
-					           (value = "bhc_hh", label= "Before Housing Costs"),
-							   (value = "total_bens", label="Total Benefits Received"),
-							   (value = "total_taxes", label="Total Taxes Paid") ],
-					value = "ahc_hh",
-					labelStyle=Dict("display" => "list")
-				),
-				dcc_markdown(
-	"""
-This illustrates how net the net income of a household (i.e. after deducting taxes and housing costs, then adding benefits)
-varies with gross earnings, under the new Universal Credit benefit system and the old
-'legacy' tax-credit system. 
+app = dash(external_stylesheets=[dbc_themes.UNITED]) 
+# BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR
+app.layout = dbc_container(fluid=true, className="p-5") do
+	
+	html_h1("Household Budget Constraints: Legacy vs UC Examples"),
 
-For simplicity, we assume:
+	dbc_row([
+    	dbc_col(get_input_block(), width=4),
+		dbc_col( dcc_graph( id = "bc-1" ))
+		]
+	),
+			# , style=(display="inline-block", float="right")
+	dbc_row([
+		dbc_col( dcc_markdown( INFO ), width=10)
+	])
+	
 
-* only one person in the household works;
-* there are no other sources of income;
-* the working person faces a fixed £10 hourly wage and can work any hours at that wage.
-
-You'll see that the graphs are complicated enough even with those simplifications.
-
-Choose one of the three example families above. Move your mouse over the 'kink points' in the graph for a detailed calculation.
-
-See [here](https://stb.virtual-worlds.scot/bc-intro.html) for more on the ideas behind budget constraints.
-
-* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl);
-* Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
-* Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
-	"""	)
-	],
-				style=(width="30%", display="inline-block")
-			),
-		html_div( 
-			children = [dcc_graph( id = "bc-1" )],
-				style=(width="69%", display="inline-block", float="right")
-			)
 end
 
 callback!(
