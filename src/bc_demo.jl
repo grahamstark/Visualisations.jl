@@ -190,32 +190,31 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle ::
 		name="Universal Credit", 
 		text=:simplelabel,
 		hoverinfo="text"
+		# ,xaxis="x2"
 	)
-	ls = scatter(
-		ubc, 
-		x=:ls, 
-		y=:net, 
-		mode="line", 
-		showlegend=false, 
-		name=""
-	)
-	#= 45% line
-	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
-	=#
-	ls["marker"] = Dict(:color => "#fff",
-						:line => Dict(:color=> "#fff",
-                        :width=> 0))
-	
 	layout = Layout(
 		title="Budget Constraint: Legacy Benefits vs Universal Credit",
         xaxis_title="Leisure (hours p.w.)",
         yaxis_title=ytitle,
 		xaxis_range=[0, MAX_HRS ],
 		yaxis_range=[0, 1_500],
+		#=
+		xaxis2=attr(
+
+            title="Hours of work", 
+			# titlefont_color="blue",
+            overlaying="x", 
+			side="bottom", 
+			position=0.15, 
+			anchor="free"
+
+        ),
+		=#
+		
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.plot( [ls, bl, bu], layout)
+	p = PlotlyJS.plot( [bl, bu], layout)
 	# (typeof(p))
 	return p
 end
@@ -305,7 +304,9 @@ function doplot(
 	return figure 
 end
 
-# .row: border-bottom 1px hashed #aaaaaa;
+"""
+Create the block of sliders and radios on the LHS
+"""
 function get_input_block()
 	return dbc_form(
 		
@@ -440,39 +441,11 @@ function get_input_block()
 	])
 end 
 
-"""
-an experimental html table. Not actually used.
-"""
-function generate_table(df :: DataFrame)
-	rows = []
-	for r in eachrow(df)
-		push!(rows,
-			html_tr([
-				html_td(r.gross),
-				html_td(r.net),
-				html_td(dcc_markdown(r.label))]
-			)
-		)
-	end
-    t = html_table([
-        html_thead(html_tr([html_th("Gross"), html_th("Net"), html_th("Breakdown")])),
-        html_tbody(rows)])
-end
-
-# not used either
-hhnames = ExampleHouseholdGetter.initialise()
-d = []
-push!(d, Dict("label"=>"Couple 28, 29; 2 children; £80pw mortgage.", "value" => "example_hh1"))
-push!(d, Dict("label"=>"Lone Parent, age 30; 2 Children; £103pw rent.", "value" => "single_parent_1"))
-push!(d, Dict("label"=>"Single Person, Age 21; £103pw rent.", "value" => "mel_c2"))
-
-
-
 sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 weeklyise!( sys )
 
-app = dash(external_stylesheets=[dbc_themes.SANDSTONE]) 
+app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
 	
@@ -482,10 +455,9 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	]),
 	dbc_row([
     	dbc_col(get_input_block(), width=4),
-		dbc_col( dcc_graph( id = "bc-1" ))
+	    dbc_col( dcc_graph( id = "bc-1" ))
 		]
 	),
-			# , style=(display="inline-block", float="right")
 	dbc_row([
 		dbc_col( dcc_markdown( INFO ), width=10)
 	])
@@ -512,4 +484,55 @@ callback!(
 	end
 
 
-run_server(app, "0.0.0.0", debug=true)
+run_server(app, "0.0.0.0", debug=true )
+
+#=
+
+"""
+an experimental html table. Not actually used.
+"""
+function generate_table(df :: DataFrame)
+	rows = []
+	for r in eachrow(df)
+		push!(rows,
+			html_tr([
+				html_td(r.gross),
+				html_td(r.net),
+				html_td(dcc_markdown(r.label))]
+			)
+		)
+	end
+    t = html_table([
+        html_thead(html_tr([html_th("Gross"), html_th("Net"), html_th("Breakdown")])),
+        html_tbody(rows)])
+end
+
+# not used either
+hhnames = ExampleHouseholdGetter.initialise()
+d = []
+push!(d, Dict("label"=>"Couple 28, 29; 2 children; £80pw mortgage.", "value" => "example_hh1"))
+push!(d, Dict("label"=>"Lone Parent, age 30; 2 Children; £103pw rent.", "value" => "single_parent_1"))
+push!(d, Dict("label"=>"Single Person, Age 21; £103pw rent.", "value" => "mel_c2"))
+
+	 
+failed attempt at drawing a 'labour supplied' axis:
+
+	ls = scatter(
+		ubc, 
+		x=:ls, 
+		y=:net, 
+		mode="line", 
+		showlegend=false, 
+		name=""
+	)
+	ls["marker"] = Dict(:color => "#fff",
+						:line => Dict(:color=> "#fff",
+                        :width=> 0))
+	
+	=#
+	#= 45% line
+	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
+	=#
+	
+
+=# 
