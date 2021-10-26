@@ -2,7 +2,6 @@
 using Dash
 using PlotlyJS
 using DashBootstrapComponents
-#, DashHtmlComponents, DashCoreComponents
 using ScottishTaxBenefitModel
 using .BCCalcs
 using .ModelHousehold
@@ -529,4 +528,14 @@ failed attempt at drawing a 'labour supplied' axis:
 						:line => Dict(:color=> "#fff",
                         :width=> 0))
 	
+<<<<<<< HEAD
 =#
+=======
+	=#
+	#= 45% line
+	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
+	=#
+	
+
+=# 
+>>>>>>> 55bdd1005bd9c2814483525b47ec0831b7733959
