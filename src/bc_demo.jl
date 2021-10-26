@@ -448,7 +448,7 @@ weeklyise!( sys )
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
-	
+	html_title( "Scotland's Kinkiest Families: Household Budget Constraints")
 	html_h1("Scotland's Kinkiest Families: Household Budget Constraints"),
 	dbc_row([
 		dbc_col( dcc_markdown( PREAMBLE ), width=10)
@@ -529,10 +529,4 @@ failed attempt at drawing a 'labour supplied' axis:
 						:line => Dict(:color=> "#fff",
                         :width=> 0))
 	
-	=#
-	#= 45% line
-	gn = scatter(y=[0,1200], x=[0,120], showlegend=false, name="")
-	=#
-	
-
-=# 
+=#
