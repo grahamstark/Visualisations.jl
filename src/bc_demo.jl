@@ -450,12 +450,13 @@ function generate_table(df :: DataFrame)
 			html_tr([
 				html_td(r.gross),
 				html_td(r.net),
-				html_td(dcc_markdown(r.label))]
+				html_td(dcc_markdown(r.label))
+				html_td(dcc_markdown(r.label_p1))]
 			)
 		)
 	end
     t = html_table([
-        html_thead(html_tr([html_th("Gross"), html_th("Net"), html_th("Breakdown")])),
+        html_thead(html_tr([html_th("Gross"), html_th("Net"), html_th("Breakdown"), html_th("Breakdown+1p")])),
         html_tbody(rows)])
 end
 
