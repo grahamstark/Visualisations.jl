@@ -12,6 +12,7 @@ using .SingleHouseholdCalculations
 using .RunSettings
 using .FRSHouseholdGetter
 using .STBParameters
+using .STBOutput: summarise_frames 
 using .ExampleHelpers
 using .Runner;
 
@@ -39,6 +40,7 @@ const SETTINGS = Settings()
 function do_run( sys :: TaxBenefitSystem, settings :: Settings  )
     settings.means_tested_routing = modelled_phase_in
     settings.run_name="run-$(mtrouting)-$(date_string())"
+	println( "running!!")
     results = do_one_run( settings, [sys, BASE_SYS] )
 	return results
 end 
@@ -108,12 +110,12 @@ function get_input_block()
 					id = "br",
 					min = 1,
 					max = 50,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:1:100]),
 					value = 10.0,
 					step = 1
 				)) # 
 		], style=FORM_EXTRA),
-		dbc_button(id = "submit-button-state", class_name="primary", children = "submit", n_clicks = 0)
+		dbc_button(id = "submit-button-state", class_name="primary", color = "primary", children = "submit", n_clicks = 0)
 			])
 end 
 
@@ -140,7 +142,7 @@ end
 
 function do_output( br )
 	results = do_run( [BASE_SYS, BASE_SYS], SETTINGS )
-	
+	out = summarise_frames( results )
 end
 
 callback!(
