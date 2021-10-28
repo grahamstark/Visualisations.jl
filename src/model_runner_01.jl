@@ -130,7 +130,7 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	]),
 	dbc_row([
     	dbc_col(get_input_block(), width=4),
-	    dbc_col( dcc_graph( id = "bc-1-state" ))
+	    dbc_col( dcc_graph( id = "bc-1" ))
 		]
 	),
 	dbc_row([
