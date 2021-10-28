@@ -13,6 +13,7 @@ using .RunSettings
 using .FRSHouseholdGetter
 using .STBParameters
 using .ExampleHelpers
+using .Runner;
 
 using Markdown
 using DataFrames
@@ -25,15 +26,23 @@ const FORM_EXTRA =Dict(
 const PREAMBLE = """
 """
 
-
-function calc_one_result( res :: DataFrane ) :: NamedTuple
-	rc = @timed begin
-		num_households,total_num_people,nhh2 = FRSHouseholdGetter.initialise( DEFAULT_SETTINGS )
-		
-	end
+function load_system()::TaxBenefitSystem
+	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
+	load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
+	weeklyise!( sys )
+	return sys
 end
 
-const 
+const BASE_SYS = load_system()
+const SETTINGS = Settings()
+
+function do_run( sys :: TaxBenefitSystem, settings :: Settings  )
+    settings.means_tested_routing = modelled_phase_in
+    settings.run_name="run-$(mtrouting)-$(date_string())"
+    results = do_one_run( settings, [sys, BASE_SYS] )
+	return results
+end 
+
 
 const INFO = """
 
@@ -44,10 +53,9 @@ const INFO = """
 """
 Plot two budget constraints (contained in dataframes) - legacy & universal credit.
 """
-function econ_bcplot( 
-	lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle :: String )
+function plot1( 
+	output :: NamedTuple )
 	# legacy
-	gross_to_leisure!(lbc, wage )
 	bl = scatter(
            lbc, 
 		   x=:leisure, 
@@ -75,19 +83,6 @@ function econ_bcplot(
         yaxis_title=ytitle,
 		xaxis_range=[0, MAX_HRS ],
 		yaxis_range=[0, 1_500],
-		#=
-		xaxis2=attr(
-
-            title="Hours of work", 
-			# titlefont_color="blue",
-            overlaying="x", 
-			side="bottom", 
-			position=0.15, 
-			anchor="free"
-
-        ),
-		=#
-		
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
@@ -110,7 +105,7 @@ function get_input_block()
 			),
 			dbc_col(
 				dcc_slider(
-					id = "wage",
+					id = "br",
 					min = 1,
 					max = 50,
 					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
@@ -118,12 +113,10 @@ function get_input_block()
 					step = 1
 				)) # 
 		], style=FORM_EXTRA),
+		dbc_button(id = "submit-button-state", class_name="primary", children = "submit", n_clicks = 0)
 			])
 end 
 
-sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
-load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
-weeklyise!( sys )
 
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
@@ -135,7 +128,7 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	]),
 	dbc_row([
     	dbc_col(get_input_block(), width=4),
-	    dbc_col( dcc_graph( id = "bc-1" ))
+	    dbc_col( dcc_graph( id = "bc-1-state" ))
 		]
 	),
 	dbc_row([
@@ -145,15 +138,18 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 
 end
 
-
+function do_output( br )
+	results = do_run( [BASE_SYS, BASE_SYS], SETTINGS )
+	
+end
 
 callback!(
     app,
     Output("bc-1", "figure"),
 	Input( "br", "value")) do br
-		return doplot( br )
+		return do_output( br )
 	end
 
 
-run_server(app, "0.0.0.0", debug=true )
+run_server(app, "0.0.0.0", 8051; debug=true )
 
