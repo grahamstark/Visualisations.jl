@@ -39,9 +39,9 @@ const SETTINGS = Settings()
 
 function do_run( sys :: TaxBenefitSystem, settings :: Settings  )
     settings.means_tested_routing = modelled_phase_in
-    settings.run_name="run-$(mtrouting)-$(date_string())"
+    settings.run_name="run-$(date_string())"
 	println( "running!!")
-    results = do_one_run( settings, [sys, BASE_SYS] )
+    results = do_one_run( settings, [sys] )
 	return results
 end 
 
@@ -98,27 +98,35 @@ end
 Create the block of sliders and radios on the LHS
 """
 function get_input_block()
-	return dbc_form(
-		
-		[
+	return dbc_form([
 		dbc_row([
 			dbc_col(
-				dbc_label("Basic Rate"; html_for="br"), width=3
+				dbc_label("Basic Rate"; html_for="basic_rate"), width=3
 			),
 			dbc_col(
 				dcc_slider(
-					id = "br",
-					min = 1,
-					max = 50,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:1:100]),
+					id = "basic_rate",
+					min = 0,
+					max = 100,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
 					value = 10.0,
 					step = 1
-				)) # 
-		], style=FORM_EXTRA),
-		dbc_button(id = "submit-button-state", class_name="primary", color = "primary", children = "submit", n_clicks = 0)
-			])
+				)), # col
+			dbc_col([
+				dbc_button(
+					id = "submit-button", 
+					class_name="primary", 
+					color = "primary",
+					# name = "Run",
+					# value = "Run", 
+					children = "submit"
+					)
+			]) # col
+		]) # row
+	]) # form
 end 
 
+f1 = plot( [1,2,3])
 
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
@@ -127,31 +135,54 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	html_h1("You are Katie Forbes"),
 	dbc_row([
 		dbc_col( dcc_markdown( PREAMBLE ), width=10)
-	]),
+	]), # row
 	dbc_row([
     	dbc_col(get_input_block(), width=4),
-	    dbc_col( dcc_graph( id = "bc-1" ))
-		]
-	),
+		dbc_col([
+			dcc_loading( 
+				id="model_running", 
+				type="default", 
+				children = [
+					html_div(
+						id="loading-output-1"
+						#= 
+						children=(
+							dcc_graph( id = "bc-1", figure=f1 )
+						) # child graph
+						=#
+					) # div
+				] # children
+			) # loading
+		]) # col
+	]), # row
+	
+	dbc_row([
+		dbc_col([
+			dcc_graph( id = "bc-1" )])
+	]),
 	dbc_row([
 		dbc_col( dcc_markdown( INFO ), width=10)
-	])
-	
-
-end
+	]) # row
+end # layout
 
 function do_output( br )
-	results = do_run( [BASE_SYS, BASE_SYS], SETTINGS )
+	results = do_run( BASE_SYS, SETTINGS )
 	out = summarise_frames( results )
+	plot([1,2,3.5])
 end
 
 callback!(
     app,
-    Output("bc-1", "figure"),
-	Input( "br", "value")) do br
-		return do_output( br )
+    Output("model_running",  "children"),
+	Output("bc-1", "figure"),
+	Input("submit-button", "n_clicks"),
+	State( "basic_rate", "value")) do n_clicks, basic_rate
+	println( "n_clicks = $n_clicks")
+	if ! isnothing( n_clicks )
+		return [nothing,do_output( basic_rate )]
 	end
+	[nothing,plot([1,2,3])]
+end
 
 
 run_server(app, "0.0.0.0", 8051; debug=true )
-
