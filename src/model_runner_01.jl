@@ -34,21 +34,56 @@ function load_system()::TaxBenefitSystem
 	return sys
 end
 
-const BASE_SYS = load_system()
-const SETTINGS = Settings()
+struct BaseState
+	sys          :: TaxBenefitSystem
+	settings     :: Settings
+	results      :: NamedTuple
+	summary      :: NamedTuple
+end
 
-function do_run( sys :: TaxBenefitSystem, settings :: Settings  )
-    settings.means_tested_routing = modelled_phase_in
+
+function initialise()::BaseState
+    settings = Settings()
+	settings.means_tested_routing = modelled_phase_in
     settings.run_name="run-$(date_string())"
+	sys = load_system()
+	results = do_one_run( settings, [sys] )
+	settings.poverty_line = make_poverty_line( results.hh[1], settings )
+	summary = summarise_frames( results, settings )
+	return BaseState( sys, settings, results, summary)
+end
+
+const BASE_STATE = initialise()
+
+function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	println( "running!!")
-    results = do_one_run( settings, [sys] )
-	return results
+    results = do_one_run( BASE_STATE.settings, [sys] )
+	outf = summarise_frames( results, BASE_STATE.settings )
+	gl = add_gain_lose!( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings )    
+	return (summary=outf,gain_lose=gl)
 end 
 
+#=
+function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing  )
+    settings.means_tested_routing = mtrouting
+    settings.run_name="run-$(mtrouting)-$(date_string())"
+    sys = [get_system(scotland=false), get_system( scotland=true )]
+    results = do_one_run( settings, sys )
+    h1 = results.hh[1]
+    pretty_table( h1[:,[:weighted_people,:bhc_net_income,:eq_bhc_net_income,:ahc_net_income,:eq_ahc_net_income]] )
+    settings.poverty_line = make_poverty_line( results.hh[1], settings )
+    dump_frames( settings, results )
+    println( "poverty line = $(settings.poverty_line)")
+    outf = summarise_frames( results, settings )
+    println( outf )
+    gl = add_gain_lose!( results.hh[1], results.hh[2], settings )
+    println(sum(gl.gainers))
+end 
+=#
 
 const INFO = """
 
-* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Budget Constraint Generator](https://github.com/grahamstark/BudgetConstraints.jl);
+* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Inequality an Poverty Measures](https://github.com/grahamstark/BudgetConstraints.jl);
 * Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
 * Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
 """
@@ -112,21 +147,21 @@ function get_input_block()
 					value = 10.0,
 					step = 1
 				)), # col
+		]),
+		dbc_row([
 			dbc_col([
 				dbc_button(
 					id = "submit-button", 
 					class_name="primary", 
 					color = "primary",
-					# name = "Run",
-					# value = "Run", 
+					name = "Run",
+					value = "Run", 
 					children = "submit"
 					)
 			]) # col
 		]) # row
 	]) # form
 end 
-
-f1 = plot( [1,2,3])
 
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
