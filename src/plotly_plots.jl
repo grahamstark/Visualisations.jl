@@ -32,3 +32,12 @@ function draw_lorenz( pre::Vector, post::Vector )
     
     return PlotlyJS.plot( [pre, post, diag], layout)
 end
+
+function drawDeciles( pre::Vector, post :: Vector )
+    v = pre-post;
+    return Plotly.plot( 
+        1:10, 
+        v, 
+        type=:bar )
+	
+end

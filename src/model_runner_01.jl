@@ -8,6 +8,7 @@ using Markdown
 using DataFrames
 
 include( "run_and_consts.jl")
+include( "plotly_plots.jl")
 
 const FORM_EXTRA =Dict(
 	"border-bottom"=>"1px dashed #aaaaaa", 
@@ -42,47 +43,6 @@ const INFO = """
 * Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
 * Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
 """
-"""
-Plot two budget constraints (contained in dataframes) - legacy & universal credit.
-"""
-function plot1( 
-	output :: NamedTuple )
-	# legacy
-	bl = scatter(
-           lbc, 
-		   x=:leisure, 
-		   y=:net, 
-           mode="line", 
-		   name="Legacy Benefits", 
-		   text=:simplelabel,
-		   hoverinfo="text"
-       )
-	# uc
-	gross_to_leisure!(ubc, wage )
-	bu = scatter(
-		ubc, 
-		x=:leisure, 
-		y=:net, 
-		mode="line", 
-		name="Universal Credit", 
-		text=:simplelabel,
-		hoverinfo="text"
-		# ,xaxis="x2"
-	)
-	layout = Layout(
-		title="Budget Constraint: Legacy Benefits vs Universal Credit",
-        xaxis_title="Leisure (hours p.w.)",
-        yaxis_title=ytitle,
-		xaxis_range=[0, MAX_HRS ],
-		yaxis_range=[0, 1_500],
-		legend=attr(x=0.01, y=0.95),
-		width=700, 
-		height=700)
-	p = PlotlyJS.plot( [bl, bu], layout)
-	# (typeof(p))
-	return p
-end
-
 
 """
 Create the block of sliders and radios on the LHS
@@ -156,8 +116,15 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 end # layout
 
 function do_output( br )
-	results = do_run( BASE_STATE.sys )
-	plot( 1:10, results.summary.deciles[1][:,3], type=:bar )
+	sys = deepcopy( BASE_STATE.sys )
+	incr = br-sys.it.non_savings_rates[2] 
+	sys.it.non_savings_rates[1:3] .+= incr 
+	results = do_run( sys )
+	lorenz = plot( 1:10, results.summary.deciles[1][:,3], type=:bar )
+	gbd = drawDeciles( 
+		results.summary.deciles[1][:,3],
+		BASE_STATE.summary.deciles[1][:,3] )
+	[lorenz gbd; lorenz gbd; lorenz gbd]	
 end
 
 callback!(
