@@ -118,6 +118,7 @@ end # layout
 function do_output( br )
 	br /= 100.0
 	sys = deepcopy( BASE_STATE.sys )
+	println("sys.it.non_savings_rates[2] $(sys.it.non_savings_rates[2])")
 	incr = br-sys.it.non_savings_rates[2] 
 	sys.it.non_savings_rates[1:3] .+= incr 
 	results = do_run( sys )
