@@ -35,7 +35,7 @@ end
 
 function drawDeciles( pre::Vector, post :: Vector )
     v = pre-post;
-    return Plotly.plot( 
+    return PlotlyJS.plot( 
         1:10, 
         v, 
         type=:bar )

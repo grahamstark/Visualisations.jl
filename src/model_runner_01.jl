@@ -116,15 +116,18 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 end # layout
 
 function do_output( br )
+	br /= 100.0
 	sys = deepcopy( BASE_STATE.sys )
 	incr = br-sys.it.non_savings_rates[2] 
 	sys.it.non_savings_rates[1:3] .+= incr 
 	results = do_run( sys )
-	lorenz = plot( 1:10, results.summary.deciles[1][:,3], type=:bar )
+	lorenz = draw_lorenz(
+		BASE_STATE.summary.deciles[1][:,2],
+		results.summary.deciles[1][:,2] )
 	gbd = drawDeciles( 
 		results.summary.deciles[1][:,3],
 		BASE_STATE.summary.deciles[1][:,3] )
-	[lorenz gbd; lorenz gbd; lorenz gbd]	
+	[lorenz gbd lorenz gbd; lorenz gbd lorenz gbd; lorenz gbd lorenz gbd]	
 end
 
 callback!(
