@@ -3,21 +3,11 @@ using Dash
 using PlotlyJS
 using DashBootstrapComponents
 #, DashHtmlComponents, DashCoreComponents
-using ScottishTaxBenefitModel
-using .BCCalcs
-using .ModelHousehold
-using .Utils
-using .Definitions
-using .SingleHouseholdCalculations
-using .RunSettings
-using .FRSHouseholdGetter
-using .STBParameters
-using .STBOutput: summarise_frames 
-using .ExampleHelpers
-using .Runner;
 
 using Markdown
 using DataFrames
+
+include( "run_and_consts.jl")
 
 const FORM_EXTRA =Dict(
 	"border-bottom"=>"1px dashed #aaaaaa", 
@@ -27,41 +17,6 @@ const FORM_EXTRA =Dict(
 const PREAMBLE = """
 """
 
-function load_system()::TaxBenefitSystem
-	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
-	load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
-	weeklyise!( sys )
-	return sys
-end
-
-struct BaseState
-	sys          :: TaxBenefitSystem
-	settings     :: Settings
-	results      :: NamedTuple
-	summary      :: NamedTuple
-end
-
-
-function initialise()::BaseState
-    settings = Settings()
-	settings.means_tested_routing = modelled_phase_in
-    settings.run_name="run-$(date_string())"
-	sys = load_system()
-	results = do_one_run( settings, [sys] )
-	settings.poverty_line = make_poverty_line( results.hh[1], settings )
-	summary = summarise_frames( results, settings )
-	return BaseState( sys, settings, results, summary)
-end
-
-const BASE_STATE = initialise()
-
-function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
-	println( "running!!")
-    results = do_one_run( BASE_STATE.settings, [sys] )
-	outf = summarise_frames( results, BASE_STATE.settings )
-	gl = add_gain_lose!( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings )    
-	return (summary=outf,gain_lose=gl)
-end 
 
 #=
 function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing  )
@@ -201,9 +156,8 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 end # layout
 
 function do_output( br )
-	results = do_run( BASE_SYS, SETTINGS )
-	out = summarise_frames( results )
-	plot([1,2,3.5])
+	results = do_run( BASE_STATE.sys )
+	plot( 1:10, results.summary.deciles[1][:,3], type=:bar )
 end
 
 callback!(
