@@ -41,3 +41,30 @@ function drawDeciles( pre::Vector, post :: Vector )
         type=:bar )
 	
 end
+
+function gain_lose_table( gl :: NamedTuple )
+    lt = sum( gl.losers )
+    gt = sum( gl.gainers )
+    popn = sum( gl.popn )
+    nct = sum( gl.nc )
+    
+    losers = md_format(lt)
+    gainers = md_format(gt)
+    nc = md_format(nct)
+
+    losepct = md_format(100*lt/popn)
+    gainpct = md_format(100*gt/popn)
+    ncpct = md_format(100*nct/popn)
+
+    tab = table(  
+        header_values=["", "", "%"],
+        cells_values=[
+            ["Gainers","No Change","Losers"],
+            [gainers,nc,losers],
+            ["($(gainpct)%)","($(ncpct)%)","($(losepct))"]
+        ]
+    )
+    return tab
+    # PlotlyJS.plot( tab,
+    #    Layout(width=200, height=300))
+end

@@ -18,28 +18,9 @@ const FORM_EXTRA =Dict(
 const PREAMBLE = """
 """
 
-
-#=
-function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing  )
-    settings.means_tested_routing = mtrouting
-    settings.run_name="run-$(mtrouting)-$(date_string())"
-    sys = [get_system(scotland=false), get_system( scotland=true )]
-    results = do_one_run( settings, sys )
-    h1 = results.hh[1]
-    pretty_table( h1[:,[:weighted_people,:bhc_net_income,:eq_bhc_net_income,:ahc_net_income,:eq_ahc_net_income]] )
-    settings.poverty_line = make_poverty_line( results.hh[1], settings )
-    dump_frames( settings, results )
-    println( "poverty line = $(settings.poverty_line)")
-    outf = summarise_frames( results, settings )
-    println( outf )
-    gl = add_gain_lose!( results.hh[1], results.hh[2], settings )
-    println(sum(gl.gainers))
-end 
-=#
-
 const INFO = """
 
-* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Inequality an Poverty Measures](https://github.com/grahamstark/BudgetConstraints.jl);
+* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Inequality an Poverty Measures](https://github.com/grahamstark/PovertyAndInequalityMeasures.jl);
 * Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
 * Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
 """
@@ -81,8 +62,8 @@ end
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
-	html_title( "You are Katie Forbes")
-	html_h1("You are Katie Forbes"),
+	html_title( "You are The Finance Minister")
+	html_h1("You are The Finance Minister"),
 	dbc_row([
 		dbc_col( dcc_markdown( PREAMBLE ), width=10)
 	]), # row
@@ -122,14 +103,23 @@ function do_output( br )
 	incr = br-sys.it.non_savings_rates[2] 
 	sys.it.non_savings_rates[1:3] .+= incr 
 	results = do_run( sys )
+	gls1 = gain_lose_table( 
+		results.gain_lose )
+	gls2 = gain_lose_table( 
+		results.gain_lose )
+	gls3 = gain_lose_table( 
+		results.gain_lose )
 	lorenz = draw_lorenz(
 		BASE_STATE.summary.deciles[1][:,2],
 		results.summary.deciles[1][:,2] )
 	gbd = drawDeciles( 
 		results.summary.deciles[1][:,3],
 		BASE_STATE.summary.deciles[1][:,3] )
-	[lorenz gbd lorenz gbd; lorenz gbd lorenz gbd; lorenz gbd lorenz gbd]	
-end
+	return [
+		PlotlyJS.plot(gls1) lorenz gbd; 
+		lorenz PlotlyJS.plot(gls2) gbd; 
+		lorenz gbd PlotlyJS.plot(gls3) ]	
+end 
 
 callback!(
     app,

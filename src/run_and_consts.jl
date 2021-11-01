@@ -15,6 +15,7 @@ using .STBParameters
 using .STBOutput
 using .ExampleHelpers
 using .Runner;
+using .Utils:md_format
 
 function load_system()::TaxBenefitSystem
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
