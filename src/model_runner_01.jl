@@ -115,7 +115,41 @@ function do_output( br )
 	gbd = drawDeciles( 
 		results.summary.deciles[1][:,3],
 		BASE_STATE.summary.deciles[1][:,3] )
-	return [
+
+	fig = make_subplots(
+		rows=3, cols=3,
+		
+		column_widths=[0.3, 0.3, 0.4],
+		row_heights=[0.33, 0.33, 0.33],
+		specs=[
+			Spec(kind="table", rowspan=1, colspan=1)  Spec(kind="xy")  Spec(kind="xy");
+			Spec(kind="xy")  Spec(kind="table", rowspan=1, colspan=1)  Spec(kind="xy");	
+			Spec(kind="xy")  Spec(kind="xy")  Spec(kind="table", rowspan=1, colspan=1)]
+	)
+	for row in 1:3
+		for col in 1:3
+			if row == col
+				add_trace!( fig, gls1, row=row, col=col)
+			elseif rand(1:2) == 1
+				add_trace!( fig, gbd, row=row, col=col )				
+			else
+				add_trace!( fig, lorenz, row=row, col=col )
+			end
+		end
+	end
+		# specs=[
+		#		Spec(kind="table") Spec(kind="xy")
+		#
+		#		missing Spec(kind= "scene")
+		#
+		#	]
+		
+		#
+		
+
+	return fig 
+	
+	[
 		PlotlyJS.plot(gls1) lorenz gbd; 
 		lorenz PlotlyJS.plot(gls2) gbd; 
 		lorenz gbd PlotlyJS.plot(gls3) ]	

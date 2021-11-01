@@ -35,10 +35,10 @@ end
 
 function drawDeciles( pre::Vector, post :: Vector )
     v = pre-post;
-    return PlotlyJS.plot( 
-        1:10, 
-        v, 
-        type=:bar )
+    # return PlotlyJS.plot( 
+     bar(   
+        x=1:10, 
+        y=v )
 	
 end
 
@@ -64,7 +64,6 @@ function gain_lose_table( gl :: NamedTuple )
             ["($(gainpct)%)","($(ncpct)%)","($(losepct))"]
         ]
     )
-    return tab
-    # PlotlyJS.plot( tab,
-    #    Layout(width=200, height=300))
+    return tab #PlotlyJS.plot( tab,
+        # Layout(width=200, height=300))
 end
