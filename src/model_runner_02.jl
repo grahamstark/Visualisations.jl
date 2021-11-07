@@ -18,7 +18,10 @@ const FORM_EXTRA =Dict(
 const PREAMBLE = """
 """
 
+
+
 const INFO = """
+
 
 * Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Inequality an Poverty Measures](https://github.com/grahamstark/PovertyAndInequalityMeasures.jl);
 * Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
@@ -59,8 +62,25 @@ function get_input_block()
 	]) # form
 end 
 
+function make_output_block( state :: BaseState )
+	html_div([
+		dbc_row(dbc_col(html_div("
+			A single column"))),
+    dbc_row([
+        dbc_col(html_div("One of three columns")),
+        dbc_col(html_div("One of three columns")),
+        dbc_col(html_div("One of three columns")),
+    ]),
+    dbc_row([
+        dbc_col(html_div("One of two columns")),
+        dbc_col(html_div("One of two columns")),
+    ]),
+]);
+end
+
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
+
 app.layout = dbc_container(fluid=true, className="p-5") do
 	html_title( "You are The Finance Minister")
 	html_h1("You are The Finance Minister"),
@@ -86,87 +106,46 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 			) # loading
 		]) # col
 	]), # row
+
+	dbc_row( id="output-block" ), # results go here
 	
-	dbc_row([
-		dbc_col([
-			dcc_graph( id = "bc-1" )])
-	]),
 	dbc_row([
 		dbc_col( dcc_markdown( INFO ), width=10)
 	]) # row
 end # layout
 
 function do_output( br )
-	br /= 100.0
-	sys = deepcopy( BASE_STATE.sys )
-	println("sys.it.non_savings_rates[2] $(sys.it.non_savings_rates[2])")
-	incr = br-sys.it.non_savings_rates[2] 
-	sys.it.non_savings_rates[1:3] .+= incr 
-	results = do_run( sys )
-	gls1 = gain_lose_table( 
-		results.gain_lose )
-	gls2 = gain_lose_table( 
-		results.gain_lose )
-	gls3 = gain_lose_table( 
-		results.gain_lose )
-	lorenz = draw_lorenz(
-		BASE_STATE.summary.deciles[1][:,2],
-		results.summary.deciles[1][:,2] )
-	gbd = drawDeciles( 
-		results.summary.deciles[1][:,3],
-		BASE_STATE.summary.deciles[1][:,3] )
-
-	fig = make_subplots(
-		rows=3, 
-		cols=3,	
-		column_widths=[0.3, 0.3, 0.4],
-		row_heights=[0.33, 0.33, 0.33],
-		specs=[
-			Spec(kind="xy")  Spec(kind="table", rowspan=1, colspan=1)  Spec(kind="xy");
-			Spec(kind="xy")  Spec(kind="table", rowspan=1, colspan=1)  Spec(kind="xy");	
-			Spec(kind="xy")  Spec(kind="xy")  Spec(kind="table", rowspan=1, colspan=1)]
-	)
-	for row in 1:3
-		for col in 1:3
-			if row > 1 && (row == col)
-				add_trace!( fig, gls1, row=row, col=col)
-			elseif row == 1 && col == 2
-				add_trace!( fig, gls1, row=row, col=col)
-			elseif rand(1:2) == 1
-				add_trace!( fig, gbd, row=row, col=col )				
-			else
-				for i in lorenz
-					add_trace!( fig, i, row=row, col=col )
-				end
-			end
-		end
+	results = nothing
+	if br != 20
+		br /= 100.0
+		sys = deepcopy( BASE_STATE.sys )
+		println("sys.it.non_savings_rates[2] $(sys.it.non_savings_rates[2])")
+		incr = br-sys.it.non_savings_rates[2] 
+		sys.it.non_savings_rates[1:3] .+= incr 
+		results = do_run( sys )
+	else
+		results = ( 
+			summary = BASE_STATE.summary, 
+			gain_lose = BASE_STATE.gain_lose]
 	end
-		# specs=[
-		#		Spec(kind="table") Spec(kind="xy")
-		#
-		#		missing Spec(kind= "scene")
-		#
-		#	]
-		
-		#
-		
-
-	return fig 
-	
+	return results
 end 
+
+function do_no_change_output()
+	do_output(20)
+end
 
 callback!(
     app,
     Output("model_running",  "children"),
-	Output("bc-1", "figure"),
+	Output("output-block", "children"),
 	Input("submit-button", "n_clicks"),
 	State( "basic_rate", "value")) do n_clicks, basic_rate
 	println( "n_clicks = $n_clicks")
 	if ! isnothing( n_clicks )
 		return [nothing,do_output( basic_rate )]
 	end
-	[nothing,do_output(20)]
+	[nothing,do_output( 20 )]
 end
 
-
-run_server(app, "0.0.0.0", 8051; debug=true )
+run_server(app, "0.0.0.0", 8052; debug=true )

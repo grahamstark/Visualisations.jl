@@ -29,9 +29,9 @@ function draw_lorenz( pre::Vector, post::Vector )
         name="Post" )
 
     diag = scatter(y=[0,1], x=[0,1], showlegend=false, name="")   
-    return [pre, post, diag]
+    ##return [pre, post, diag]
     #return Dict([:data=>[pre, post, diag],:layout=>layout])
-    return post; #PlotlyJS.Plot( [pre, post, diag], layout)
+    PlotlyJS.Plot( [pre, post, diag], layout)
 end
 
 function drawDeciles( pre::Vector, post :: Vector )

@@ -29,6 +29,7 @@ struct BaseState
 	settings     :: Settings
 	results      :: NamedTuple
 	summary      :: NamedTuple
+	gain_lose    :: NamedTuple
 end
 
 function initialise()::BaseState
@@ -39,7 +40,13 @@ function initialise()::BaseState
 	results = do_one_run( settings, [sys] )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )
 	summary = summarise_frames( results, settings )
-	return BaseState( sys, settings, results, summary)
+	popn = BASE_STATE.summary.inequality[1].total_population
+	gainlose = ( 
+		gainers=0.0, 
+		losers=0.0,
+		nc=popn, 
+		popn = popn )	
+	return BaseState( sys, settings, results, summary, gainlose )
 end
 
 const BASE_STATE = initialise()
@@ -48,7 +55,7 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	println( "running!!")
     results = do_one_run( BASE_STATE.settings, [sys] )
 	outf = summarise_frames( results, BASE_STATE.settings )
-	gl = add_gain_lose!( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings )    
+	gl = make_gain_lose!( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings )    
 	return (summary=outf,gain_lose=gl)
 end 
 
