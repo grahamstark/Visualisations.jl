@@ -13,8 +13,8 @@ function draw_lorenz( pre::Vector, post::Vector )
         xaxis_range=[0, 1],
         yaxis_range=[0, 1],
         legend=attr(x=0.01, y=0.95),
-        width=700, 
-        height=700)
+        width=250, 
+        height=250)
 
     pre = scatter(
         x=xr, 
@@ -29,21 +29,25 @@ function draw_lorenz( pre::Vector, post::Vector )
         name="Post" )
 
     diag = scatter(y=[0,1], x=[0,1], showlegend=false, name="")   
-    return [pre, post, diag]
+    # return [pre, post, diag]
     #return Dict([:data=>[pre, post, diag],:layout=>layout])
-    return post; #PlotlyJS.Plot( [pre, post, diag], layout)
+    return PlotlyJS.Plot( [pre, post, diag], layout)
 end
 
 function drawDeciles( pre::Vector, post :: Vector )
     v = pre-post;
-    # return PlotlyJS.plot( 
-     bar(   
-        x=1:10, 
-        y=v )
+    layout = Layout(
+        title="Gain/Loss by decile",
+        xaxis_title="Decile",
+        yaxis_title="£pw",
+        width=250, 
+        height=250)
+    return PlotlyJS.plot( 
+     bar( x=1:10, y=v), layout )
 	
 end
 
-function gain_lose_table( gl :: NamedTuple )
+function gain_lose_table_p( gl :: NamedTuple )
     lt = sum( gl.losers )
     gt = sum( gl.gainers )
     popn = sum( gl.popn )
@@ -65,6 +69,28 @@ function gain_lose_table( gl :: NamedTuple )
             ["($(gainpct)%)","($(ncpct)%)","($(losepct))"]
         ]
     )
-    return tab #PlotlyJS.plot( tab,
-        # Layout(width=200, height=300))
+    return PlotlyJS.plot( tab,
+        Layout(width=200, height=300))
+end
+
+function gain_lose_table( gl :: NamedTuple )
+ 
+    losepct = md_format(100*gl.losers/gl.popn)
+    gainpct = md_format(100*gl.gainers/gl.popn)
+    ncpct = md_format(100*gl.nc/gl.popn)
+
+    table_header = 
+        html_thead(
+            html_tr([html_th(""), html_th(""),html_th("%")])
+        )
+
+
+    row1 = html_tr([html_td("Gainers"), html_td(md_format(gl.gainers)),html_td(gainpct) ])
+    row2 = html_tr([html_td("Losers"), html_td(md_format(gl.losers)),html_td(gainpct)])
+    row3 = html_tr([html_td("Unchanged"), html_td(md_format(gl.nc)),html_td(ncpct)])
+
+    table_body = html_tbody([row1, row2, row3])
+
+    table = dbc_table([table_header,table_body], bordered = false)
+    return table
 end

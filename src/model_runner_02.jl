@@ -62,20 +62,22 @@ function get_input_block()
 	]) # form
 end 
 
-function make_output_block( state :: BaseState )
-	html_div([
-		dbc_row(dbc_col(html_div("
-			A single column"))),
+function make_output_block( results )
     dbc_row([
-        dbc_col(html_div("One of three columns")),
-        dbc_col(html_div("One of three columns")),
+        dbc_col(dcc_graph(figure=drawDeciles( 
+			results.summary.deciles[1][:,3],
+			BASE_STATE.summary.deciles[1][:,3]))),
+        dbc_col(html_div(
+			gain_lose_table( results.gain_lose))),
         dbc_col(html_div("One of three columns")),
     ]),
     dbc_row([
         dbc_col(html_div("One of two columns")),
-        dbc_col(html_div("One of two columns")),
-    ]),
-]);
+        dbc_col( dcc_graph(figure=draw_lorenz(
+			BASE_STATE.summary.deciles[1][:,2],
+			results.summary.deciles[1][:,2] )
+	)),
+    ])
 end
 
 app = dash(external_stylesheets=[dbc_themes.UNITED]) 
@@ -126,14 +128,11 @@ function do_output( br )
 	else
 		results = ( 
 			summary = BASE_STATE.summary, 
-			gain_lose = BASE_STATE.gain_lose]
+			gain_lose = BASE_STATE.gain_lose )
 	end
-	return results
+	return make_output_block(results)
 end 
 
-function do_no_change_output()
-	do_output(20)
-end
 
 callback!(
     app,
