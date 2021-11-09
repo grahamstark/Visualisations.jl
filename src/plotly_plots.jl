@@ -1,3 +1,29 @@
+const TAB_RIGHT = Dict( "text-align"=>"right")
+const TAB_CENTRE = Dict( "text-align"=>"center")
+const TAB_RED = Dict( "color"=>"#BB3311")
+const TAB_GREEN = Dict( "color"=>"#33BB11")
+const TAB_BOLD = Dict( "font-weight"=>"Bold")
+    
+    
+function f0( n :: Number ) :: String 
+	format(n, commas=true, precision=0 )
+	# , autoscale=:finance
+end
+
+function fp( n :: Number ) :: String 
+	format(n, precision=2, signed=true )
+	# , autoscale=:finance
+end
+
+function f2( n :: Number ) :: String 
+	format(n, commas=true, precision=2 )
+	# , autoscale=:finance
+end
+
+function u( d ... )
+    Dict( union(d...))
+end
+
 function draw_lorenz( pre::Vector, post::Vector )
     np = size(pre)[1]
     step = 1/np
@@ -13,14 +39,14 @@ function draw_lorenz( pre::Vector, post::Vector )
         xaxis_range=[0, 1],
         yaxis_range=[0, 1],
         legend=attr(x=0.01, y=0.95),
-        width=250, 
-        height=250)
+        width=350, 
+        height=350)
 
     pre = scatter(
         x=xr, 
         y=v1, 
         mode="line", 
-        name="Post" )
+        name="Pre" )
 
     post = scatter(
         x=xr, 
@@ -40,13 +66,109 @@ function drawDeciles( pre::Vector, post :: Vector )
         title="Gain/Loss by decile",
         xaxis_title="Decile",
         yaxis_title="£pw",
-        width=250, 
-        height=250)
+        width=350, 
+        height=350)
     return PlotlyJS.plot( 
      bar( x=1:10, y=v), layout )
 	
 end
 
+function thing_table( names, v1, v2, up_is_good )
+    table_header = 
+        html_thead(
+            html_tr([html_th(""), 
+            html_th("Before",style=TAB_RIGHT),
+            html_th("After",style=TAB_RIGHT),
+            html_th("Change",style=TAB_RIGHT)])
+        )
+    rows = []
+    n = size(names)[1]
+    diff = v2 - v1
+    for i in 1:n 
+        colour = Dict()
+        if (up_is_good[i] !== 0) && (! (diff[i] ≈ 0))
+            if diff[i] > 0
+                colour = up_is_good[i] == 1 ? TAB_GREEN : TAB_RED
+             else
+                colour = up_is_good[i] == 1 ? TAB_RED : TAB_GREEN
+            end # neg diff   
+        end # non zero diff
+        row = html_tr([html_td(names[i]), 
+            html_td(f2(v1[i]),style=TAB_RIGHT),
+            html_td(f2(v2[i]),style=TAB_RIGHT),
+            html_td(fp(diff[i]),style=u(TAB_RIGHT,colour))
+            ])
+        push!( rows, row )
+    end
+    table_body = html_tbody(rows)
+    return dbc_table([table_header,table_body], bordered = false)
+end 
+
+function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
+    names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
+    v1 = [ineq1.gini, ineq1.palma, ineq1.atkinson[2], ineq1.atkinson[4], ineq1.atkinson[8], ineq1.hoover] .* 100
+    v2 = [ineq2.gini, ineq2.palma, ineq2.atkinson[2], ineq2.atkinson[4], ineq2.atkinson[8], ineq2.hoover] .* 100
+    up_is_good = fill( -1, 6 )
+    # 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0
+    # 
+    thing_table( names, v1, v2, up_is_good )
+end
+
+function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
+    names = ["Headcount", "Gap", "FGT(α=2)", "Watts", "Sen", "Shorrocks"]
+    v1 = [pov1.headcount, pov1.gap, pov1.foster_greer_thorndyke[5], pov1.watts, pov1.sen, pov1.shorrocks]  .* 100
+    v2 = [pov2.headcount, pov2.gap, pov2.foster_greer_thorndyke[5], pov2.watts, pov2.sen, pov2.shorrocks]  .* 100
+    up_is_good = fill( -1, 6 )
+    # const DEFAULT_FGT_ALPHAS = [ 0.0, 0.50, 1.0, 1.50, 2.0, 2.5 ];
+    thing_table( names, v1, v2, up_is_good )
+end
+
+function rb_table( sys )
+    table_header = 
+        html_thead(
+            html_tr([
+                html_th("Bands(£pa)"),
+		        html_th("Rates(%)")
+	        ])
+        )
+    nr = size( sys.it.)
+end
+
+function make_output_table( results, sys )
+    header = []    
+    hrow = html_tr([
+        html_td(html_h4("Gainers and Losers"),style=TAB_CENTRE,colSpan=2),
+		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
+	])
+    chrow = html_tr([
+        html_td(
+			rb_table( sys.it )),
+    ])
+    row1 = html_tr([
+        html_td(
+			gain_lose_table( results.gain_lose)),
+		html_td(dcc_graph(figure=drawDeciles( 
+			results.summary.deciles[1][:,3],
+			BASE_STATE.summary.deciles[1][:,3]))),
+		html_td( ineq_table(
+			BASE_STATE.summary.inequality[1],
+			results.summary.inequality[1])),
+		html_td( dcc_graph(figure=draw_lorenz(
+				BASE_STATE.summary.deciles[1][:,2],
+				results.summary.deciles[1][:,2])))			 
+	])
+	row2 = html_tr([		
+        html_td(
+			pov_table(
+				BASE_STATE.summary.poverty[1],
+				results.summary.poverty[1]))
+    ])
+    table_body = html_tbody([hrow, row1, row2])
+    table = dbc_table([table_body], bordered = false)
+    return table
+end
+
+#=
 function gain_lose_table_p( gl :: NamedTuple )
     lt = sum( gl.losers )
     gt = sum( gl.gainers )
@@ -72,25 +194,20 @@ function gain_lose_table_p( gl :: NamedTuple )
     return PlotlyJS.plot( tab,
         Layout(width=200, height=300))
 end
+=#
 
 function gain_lose_table( gl :: NamedTuple )
- 
     losepct = md_format(100*gl.losers/gl.popn)
     gainpct = md_format(100*gl.gainers/gl.popn)
     ncpct = md_format(100*gl.nc/gl.popn)
-
     table_header = 
         html_thead(
-            html_tr([html_th(""), html_th(""),html_th("%")])
+            html_tr([html_th(""), html_th(""),html_th("%",style=TAB_RIGHT)])
         )
-
-
-    row1 = html_tr([html_td("Gainers"), html_td(md_format(gl.gainers)),html_td(gainpct) ])
-    row2 = html_tr([html_td("Losers"), html_td(md_format(gl.losers)),html_td(gainpct)])
-    row3 = html_tr([html_td("Unchanged"), html_td(md_format(gl.nc)),html_td(ncpct)])
-
+    row1 = html_tr([html_td("Gainers"), html_td(f0(gl.gainers),style=TAB_RIGHT),html_td(gainpct,style=TAB_RIGHT) ])
+    row2 = html_tr([html_td("Losers"), html_td(f0(gl.losers),style=TAB_RIGHT),html_td(losepct,style=TAB_RIGHT)])
+    row3 = html_tr([html_td("Unchanged"), html_td(f0(gl.nc),style=TAB_RIGHT),html_td(ncpct,style=TAB_RIGHT)])
     table_body = html_tbody([row1, row2, row3])
-
     table = dbc_table([table_header,table_body], bordered = false)
     return table
 end

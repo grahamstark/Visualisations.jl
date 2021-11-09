@@ -2,6 +2,9 @@
 using Dash
 using PlotlyJS
 using DashBootstrapComponents
+using Formatting
+using PovertyAndInequalityMeasures
+
 #, DashHtmlComponents, DashCoreComponents
 
 using Markdown
@@ -43,10 +46,38 @@ function get_input_block()
 					min = 0,
 					max = 100,
 					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
-					value = 10.0,
+					value = 20.0,
 					step = 1
-				)), # col
+				))
 		]),
+		dbc_row([	
+				dbc_col(
+					dbc_label("Higher Rate"; html_for="basic_rate"), width=3
+				),
+				dbc_col(
+					dcc_slider(
+						id = "higher_rate",
+						min = 0,
+						max = 100,
+						marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
+						value = 41.0,
+						step = 1
+				)), # col
+		]), # row
+		dbc_row([	
+				dbc_col(
+					dbc_label("Top Rate"; html_for="basic_rate"), width=3
+				),
+				dbc_col(
+					dcc_slider(
+						id = "top_rate",
+						min = 0,
+						max = 100,
+						marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
+						value = 45.0,
+						step = 1
+				)), # col
+		]), # row
 		dbc_row([
 			dbc_col([
 				dbc_button(
@@ -62,21 +93,32 @@ function get_input_block()
 	]) # form
 end 
 
+"""
+Using dash blocks - can re-arrange itself.
+"""
 function make_output_block( results )
     dbc_row([
-        dbc_col(dcc_graph(figure=drawDeciles( 
+        dbc_col(html_h4("Gainers and Losers"),style=TAB_CENTRE),
+		dbc_col(html_h4("Inequality"),style=TAB_CENTRE)
+	]),
+    dbc_row([
+        dbc_col(
+			gain_lose_table( results.gain_lose)),
+		dbc_col(dcc_graph(figure=drawDeciles( 
 			results.summary.deciles[1][:,3],
 			BASE_STATE.summary.deciles[1][:,3]))),
-        dbc_col(html_div(
-			gain_lose_table( results.gain_lose))),
-        dbc_col(html_div("One of three columns")),
-    ]),
-    dbc_row([
-        dbc_col(html_div("One of two columns")),
-        dbc_col( dcc_graph(figure=draw_lorenz(
-			BASE_STATE.summary.deciles[1][:,2],
-			results.summary.deciles[1][:,2] )
-	)),
+		dbc_col( ineq_table(
+			BASE_STATE.summary.inequality[1],
+			results.summary.inequality[1])),
+		dbc_col( dcc_graph(figure=draw_lorenz(
+				BASE_STATE.summary.deciles[1][:,2],
+				results.summary.deciles[1][:,2])))			 
+		]),
+	dbc_row([		
+        dbc_col(
+			pov_table(
+				BASE_STATE.summary.poverty[1],
+				results.summary.poverty[1]))
     ])
 end
 
@@ -116,21 +158,26 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	]) # row
 end # layout
 
-function do_output( br )
+function do_output( br, hr, tr )
 	results = nothing
-	if br != 20
+	if (br != 20) ||  (hr !=41)||(hr !=45)
 		br /= 100.0
+		hr /= 100.0
+		tr /= 100.0
 		sys = deepcopy( BASE_STATE.sys )
 		println("sys.it.non_savings_rates[2] $(sys.it.non_savings_rates[2])")
-		incr = br-sys.it.non_savings_rates[2] 
-		sys.it.non_savings_rates[1:3] .+= incr 
+		bincr = br-sys.it.non_savings_rates[2] 
+		sys.it.non_savings_rates[1:3] .+= bincr
+		sys.it.non_savings_rates[4] = hr
+		sys.it.non_savings_rates[5] = tr
+
 		results = do_run( sys )
 	else
 		results = ( 
 			summary = BASE_STATE.summary, 
 			gain_lose = BASE_STATE.gain_lose )
 	end
-	return make_output_block(results)
+	return make_output_table(results,sys)
 end 
 
 
@@ -139,12 +186,15 @@ callback!(
     Output("model_running",  "children"),
 	Output("output-block", "children"),
 	Input("submit-button", "n_clicks"),
-	State( "basic_rate", "value")) do n_clicks, basic_rate
+	State( "basic_rate", "value"),
+	State( "higher_rate", "value"),
+	State( "top_rate", "value")
+	) do n_clicks, basic_rate, higher_rate, top_rate
 	println( "n_clicks = $n_clicks")
 	if ! isnothing( n_clicks )
-		return [nothing,do_output( basic_rate )]
+		return [nothing,do_output( basic_rate, higher_rate, top_rate )]
 	end
-	[nothing,do_output( 20 )]
+	[nothing,do_output( 20, 41, 45 )]
 end
 
 run_server(app, "0.0.0.0", 8052; debug=true )
