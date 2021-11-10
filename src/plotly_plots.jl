@@ -73,7 +73,7 @@ function drawDeciles( pre::Vector, post :: Vector )
 	
 end
 
-function thing_table( names, v1, v2, up_is_good )
+function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Integer} )
     table_header = 
         html_thead(
             html_tr([html_th(""), 
@@ -93,10 +93,11 @@ function thing_table( names, v1, v2, up_is_good )
                 colour = up_is_good[i] == 1 ? TAB_RED : TAB_GREEN
             end # neg diff   
         end # non zero diff
+        ds = diff[i] ≈ 0 ? "-" : fp(diff[i])
         row = html_tr([html_td(names[i]), 
             html_td(f2(v1[i]),style=TAB_RIGHT),
             html_td(f2(v2[i]),style=TAB_RIGHT),
-            html_td(fp(diff[i]),style=u(TAB_RIGHT,colour))
+            html_td( ds ,style=u(TAB_RIGHT,colour))
             ])
         push!( rows, row )
     end
@@ -123,27 +124,44 @@ function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
     thing_table( names, v1, v2, up_is_good )
 end
 
-function rb_table( sys )
+function rb_table( sys :: TaxBenefitSystem )
     table_header = 
         html_thead(
             html_tr([
-                html_th("Bands(£pa)"),
-		        html_th("Rates(%)")
+                html_th("Rates(%)"),
+                html_th("Threshold(£pa)")
 	        ])
         )
-    nr = size( sys.it.)
+    nr = size( sys.it.non_savings_rates)[1]
+    rows = []
+    
+    rates = copy( sys.it.non_savings_rates ) .* 100
+    bands = copy( sys.it.non_savings_thresholds ) .* WEEKS_PER_YEAR
+    for i in 1:nr
+        bs = (i < nr) ? f0(bands[i]) : "Remainder"
+        row = html_tr([
+            html_td(f2(rates[i]),style=TAB_RIGHT),
+            html_td(bs,style=TAB_RIGHT)])
+        push!( rows, row )
+    end
+    table_body = html_tbody(rows)
+    table = dbc_table([table_header,table_body], bordered = false)
+    println( typeof(table))
+    return table
 end
 
-function make_output_table( results, sys )
+function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
     header = []    
     hrow = html_tr([
         html_td(html_h4("Gainers and Losers"),style=TAB_CENTRE,colSpan=2),
 		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
 	])
+    #=
     chrow = html_tr([
         html_td(
-			rb_table( sys.it )),
+			rb_table( sys )),
     ])
+    =#
     row1 = html_tr([
         html_td(
 			gain_lose_table( results.gain_lose)),
@@ -163,8 +181,8 @@ function make_output_table( results, sys )
 				BASE_STATE.summary.poverty[1],
 				results.summary.poverty[1]))
     ])
-    table_body = html_tbody([hrow, row1, row2])
-    table = dbc_table([table_body], bordered = false)
+    table_body = html_tbody([row1, row2])
+    table = dbc_table([hrow, table_body], bordered = false)
     return table
 end
 

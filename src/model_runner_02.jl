@@ -18,6 +18,10 @@ const FORM_EXTRA =Dict(
 	"margin-bottom"=>"5px",
 	"margin-top"=>"5px")
 
+const TOOLTIP_PROPS = Dict(
+		"placement"=>"bottom", 
+		"always_visible"=> true)
+
 const PREAMBLE = """
 """
 
@@ -47,7 +51,8 @@ function get_input_block()
 					max = 100,
 					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
 					value = 20.0,
-					step = 1
+					step = 1,
+					tooltip=TOOLTIP_PROPS
 				))
 		]),
 		dbc_row([	
@@ -61,7 +66,8 @@ function get_input_block()
 						max = 100,
 						marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
 						value = 41.0,
-						step = 1
+						step = 1,
+						tooltip=TOOLTIP_PROPS
 				)), # col
 		]), # row
 		dbc_row([	
@@ -74,8 +80,9 @@ function get_input_block()
 						min = 0,
 						max = 100,
 						marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
-						value = 45.0,
-						step = 1
+						value = 46.0,
+						step = 1,
+						tooltip=TOOLTIP_PROPS
 				)), # col
 		]), # row
 		dbc_row([
@@ -160,12 +167,11 @@ end # layout
 
 function do_output( br, hr, tr )
 	results = nothing
-	if (br != 20) ||  (hr !=41)||(hr !=45)
+	if (br != 20) ||  (hr !=41)||(hr !=46)
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
 		sys = deepcopy( BASE_STATE.sys )
-		println("sys.it.non_savings_rates[2] $(sys.it.non_savings_rates[2])")
 		bincr = br-sys.it.non_savings_rates[2] 
 		sys.it.non_savings_rates[1:3] .+= bincr
 		sys.it.non_savings_rates[4] = hr
@@ -177,6 +183,9 @@ function do_output( br, hr, tr )
 			summary = BASE_STATE.summary, 
 			gain_lose = BASE_STATE.gain_lose )
 	end
+	println("sys.it.non_savings_rates $(sys.it.non_savings_rates)")
+	println("BASE_STATE.sys.it.non_savings_rates $(BASE_STATE.sys.it.non_savings_rates)")
+	
 	return make_output_table(results,sys)
 end 
 
@@ -194,7 +203,7 @@ callback!(
 	if ! isnothing( n_clicks )
 		return [nothing,do_output( basic_rate, higher_rate, top_rate )]
 	end
-	[nothing,do_output( 20, 41, 45 )]
+	[nothing,do_output( 20, 41, 46 )]
 end
 
 run_server(app, "0.0.0.0", 8052; debug=true )

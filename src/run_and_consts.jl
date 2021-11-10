@@ -14,7 +14,8 @@ using .FRSHouseholdGetter
 using .STBParameters
 using .STBOutput
 using .ExampleHelpers
-using .Runner;
+using .Runner
+using .GeneralTaxComponents: WEEKS_PER_YEAR
 using .Utils:md_format
 
 function load_system()::TaxBenefitSystem
