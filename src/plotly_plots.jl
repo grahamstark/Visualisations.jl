@@ -73,7 +73,7 @@ function drawDeciles( pre::Vector, post :: Vector )
 	
 end
 
-function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Integer} )
+function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Int} )
     table_header = 
         html_thead(
             html_tr([html_th(""), 
@@ -104,6 +104,16 @@ function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good:
     table_body = html_tbody(rows)
     return dbc_table([table_header,table_body], bordered = false)
 end 
+
+function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
+    names = ["Scottish Income Tax", "Employee's NI", "Employer's NI"]
+    v1 = incs1[1,:]
+    up_is_good = fill( 1, 3 )
+    #out[1,col] = sum( WEEKS_PER_YEAR .* incd[:,col] .* incd[:,:weight] ) # £mn 
+    #out[2,col] = sum((incd[:,col] .> 0) .* incd[:,:weight]) # counts
+
+end
+
 
 function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
     names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
