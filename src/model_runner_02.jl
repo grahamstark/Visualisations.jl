@@ -167,11 +167,12 @@ end # layout
 
 function do_output( br, hr, tr )
 	results = nothing
-	if (br != 20) ||  (hr !=41)||(hr !=46)
+	sys = deepcopy( BASE_STATE.sys )
+		
+	if (br != 20) || (hr !=41)||(tr !=46)
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
-		sys = deepcopy( BASE_STATE.sys )
 		bincr = br-sys.it.non_savings_rates[2] 
 		sys.it.non_savings_rates[1:3] .+= bincr
 		sys.it.non_savings_rates[4] = hr

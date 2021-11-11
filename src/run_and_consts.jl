@@ -37,6 +37,7 @@ function initialise()::BaseState
     settings = Settings()
 	settings.means_tested_routing = modelled_phase_in
     settings.run_name="run-$(date_string())"
+	settings.income_data_source = ds_frs
 	sys = load_system()
 	results = do_one_run( settings, [sys] )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )

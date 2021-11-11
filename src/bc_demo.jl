@@ -450,7 +450,7 @@ function generate_table(df :: DataFrame)
 			html_tr([
 				html_td(r.gross),
 				html_td(r.net),
-				html_td(dcc_markdown(r.label))
+				html_td(dcc_markdown(r.label)),
 				html_td(dcc_markdown(r.label_p1))]
 			)
 		)

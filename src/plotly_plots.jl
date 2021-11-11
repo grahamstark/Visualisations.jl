@@ -73,7 +73,7 @@ function drawDeciles( pre::Vector, post :: Vector )
 	
 end
 
-function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Integer} )
+function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Int} )
     table_header = 
         html_thead(
             html_tr([html_th(""), 
