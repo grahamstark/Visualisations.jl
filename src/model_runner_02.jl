@@ -1,9 +1,9 @@
-
 using Dash
 using PlotlyJS
 using DashBootstrapComponents
 using Formatting
 using PovertyAndInequalityMeasures
+using StatsBase
 
 #, DashHtmlComponents, DashCoreComponents
 

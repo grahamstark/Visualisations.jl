@@ -73,6 +73,18 @@ function drawDeciles( pre::Vector, post :: Vector )
 	
 end
 
+function drawMRS( pre :: Histogram, post :: Histogram )
+    layout = Layout(
+        title="Marginal Tax Rates",
+        xaxis_title="METR(%)",
+        yaxis_title="Number",
+        width=350, 
+        height=350)
+    preb = bar( x=pre.edges, y=pre.weights)
+    postb = bar( x=post.edges, y=post.weights)
+    return PlotlyJS.plot( [preb, postb], layout )
+end
+
 function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Int} )
     table_header = 
         html_thead(
@@ -106,12 +118,13 @@ function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good:
 end 
 
 function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
-    names = ["Scottish Income Tax", "Employee's NI", "Employer's NI"]
-    v1 = incs1[1,:]
-    up_is_good = fill( 1, 3 )
+    names = ["Scottish Income Tax", "Employee's NI"]
+    v1 = [incs1[1,:income_tax], incs1[1,:national_insurance]] ./ 1_000_000
+    v2 = [incs2[1,:income_tax], incs2[1,:national_insurance]] ./ 1_000_000
+    up_is_good = fill( 1, 2 )
+    thing_table( names, v1, v2, up_is_good )
     #out[1,col] = sum( WEEKS_PER_YEAR .* incd[:,col] .* incd[:,:weight] ) # £mn 
     #out[2,col] = sum((incd[:,col] .> 0) .* incd[:,:weight]) # counts
-
 end
 
 
@@ -135,7 +148,7 @@ function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
 end
 
 function rb_table( sys :: TaxBenefitSystem )
-    table_header = 
+    table_header_1 = 
         html_thead(
             html_tr([
                 html_th("Rates(%)"),
@@ -155,14 +168,14 @@ function rb_table( sys :: TaxBenefitSystem )
         push!( rows, row )
     end
     table_body = html_tbody(rows)
-    table = dbc_table([table_header,table_body], bordered = false)
+    table = dbc_table([table_header_1,table_body], bordered = false)
     println( typeof(table))
     return table
 end
 
 function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
     header = []    
-    hrow = html_tr([
+    hrow_1 = html_tr([
         html_td(html_h4("Gainers and Losers"),style=TAB_CENTRE,colSpan=2),
 		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
 	])
@@ -185,14 +198,28 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
 				BASE_STATE.summary.deciles[1][:,2],
 				results.summary.deciles[1][:,2])))			 
 	])
+    hrow_2 = html_tr([
+        html_td(html_h4("Poverty"),style=TAB_CENTRE),
+		html_td(html_h4("Costs and Revenues (£m pa) "),style=TAB_CENTRE),
+        html_td(html_h4("Marginal Tax Rates "),style=TAB_CENTRE),
+        html_td(html_h4("Thing "),style=TAB_CENTRE)
+	])
+
 	row2 = html_tr([		
         html_td(
 			pov_table(
 				BASE_STATE.summary.poverty[1],
-				results.summary.poverty[1]))
-    ])
-    table_body = html_tbody([row1, row2])
-    table = dbc_table([hrow, table_body], bordered = false)
+				results.summary.poverty[1])),
+                 # td
+        html_td(
+            costs_table(
+                BASE_STATE.summary.income_summary[1],
+                results.summary.income_summary[1])),
+        html_td( drawMRS( BASE_STATE.summary.metrs, results.summary.metrs )),
+        html_td( "Thing here" )
+            ])
+    table_body = html_tbody([hrow_1, row1, hrow_2, row2 ])
+    table = dbc_table([ table_body], bordered = false)
     return table
 end
 

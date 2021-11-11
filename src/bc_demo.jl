@@ -66,15 +66,14 @@ function getbc(
 	hh  :: Household, 
 	sys :: TaxBenefitSystem, 
 	wage :: Real,
-	settings :: Settings,
-	target :: TargetIncomes )::Tuple
+	settings :: Settings )::Tuple
 	defroute = settings.means_tested_routing
 	
 	settings.means_tested_routing = lmt_full 
-	lbc = BCCalcs.makebc( hh, sys, settings, wage, target )
+	lbc = BCCalcs.makebc( hh, sys, settings, wage )
 
 	settings.means_tested_routing = uc_full 
-	ubc = BCCalcs.makebc( hh, sys, settings, wage, target )
+	ubc = BCCalcs.makebc( hh, sys, settings, wage )
 
 	settings.means_tested_routing = defroute
     (lbc,ubc)
@@ -293,8 +292,9 @@ function doplot(
 	elseif target_str == "total_taxes"
 		ytitle = "Total Income Tax and NI Payments £pw"
 		target = total_taxes 
-	end # forgot how to covert
-	lbc, ubc = getbc( hh, sys, wage, settings, target )
+	end # forgot how to cover
+	settings.target_bc_income = target
+	lbc, ubc = getbc( hh, sys, wage, settings )
 	if view == "l_vs_l"
 		figure=econ_bcplot( lbc, ubc, wage, ytitle )
 	else
