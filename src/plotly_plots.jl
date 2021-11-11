@@ -105,6 +105,16 @@ function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good:
     return dbc_table([table_header,table_body], bordered = false)
 end 
 
+function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
+    names = ["Scottish Income Tax", "Employee's NI", "Employer's NI"]
+    v1 = incs1[1,:]
+    up_is_good = fill( 1, 3 )
+    #out[1,col] = sum( WEEKS_PER_YEAR .* incd[:,col] .* incd[:,:weight] ) # £mn 
+    #out[2,col] = sum((incd[:,col] .> 0) .* incd[:,:weight]) # counts
+
+end
+
+
 function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
     names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
     v1 = [ineq1.gini, ineq1.palma, ineq1.atkinson[2], ineq1.atkinson[4], ineq1.atkinson[8], ineq1.hoover] .* 100
