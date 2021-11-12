@@ -146,6 +146,10 @@ function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     #out[2,col] = sum((incd[:,col] .> 0) .* incd[:,:weight]) # counts
 end
 
+function mr_table( mr1::Histogram, mr2::Histogram)
+    
+end
+
 
 function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
     names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
