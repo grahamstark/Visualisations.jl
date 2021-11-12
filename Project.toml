@@ -15,6 +15,7 @@ Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PovertyAndInequalityMeasures = "582645c0-90fa-497a-98b9-936b80116c29"
 ScottishTaxBenefitModel = "a734f2ee-4b7f-478f-84ca-797081d39f6e"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]

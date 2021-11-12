@@ -38,6 +38,8 @@ function initialise()::BaseState
 	settings.means_tested_routing = modelled_phase_in
     settings.run_name="run-$(date_string())"
 	settings.income_data_source = ds_frs
+	settings.dump_frames = true
+	settings.do_marginal_rates = true
 	sys = load_system()
 	results = do_one_run( settings, [sys] )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )

@@ -70,7 +70,18 @@ function drawDeciles( pre::Vector, post :: Vector )
         height=350)
     return PlotlyJS.plot( 
      bar( x=1:10, y=v), layout )
-	
+end
+
+function drawMRS( pre :: DataFrame, post :: DataFrame )
+    layout = Layout(
+        title="Marginal Tax Rates",
+        xaxis_title="METR(%)",
+        yaxis_title="People",
+        width=350, 
+        height=350)
+    preb = histogram( pre, x=:metr, y=0:10:200)
+    postb = histogram( post, x=:metr,y=0:10:200)
+    return PlotlyJS.plot( [preb,postb], layout )
 end
 
 function drawMRS( pre :: Histogram, post :: Histogram )
@@ -215,11 +226,15 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
             costs_table(
                 BASE_STATE.summary.income_summary[1],
                 results.summary.income_summary[1])),
-        html_td( drawMRS( BASE_STATE.summary.metrs, results.summary.metrs )),
+        html_td( dcc_graph(
+            figure=drawMRS( 
+                BASE_STATE.summary.metrs[1], 
+                results.summary.metrs[1] ))),
         html_td( "Thing here" )
             ])
     table_body = html_tbody([hrow_1, row1, hrow_2, row2 ])
     table = dbc_table([ table_body], bordered = false)
+    println( results.summary.metrs[1] )
     return table
 end
 
