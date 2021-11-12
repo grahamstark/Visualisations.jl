@@ -61,6 +61,6 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
 	println( "gl=$gl");   
-	return (summary=outf,gain_lose=gl)
+	return (results=results, summary=outf,gain_lose=gl)
 end 
 

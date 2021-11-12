@@ -181,6 +181,7 @@ function do_output( br, hr, tr )
 		results = do_run( sys )
 	else
 		results = ( 
+			results = BASE_STATE.results,
 			summary = BASE_STATE.summary, 
 			gain_lose = BASE_STATE.gain_lose )
 	end

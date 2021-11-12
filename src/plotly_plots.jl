@@ -72,6 +72,11 @@ function drawDeciles( pre::Vector, post :: Vector )
      bar( x=1:10, y=v), layout )
 end
 
+"""
+There's a pre-computed histogram in summary, but
+in turns out to be less hassle to just feed plotly
+the raw data & let it do its own histogram.
+"""
 function drawMRS( pre :: DataFrame, post :: DataFrame )
     layout = Layout(
         title="Marginal Tax Rates",
@@ -79,11 +84,14 @@ function drawMRS( pre :: DataFrame, post :: DataFrame )
         yaxis_title="People",
         width=350, 
         height=350)
-    preb = histogram( pre, x=:metr, y=0:10:200)
-    postb = histogram( post, x=:metr,y=0:10:200)
+    preb = histogram( pre, x=:metr, y=0:5:200, histnorm="probability density")
+    postb = histogram( post, x=:metr, y=0:5:200, histnorm="probability density")
     return PlotlyJS.plot( [preb,postb], layout )
 end
 
+"""
+This doesn't work well. 
+"""
 function drawMRS( pre :: Histogram, post :: Histogram )
     layout = Layout(
         title="Marginal Tax Rates",
@@ -228,8 +236,8 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
                 results.summary.income_summary[1])),
         html_td( dcc_graph(
             figure=drawMRS( 
-                BASE_STATE.summary.metrs[1], 
-                results.summary.metrs[1] ))),
+                BASE_STATE.results.indiv[1], 
+                results.results.indiv[1] ))),
         html_td( "Thing here" )
             ])
     table_body = html_tbody([hrow_1, row1, hrow_2, row2 ])
