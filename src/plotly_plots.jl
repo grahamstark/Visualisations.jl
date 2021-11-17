@@ -136,18 +136,76 @@ function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good:
     return dbc_table([table_header,table_body], bordered = false)
 end 
 
+const COST_ITEMS = [
+    :income_tax,
+    :national_insurance,
+    :employers_ni,
+    :scottish_income_tax,
+
+    :total_benefits,
+    
+    :means_tested_bens,
+    :legacy_mtbs,
+    :universal_credit,
+
+    :non_means_tested_bens,
+    :sickness_illness,
+    :scottish_benefits] 
+
+const COST_LABELS = [
+    "Total Income Tax",
+    "Employee's National Insurance",
+    "Employer's National Insurance",
+    "Scottish Income Tax",
+
+    "Total Benefit Spending",
+
+    "All Means Tested Benefits",
+    "Legacy Means-Tested Benefits",
+    "Universal Credit",
+
+    "Non Means Tested Benefits",
+    "Disability, Sickness-Related Benefits",
+    "Scottish Benefits" ]
+
+const MR_LABELS = 
+    ["0 or negative", 
+     "< 10.0%", 
+     "10-20.0%", 
+     "20-30.0%", 
+     "30-50.0%", 
+     "50-80.0%", 
+     "80-100.0%", 
+     "Above 100%"]
+
+const MR_UP_GOOD = [1,0,0,0,0,0,0,1]
+
+const COST_UP_GOOD = [1,1,1,1,-1,-1,-1,-1,-1,-1,-1]
+
+function extract_incs( d :: DataFrame, targets :: Vector{Symbol}, row = 1 ) :: Vector
+    n = length( targets )[1]
+    out = zeros(n)
+    for i in 1:n
+        out[i] = d[row, targets[i]]
+    end
+    return out
+end
+
 function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
-    names = ["Scottish Income Tax", "Employee's NI"]
-    v1 = [incs1[1,:income_tax], incs1[1,:national_insurance]] ./ 1_000_000
-    v2 = [incs2[1,:income_tax], incs2[1,:national_insurance]] ./ 1_000_000
-    up_is_good = fill( 1, 2 )
-    thing_table( names, v1, v2, up_is_good )
-    #out[1,col] = sum( WEEKS_PER_YEAR .* incd[:,col] .* incd[:,:weight] ) # £mn 
-    #out[2,col] = sum((incd[:,col] .> 0) .* incd[:,:weight]) # counts
+    v1 = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
+    v2 = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
+    thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
+end
+
+function costs_dataframe(  incs1 :: DataFrame, incs2 :: DataFrame ) :: DataFrame
+    pre = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
+    post = extract_incs( incs2, COST_ITEMS ) ./ 1_000_000
+    diff = post-pre
+    return DataFrame( name=COST_LABELS, up_good=COST_UP_GOOD, pre=pre, post=post, diff=diff )
 end
 
 function mr_table( mr1::Histogram, mr2::Histogram)
-    
+    thing_table( MR_LABELS, mr1.weights, mr2.weights, MR_UP_GOOD)
 end
 
 
@@ -202,12 +260,6 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
         html_td(html_h4("Gainers and Losers"),style=TAB_CENTRE,colSpan=2),
 		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
 	])
-    #=
-    chrow = html_tr([
-        html_td(
-			rb_table( sys )),
-    ])
-    =#
     row1 = html_tr([
         html_td(
 			gain_lose_table( results.gain_lose)),
@@ -224,29 +276,27 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
     hrow_2 = html_tr([
         html_td(html_h4("Poverty"),style=TAB_CENTRE),
 		html_td(html_h4("Costs and Revenues (£m pa) "),style=TAB_CENTRE),
-        html_td(html_h4("Marginal Tax Rates "),style=TAB_CENTRE),
-        html_td(html_h4("Thing "),style=TAB_CENTRE)
+        html_td(html_h4("Marginal Tax Rates "),style=TAB_CENTRE)
 	])
-
+    
 	row2 = html_tr([		
         html_td(
 			pov_table(
 				BASE_STATE.summary.poverty[1],
 				results.summary.poverty[1])),
-                 # td
         html_td(
             costs_table(
                 BASE_STATE.summary.income_summary[1],
                 results.summary.income_summary[1])),
-        html_td( dcc_graph(
-            figure=drawMRS( 
-                BASE_STATE.results.indiv[1], 
-                results.results.indiv[1] ))),
-        html_td( "Thing here" )
-            ])
-    table_body = html_tbody([hrow_1, row1, hrow_2, row2 ])
+        html_td( 
+            mr_table( 
+                BASE_STATE.summary.metrs[1], 
+                results.summary.metrs[1] )) 
+    ]) # TR
+    
+    table_body = html_tbody([hrow_1, row1, hrow_2]) #, row2 
     table = dbc_table([ table_body], bordered = false)
-    println( results.summary.metrs[1] )
+    
     return table
 end
 
