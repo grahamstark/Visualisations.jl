@@ -68,8 +68,7 @@ function drawDeciles( pre::Vector, post :: Vector )
         yaxis_title="£pw",
         width=350, 
         height=350)
-    return PlotlyJS.plot( 
-     bar( x=1:10, y=v), layout )
+    return PlotlyJS.Plot( bar( x=1:10, y=v), layout )
 end
 
 """
@@ -86,7 +85,7 @@ function drawMRS( pre :: DataFrame, post :: DataFrame )
         height=350)
     preb = histogram( pre, x=:metr, y=0:5:200, histnorm="probability density")
     postb = histogram( post, x=:metr, y=0:5:200, histnorm="probability density")
-    return PlotlyJS.plot( [preb,postb], layout )
+    return PlotlyJS.Plot( [preb,postb], layout )
 end
 
 """
@@ -101,7 +100,7 @@ function drawMRS( pre :: Histogram, post :: Histogram )
         height=350)
     preb = bar( x=pre.edges, y=pre.weights)
     postb = bar( x=post.edges, y=post.weights)
-    return PlotlyJS.plot( [preb, postb], layout )
+    return PlotlyJS.Plot( [preb, postb], layout )
 end
 
 function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good::Vector{Int} )
@@ -193,9 +192,21 @@ end
 
 function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     v1 = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
-    v2 = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
+    v2 = extract_incs( incs2, COST_ITEMS ) ./ 1_000_000
     thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
 end
+
+function print_frame( df :: DataFrame, formatters :: Vector{Function}, caption :: String = "" )
+    table_header = 
+        html_thead(
+            html_tr([html_th(""), 
+            html_th("Before",style=TAB_RIGHT),
+            html_th("After",style=TAB_RIGHT),
+            html_th("Change",style=TAB_RIGHT)])
+        )
+    rows = []
+
+end 
 
 function costs_dataframe(  incs1 :: DataFrame, incs2 :: DataFrame ) :: DataFrame
     pre = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
@@ -256,27 +267,35 @@ end
 
 function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
     header = []    
+
     hrow_1 = html_tr([
         html_td(html_h4("Gainers and Losers"),style=TAB_CENTRE,colSpan=2),
-		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
+		html_td(html_h4("Costs and Revenues (£m pa)"),style=TAB_CENTRE),
+        html_td(html_h4("Incentives"),style=TAB_CENTRE)
 	])
+
     row1 = html_tr([
         html_td(
 			gain_lose_table( results.gain_lose)),
 		html_td(dcc_graph(figure=drawDeciles( 
 			results.summary.deciles[1][:,3],
 			BASE_STATE.summary.deciles[1][:,3]))),
-		html_td( ineq_table(
-			BASE_STATE.summary.inequality[1],
-			results.summary.inequality[1])),
-		html_td( dcc_graph(figure=draw_lorenz(
-				BASE_STATE.summary.deciles[1][:,2],
-				results.summary.deciles[1][:,2])))			 
-	])
+        html_td(
+            costs_table(
+                BASE_STATE.summary.income_summary[1],
+                results.summary.income_summary[1])),
+        html_td( 
+            [
+                
+                mr_table( 
+                    BASE_STATE.summary.metrs[1], 
+                    results.summary.metrs[1] )
+            ],style=TAB_CENTRE )
+        ])
+
     hrow_2 = html_tr([
         html_td(html_h4("Poverty"),style=TAB_CENTRE),
-		html_td(html_h4("Costs and Revenues (£m pa) "),style=TAB_CENTRE),
-        html_td(html_h4("Marginal Tax Rates "),style=TAB_CENTRE)
+		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
 	])
     
 	row2 = html_tr([		
@@ -284,17 +303,15 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
 			pov_table(
 				BASE_STATE.summary.poverty[1],
 				results.summary.poverty[1])),
-        html_td(
-            costs_table(
-                BASE_STATE.summary.income_summary[1],
-                results.summary.income_summary[1])),
-        html_td( 
-            mr_table( 
-                BASE_STATE.summary.metrs[1], 
-                results.summary.metrs[1] )) 
+        html_td( ineq_table(
+            BASE_STATE.summary.inequality[1],
+            results.summary.inequality[1])),
+        html_td( dcc_graph(figure=draw_lorenz(
+                BASE_STATE.summary.deciles[1][:,2],
+                results.summary.deciles[1][:,2])))			 
     ]) # TR
     
-    table_body = html_tbody([hrow_1, row1, hrow_2]) #, row2 
+    table_body = html_tbody([hrow_1, row1, hrow_2, row2 ]) #, row2 
     table = dbc_table([ table_body], bordered = false)
     
     return table

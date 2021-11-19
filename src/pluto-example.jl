@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.16.1
+# v0.17.1
 
 using Markdown
 using InteractiveUtils
@@ -7,11 +7,10 @@ using InteractiveUtils
 # ╔═╡ 8954681e-273b-11ec-344d-9326e736c69f
 begin
 	using Pkg
-	
-	Pkg.add( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
+	Pkg.develop( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
 	using ScottishTaxBenefitModel
 	using Plots
-	using PlotlyJS
+	using PlutoUI
 	Pkg.add( "DataFrames" )
 	using DataFrames
 end

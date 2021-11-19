@@ -212,7 +212,7 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle ::
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.plot( [bl, bu], layout)
+	p = PlotlyJS.Plot( [bl, bu], layout)
 	# (typeof(p))
 	return p
 end
@@ -257,7 +257,7 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame, ytitle :: String )
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.plot( [gn, bl, bu], layout)
+	p = PlotlyJS.Plot( [gn, bl, bu], layout)
 	# (typeof(p))
 	return p
 end
