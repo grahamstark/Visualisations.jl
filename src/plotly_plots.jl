@@ -249,7 +249,8 @@ end
 
 function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     df = costs_dataframe( incs1, incs2 )
-    return frame_to_dash_table( df, prec=0, up_is_good=COST_UP_GOOD, caption="Costs and Revenues in £m pa, 2021/22" )
+    return frame_to_dash_table( df, prec=0, up_is_good=COST_UP_GOOD, 
+        caption="Tax Liabilities and Benefit Entitlements, £m pa, 2021/22" )
     # thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
 end
 
@@ -285,23 +286,24 @@ function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
         prec=2, 
         up_is_good=up_is_good, 
         caption="Standard Inequality Measures" )
-    #=
-    names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
-    v1 = [ineq1.gini, ineq1.palma, ineq1.atkinson[2], ineq1.atkinson[4], ineq1.atkinson[8], ineq1.hoover] .* 100
-    v2 = [ineq2.gini, ineq2.palma, ineq2.atkinson[2], ineq2.atkinson[4], ineq2.atkinson[8], ineq2.hoover] .* 100
-    # 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0
-    # 
-    thing_table( names, v1, v2, up_is_good )
-    =#
 end
 
-function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
+function pov_dataframe( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
     names = ["Headcount", "Gap", "FGT(α=2)", "Watts", "Sen", "Shorrocks"]
     v1 = [pov1.headcount, pov1.gap, pov1.foster_greer_thorndyke[5], pov1.watts, pov1.sen, pov1.shorrocks]  .* 100
     v2 = [pov2.headcount, pov2.gap, pov2.foster_greer_thorndyke[5], pov2.watts, pov2.sen, pov2.shorrocks]  .* 100
+    diff = v1 - v1
+    return DataFrame( Item=names, Before=v1, After=v2, Change=diff)
+end
+
+function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
+    df = pov_dataframe( pov1, pov2 )
     up_is_good = fill( -1, 6 )
-    # const DEFAULT_FGT_ALPHAS = [ 0.0, 0.50, 1.0, 1.50, 2.0, 2.5 ];
-    thing_table( names, v1, v2, up_is_good )
+    return frame_to_dash_table( 
+        df, 
+        prec=2, 
+        up_is_good=up_is_good, 
+        caption="Standard Poverty Measures" )
 end
 
 function rb_table( sys :: TaxBenefitSystem )
@@ -419,9 +421,9 @@ function gain_lose_table( gl :: NamedTuple )
         html_thead(
             html_tr([html_th(""), html_th(""),html_th("%",style=TAB_RIGHT)])
         )
-    row1 = html_tr([html_td("Gainers"), html_td(f0(gl.gainers),style=TAB_RIGHT),html_td(gainpct,style=TAB_RIGHT) ])
-    row2 = html_tr([html_td("Losers"), html_td(f0(gl.losers),style=TAB_RIGHT),html_td(losepct,style=TAB_RIGHT)])
-    row3 = html_tr([html_td("Unchanged"), html_td(f0(gl.nc),style=TAB_RIGHT),html_td(ncpct,style=TAB_RIGHT)])
+    row1 = html_tr([html_th("Gainers"), html_td(f0(gl.gainers),style=TAB_RIGHT),html_td(gainpct,style=TAB_RIGHT) ])
+    row2 = html_tr([html_th("Losers"), html_td(f0(gl.losers),style=TAB_RIGHT),html_td(losepct,style=TAB_RIGHT)])
+    row3 = html_tr([html_th("Unchanged"), html_td(f0(gl.nc),style=TAB_RIGHT),html_td(ncpct,style=TAB_RIGHT)])
     table_body = html_tbody([row1, row2, row3])
     table_caption = html_caption( "Individuals living in households where net income has risen, fallen, or stayed the same.")
     table = dbc_table([table_header,table_caption,table_body], bordered = false)
