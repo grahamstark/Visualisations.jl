@@ -292,7 +292,7 @@ function pov_dataframe( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
     names = ["Headcount", "Gap", "FGT(α=2)", "Watts", "Sen", "Shorrocks"]
     v1 = [pov1.headcount, pov1.gap, pov1.foster_greer_thorndyke[5], pov1.watts, pov1.sen, pov1.shorrocks]  .* 100
     v2 = [pov2.headcount, pov2.gap, pov2.foster_greer_thorndyke[5], pov2.watts, pov2.sen, pov2.shorrocks]  .* 100
-    diff = v1 - v1
+    diff = v2 - v1
     return DataFrame( Item=names, Before=v1, After=v2, Change=diff)
 end
 
