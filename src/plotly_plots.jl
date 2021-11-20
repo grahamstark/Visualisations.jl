@@ -308,7 +308,8 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
             results.summary.inequality[1])),
         html_td( dcc_graph(figure=draw_lorenz(
                 BASE_STATE.summary.deciles[1][:,2],
-                results.summary.deciles[1][:,2])))			 
+                results.summary.deciles[1][:,2]))),
+        html_td() # spacer
     ]) # TR
     
     table_body = html_tbody([hrow_1, row1, hrow_2, row2 ]) #, row2 
