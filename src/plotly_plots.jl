@@ -1,4 +1,5 @@
 const TAB_RIGHT = Dict( "text-align"=>"right")
+const TAB_LEFT = Dict( "text-align"=>"left")
 const TAB_CENTRE = Dict( "text-align"=>"center")
 const TAB_RED = Dict( "color"=>"#BB3311")
 const TAB_GREEN = Dict( "color"=>"#33BB11")
@@ -177,7 +178,7 @@ const MR_LABELS =
      "80-100.0%", 
      "Above 100%"]
 
-const MR_UP_GOOD = [1,0,0,0,0,0,0,1]
+const MR_UP_GOOD = [1,0,0,0,0,0,0,-1]
 
 const COST_UP_GOOD = [1,1,1,1,-1,-1,-1,-1,-1,-1,-1]
 
@@ -196,38 +197,102 @@ function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
 end
 
-function print_frame( df :: DataFrame, formatters :: Vector{Function}, caption :: String = "" )
+function frame_to_dash_table( 
+    df :: DataFrame;
+    up_is_good :: Vector{Int},
+    prec :: Int = 2, 
+    caption :: String = "" )
     table_header = 
         html_thead(
             html_tr([html_th(""), 
-            html_th("Before",style=TAB_RIGHT),
-            html_th("After",style=TAB_RIGHT),
-            html_th("Change",style=TAB_RIGHT)])
+                html_th("Before",style=TAB_RIGHT),
+                html_th("After",style=TAB_RIGHT),
+                html_th("Change",style=TAB_RIGHT)
+            ]) # tr
         )
     rows = []
-
+    i = 0
+    for r in eachrow( df )
+        i += 1
+        colour = Dict()
+        if (up_is_good[i] !== 0) && (! (r.Change ≈ 0))
+            if r.Change > 0
+                colour = up_is_good[i] == 1 ? TAB_GREEN : TAB_RED
+             else
+                colour = up_is_good[i] == 1 ? TAB_RED : TAB_GREEN
+            end # neg diff   
+        end # non zero diff
+        ds = r.Change ≈ 0 ? "-" : format(r.Change, commas=true, precision=prec )
+        if ds != "-" && r.Change > 0
+            ds = "+$(ds)"
+        end 
+        row = html_tr( [
+            html_th( r.Item, style=TAB_LEFT),
+            html_td(format(r.Before, commas=true, precision=prec),style=TAB_RIGHT),
+            html_td(format(r.After, commas=true, precision=prec),style=TAB_RIGHT),
+            html_td( ds, style=u(TAB_RIGHT,colour))])
+        push!( rows, row )
+    end
+    table_body = html_tbody(rows)
+    table_caption = caption != "" ? html_caption( caption ) : nothing 
+    return dbc_table([table_header,table_caption,table_body], bordered = false)
 end 
 
 function costs_dataframe(  incs1 :: DataFrame, incs2 :: DataFrame ) :: DataFrame
     pre = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
     post = extract_incs( incs2, COST_ITEMS ) ./ 1_000_000
     diff = post-pre
-    return DataFrame( name=COST_LABELS, up_good=COST_UP_GOOD, pre=pre, post=post, diff=diff )
+    return DataFrame( Item=COST_LABELS, Before=pre, After=post, Change=diff )
+end
+
+
+
+function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
+    df = costs_dataframe( incs1, incs2 )
+    return frame_to_dash_table( df, prec=0, up_is_good=COST_UP_GOOD, caption="Costs and Revenues in £m pa, 2021/22" )
+    # thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
+end
+
+function mr_dataframe( mr1::Histogram, mr2::Histogram )
+    change = mr2.weights - mr1.weights
+    DataFrame( Item=MR_LABELS, Before=mr1.weights, After=mr1.weights, Change=change)
 end
 
 function mr_table( mr1::Histogram, mr2::Histogram)
-    thing_table( MR_LABELS, mr1.weights, mr2.weights, MR_UP_GOOD)
+    df = mr_dataframe( mr1, mr2 )
+    return frame_to_dash_table( 
+        df, 
+        prec=0, 
+        up_is_good=MR_UP_GOOD, 
+        caption="Working age individuals with Marginal Effective Tax Rates (METRs) in the given range." )
+    # thing_table( MR_LABELS, mr1.weights, mr2.weights, MR_UP_GOOD)
 end
 
 
-function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
+function ineq_dataframe( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
     names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
     v1 = [ineq1.gini, ineq1.palma, ineq1.atkinson[2], ineq1.atkinson[4], ineq1.atkinson[8], ineq1.hoover] .* 100
     v2 = [ineq2.gini, ineq2.palma, ineq2.atkinson[2], ineq2.atkinson[4], ineq2.atkinson[8], ineq2.hoover] .* 100
+    diff = v2 -v1
+    return DataFrame( Item=names, Before=v1, After=v2, Change=diff)
+end
+
+function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
+    df = ineq_dataframe( ineq1, ineq2 )
     up_is_good = fill( -1, 6 )
+    return frame_to_dash_table( 
+        df, 
+        prec=2, 
+        up_is_good=up_is_good, 
+        caption="Standard Inequality Measures" )
+    #=
+    names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
+    v1 = [ineq1.gini, ineq1.palma, ineq1.atkinson[2], ineq1.atkinson[4], ineq1.atkinson[8], ineq1.hoover] .* 100
+    v2 = [ineq2.gini, ineq2.palma, ineq2.atkinson[2], ineq2.atkinson[4], ineq2.atkinson[8], ineq2.hoover] .* 100
     # 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0
     # 
     thing_table( names, v1, v2, up_is_good )
+    =#
 end
 
 function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
@@ -358,6 +423,7 @@ function gain_lose_table( gl :: NamedTuple )
     row2 = html_tr([html_td("Losers"), html_td(f0(gl.losers),style=TAB_RIGHT),html_td(losepct,style=TAB_RIGHT)])
     row3 = html_tr([html_td("Unchanged"), html_td(f0(gl.nc),style=TAB_RIGHT),html_td(ncpct,style=TAB_RIGHT)])
     table_body = html_tbody([row1, row2, row3])
-    table = dbc_table([table_header,table_body], bordered = false)
+    table_caption = html_caption( "Individuals living in households where net income has risen, fallen, or stayed the same.")
+    table = dbc_table([table_header,table_caption,table_body], bordered = false)
     return table
 end

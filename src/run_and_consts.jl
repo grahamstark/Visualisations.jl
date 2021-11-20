@@ -12,6 +12,7 @@ using .SingleHouseholdCalculations
 using .RunSettings
 using .FRSHouseholdGetter
 using .STBParameters
+using .STBIncomes
 using .STBOutput
 using .ExampleHelpers
 using .Runner
