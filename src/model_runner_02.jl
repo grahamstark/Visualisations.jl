@@ -11,6 +11,7 @@ using Markdown
 using DataFrames
 
 include( "run_and_consts.jl")
+include( "summary_tables.jl")
 include( "plotly_plots.jl")
 
 const FORM_EXTRA =Dict(
