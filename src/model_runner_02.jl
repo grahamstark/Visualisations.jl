@@ -130,7 +130,9 @@ function make_output_block( results )
     ])
 end
 
-app = dash(external_stylesheets=[dbc_themes.UNITED]) 
+app = dash( 
+	external_stylesheets=[dbc_themes.UNITED], 
+	url_base_pathname="/sben/" ) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 
 app.layout = dbc_container(fluid=true, className="p-5") do
@@ -188,7 +190,6 @@ function do_output( br, hr, tr )
 	end
 	println("sys.it.non_savings_rates $(sys.it.non_savings_rates)")
 	println("BASE_STATE.sys.it.non_savings_rates $(BASE_STATE.sys.it.non_savings_rates)")
-	
 	return make_output_table(results,sys)
 end 
 

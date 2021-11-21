@@ -464,7 +464,8 @@ sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 weeklyise!( sys )
 
-app = dash(external_stylesheets=[dbc_themes.UNITED]) 
+app = dash(external_stylesheets=[dbc_themes.UNITED], 
+	url_base_pathname="/bcd/") 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
 	html_title( "Scotland's Kinkiest Families: Household Budget Constraints")
