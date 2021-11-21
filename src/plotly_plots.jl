@@ -319,54 +319,54 @@ end
 
 # as bootstrap rows
 function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
-    header = []    
-
-    hrow_1 = dbc_row_tr([
-        html_td(html_h4("Gainers and Losers"),style=TAB_CENTRE,colSpan=2),
-		html_td(html_h4("Costs and Revenues (£m pa)"),style=TAB_CENTRE),
-        html_td(html_h4("Incentives"),style=TAB_CENTRE)
-	])
-
-    row1 = html_tr([
-        html_td(
-			gain_lose_table( results.gain_lose)),
-		html_td(dcc_graph(figure=drawDeciles( 
-			results.summary.deciles[1][:,3],
-			BASE_STATE.summary.deciles[1][:,3]))),
-        html_td(
+    row1 = dbc_row([
+        dbc_col([
+            html_h4("Gainers and Losers"),
+            dbc_row([
+                dbc_col(gain_lose_table( results.gain_lose)),
+                dbc_col(
+                    dcc_graph(
+                        figure=drawDeciles( 
+                            results.summary.deciles[1][:,3],
+                            BASE_STATE.summary.deciles[1][:,3])
+                        )
+                    )
+            ]) # inner row for chart & table
+        ]), # row1, col1
+        dbc_col([
+            html_h4(" Revenues and Costs"),
             costs_table(
                 BASE_STATE.summary.income_summary[1],
-                results.summary.income_summary[1])),
-        html_td( 
-            [
-                
+                results.summary.income_summary[1])
+        ]), # row1 col2
+        dbc_col([      
+                html_h4("Incentives")
                 mr_table( 
                     BASE_STATE.summary.metrs[1], 
                     results.summary.metrs[1] )
-            ],style=TAB_CENTRE )
-        ])
+        ]) # row1 col3
+    ]) # row 1
 
-    hrow_2 = html_tr([
-        html_td(html_h4("Poverty"),style=TAB_CENTRE),
-		html_td(html_h4("Inequality"),style=TAB_CENTRE,colSpan=2)
-	])
-    
-	row2 = html_tr([		
-        html_td(
+	row2 = dbc_row([		
+        dbc_col([
+            html_h4("Poverty"),
 			pov_table(
 				BASE_STATE.summary.poverty[1],
-				results.summary.poverty[1])),
-        html_td( ineq_table(
-            BASE_STATE.summary.inequality[1],
-            results.summary.inequality[1])),
-        html_td( dcc_graph(figure=draw_lorenz(
-                BASE_STATE.summary.deciles[1][:,2],
-                results.summary.deciles[1][:,2]))),
-        html_td() # spacer
-    ]) # TR
-    
-    table_body = html_tbody([hrow_1, row1, hrow_2, row2 ]) #, row2 
-    table = dbc_table([ table_body], bordered = false)
-    
-    return table
+				results.summary.poverty[1])
+        ]), # row2 col 1
+        dbc_col( [
+            html_h4("Inequality"),
+            ineq_table(
+                BASE_STATE.summary.inequality[1],
+                results.summary.inequality[1])
+        ]), # row2 col 2
+        dbc_col( [
+                dcc_graph(
+                    figure=draw_lorenz(
+                        BASE_STATE.summary.deciles[1][:,2],
+                        results.summary.deciles[1][:,2]) 
+                )
+        ]) # row 2 col 3
+    ]) # row 2
+    return html_div([ row1, row2 ])    
 end

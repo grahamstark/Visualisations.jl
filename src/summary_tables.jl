@@ -68,7 +68,7 @@ end
 
 function mr_dataframe( mr1::Histogram, mr2::Histogram )
     change = mr2.weights - mr1.weights
-    DataFrame( Item=MR_LABELS, Before=mr1.weights, After=mr1.weights, Change=change)
+    DataFrame( Item=MR_LABELS, Before=mr1.weights, After=mr2.weights, Change=change)
 end
 
 
