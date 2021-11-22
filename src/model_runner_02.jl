@@ -106,7 +106,7 @@ function get_input_block()
 	])
 
 	ni = html_fieldset([
-		html_legend( "National Insurance")
+		html_legend( "National Insurance"),
 		dbc_row([
 			dbc_col(
 				dbc_label("Employee's Rate(%)"; html_for="ni_prim")
