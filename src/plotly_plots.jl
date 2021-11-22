@@ -194,7 +194,9 @@ function mr_table( mr1::Histogram, mr2::Histogram)
         df, 
         prec=0, 
         up_is_good=MR_UP_GOOD, 
-        caption="Working age individuals with Marginal Effective Tax Rates (METRs) in the given range." )
+        caption="Working age individuals with <a href='https://stb.virtual-worlds.scot/bc-intro.html'>Marginal Effective Tax Rates 
+                (METRs)</a> in the given range. METR is the percentage of the next £1 you earn that is taken away in taxes or 
+                reduced means-tested benefits." )
     # thing_table( MR_LABELS, mr1.weights, mr2.weights, MR_UP_GOOD)
 end
 
@@ -206,7 +208,7 @@ function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
         df, 
         prec=2, 
         up_is_good=up_is_good, 
-        caption="Standard Inequality Measures" )
+        caption="Standard Inequality Measures; see <a href='https://stb.virtual-worlds.scot/inequality.html'></>" )
 end
 
 function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
@@ -216,7 +218,7 @@ function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
         df, 
         prec=2, 
         up_is_good=up_is_good, 
-        caption="Standard Poverty Measures" )
+        caption="Standard Poverty Measures; see <a href='https://stb.virtual-worlds.scot/poverty.html'></>" )
 end
 
 
@@ -232,7 +234,7 @@ function gain_lose_table( gl :: NamedTuple )
     row2 = html_tr([html_th("Losers"), html_td(f0(gl.losers),style=TAB_RIGHT),html_td(losepct,style=TAB_RIGHT)])
     row3 = html_tr([html_th("Unchanged"), html_td(f0(gl.nc),style=TAB_RIGHT),html_td(ncpct,style=TAB_RIGHT)])
     table_body = html_tbody([row1, row2, row3])
-    table_caption = html_caption( "Individuals living in households where net income has risen, fallen, or stayed the same.")
+    table_caption = html_caption( "Individuals living in households where net income has risen, fallen, or stayed the same respectively.")
     table = dbc_table([table_header,table_caption,table_body], bordered = false)
     return table
 end
@@ -340,7 +342,7 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
                 results.summary.income_summary[1])
         ]), # row1 col2
         dbc_col([      
-                html_h4("Incentives")
+                html_h4("Incentives - Marginal Effective Tax Rates.")
                 mr_table( 
                     BASE_STATE.summary.metrs[1], 
                     results.summary.metrs[1] )
