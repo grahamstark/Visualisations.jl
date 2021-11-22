@@ -45,7 +45,7 @@ function get_input_block()
 		html_legend( "Income Tax"),
 		dbc_row([
 			dbc_col(
-				dbc_label("Basic Rate"; html_for="basic_rate")
+				dbc_label("Basic Rate (%)"; html_for="basic_rate")
 			),
 			dbc_col(
 				dbc_input(
@@ -53,13 +53,14 @@ function get_input_block()
 					id = "basic_rate",
 					min = 0,
 					max = 100,
+					size = 4,
 					value = 20.0,
 					step = 0.5 )
 			) # col
 		]),
 		dbc_row([	
 			dbc_col(
-				dbc_label("Higher Rate"; html_for="higher_rate")
+				dbc_label("Higher Rate (%)"; html_for="higher_rate")
 			),
 			dbc_col(
 				dbc_input(
@@ -67,13 +68,14 @@ function get_input_block()
 					id = "higher_rate",
 					min = 0,
 					max = 100,
+					size = 4,
 					value = 41.0,
 					step = 0.5 )
 			) # col
 		]), # row
 		dbc_row([	
 			dbc_col(
-				dbc_label("Top Rate"; html_for="top_rate")
+				dbc_label("Top Rate (%)"; html_for="top_rate")
 			),
 			dbc_col(
 				dbc_input(
@@ -81,6 +83,7 @@ function get_input_block()
 					id = "top_rate",
 					min = 0,
 					max = 100,
+					size = 4,
 					value = 46.0,
 					step = 0.5 )
 			) # col
@@ -93,7 +96,22 @@ function get_input_block()
 	])
 
 	bens = html_fieldset([
-		html_legend( "Benefits")
+		html_legend( "Benefits"),
+		dbc_row([
+			dbc_col(
+				dbc_label("Universal Credit Taper (%)"; html_for="basic_rate")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "uctaper",
+					min = 0,
+					max = 100,
+					size = 4,
+					value = 55.0,
+					step = 0.5 )
+			) # col
+		]),
 
 	]) 
 
@@ -142,19 +160,20 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	html_div( dcc_markdown( INFO ))
 end # layout
 
-function do_output( br, hr, tr )
+function do_output( br, hr, tr, uct )
 	results = nothing
 	sys = deepcopy( BASE_STATE.sys )
 		
-	if (br != 20) || (hr !=41)||(tr !=46)
+	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
+		uct /= 100.0
 		bincr = br-sys.it.non_savings_rates[2] 
 		sys.it.non_savings_rates[1:3] .+= bincr
 		sys.it.non_savings_rates[4] = hr
 		sys.it.non_savings_rates[5] = tr
-
+		sys.uc.taper = uct
 		results = do_run( sys )
 	else
 		results = ( 
@@ -175,13 +194,14 @@ callback!(
 	Input("submit-button", "n_clicks"),
 	State( "basic_rate", "value"),
 	State( "higher_rate", "value"),
-	State( "top_rate", "value")
-	) do n_clicks, basic_rate, higher_rate, top_rate
+	State( "top_rate", "value"),
+	State( "uctaper", "value")
+	) do n_clicks, basic_rate, higher_rate, top_rate, uctaper 
 	println( "n_clicks = $n_clicks")
 	if ! isnothing( n_clicks )
-		return [nothing,do_output( basic_rate, higher_rate, top_rate )]
+		return [nothing,do_output( basic_rate, higher_rate, top_rate, uctaper )]
 	end
-	[nothing,do_output( 20, 41, 46 )]
+	[nothing,do_output( 20, 41, 46, 55 )]
 end
 
 run_server(app, "0.0.0.0", 8052; debug=true )
