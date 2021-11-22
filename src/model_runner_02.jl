@@ -40,52 +40,69 @@ const INFO = """
 Create the block of sliders and radios on the LHS
 """
 function get_input_block()
-	return dbc_form([
+
+	it = html_fieldset([
+		html_legend( "Income Tax"),
 		dbc_row([
 			dbc_col(
-				dbc_label("Basic Rate"; html_for="basic_rate"), width=3
+				dbc_label("Basic Rate"; html_for="basic_rate")
 			),
 			dbc_col(
-				dcc_slider(
+				dbc_input(
+					type="number",
 					id = "basic_rate",
 					min = 0,
 					max = 100,
-					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
 					value = 20.0,
-					step = 1,
-					tooltip=TOOLTIP_PROPS
-				))
+					step = 0.5 )
+			) # col
 		]),
 		dbc_row([	
-				dbc_col(
-					dbc_label("Higher Rate"; html_for="basic_rate"), width=3
-				),
-				dbc_col(
-					dcc_slider(
-						id = "higher_rate",
-						min = 0,
-						max = 100,
-						marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
-						value = 41.0,
-						step = 1,
-						tooltip=TOOLTIP_PROPS
-				)), # col
+			dbc_col(
+				dbc_label("Higher Rate"; html_for="higher_rate")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "higher_rate",
+					min = 0,
+					max = 100,
+					value = 41.0,
+					step = 0.5 )
+			) # col
 		]), # row
 		dbc_row([	
-				dbc_col(
-					dbc_label("Top Rate"; html_for="basic_rate"), width=3
-				),
-				dbc_col(
-					dcc_slider(
-						id = "top_rate",
-						min = 0,
-						max = 100,
-						marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:10:100]),
-						value = 46.0,
-						step = 1,
-						tooltip=TOOLTIP_PROPS
-				)), # col
+			dbc_col(
+				dbc_label("Top Rate"; html_for="top_rate")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "top_rate",
+					min = 0,
+					max = 100,
+					value = 46.0,
+					step = 0.5 )
+			) # col
 		]), # row
+	])
+
+	ni = html_fieldset([
+		html_legend( "National Insurance")
+
+	])
+
+	bens = html_fieldset([
+		html_legend( "Benefits")
+
+	]) 
+
+	return dbc_form([
+		dbc_row([
+			dbc_col( it ),
+			dbc_col( ni ),
+			dbc_col( bens )			
+		])
 		dbc_row([
 			dbc_col([
 				dbc_button(
@@ -101,34 +118,6 @@ function get_input_block()
 	]) # form
 end 
 
-"""
-Using dash blocks - can re-arrange itself.
-"""
-function make_output_block( results )
-    dbc_row([
-        dbc_col(html_h4("Gainers and Losers"),style=TAB_CENTRE),
-		dbc_col(html_h4("Inequality"),style=TAB_CENTRE)
-	]),
-    dbc_row([
-        dbc_col(
-			gain_lose_table( results.gain_lose)),
-		dbc_col(dcc_graph(figure=drawDeciles( 
-			results.summary.deciles[1][:,3],
-			BASE_STATE.summary.deciles[1][:,3]))),
-		dbc_col( ineq_table(
-			BASE_STATE.summary.inequality[1],
-			results.summary.inequality[1])),
-		dbc_col( dcc_graph(figure=draw_lorenz(
-				BASE_STATE.summary.deciles[1][:,2],
-				results.summary.deciles[1][:,2])))			 
-		]),
-	dbc_row([		
-        dbc_col(
-			pov_table(
-				BASE_STATE.summary.poverty[1],
-				results.summary.poverty[1]))
-    ])
-end
 
 app = dash( 
 	external_stylesheets=[dbc_themes.UNITED], 
@@ -138,34 +127,19 @@ app = dash(
 app.layout = dbc_container(fluid=true, className="p-5") do
 	html_title( "You are The Finance Minister")
 	html_h1("You are The Finance Minister"),
-	dbc_row([
-		dbc_col( dcc_markdown( PREAMBLE ), width=10)
-	]), # row
-	dbc_row([
-    	dbc_col(get_input_block(), width=4),
-		dbc_col([
-			dcc_loading( 
-				id="model_running", 
-				type="default", 
-				children = [
-					html_div(
-						id="loading-output-1"
-						#= 
-						children=(
-							dcc_graph( id = "bc-1", figure=f1 )
-						) # child graph
-						=#
-					) # div
-				] # children
-			) # loading
-		]) # col
-	]), # row
-
-	dbc_row( id="output-block" ), # results go here
-	
-	dbc_row([
-		dbc_col( dcc_markdown( INFO ), width=10)
-	]) # row
+	dcc_markdown( PREAMBLE ),
+	get_input_block(),		
+	dcc_loading( 
+		id="model_running", 
+		type="default", 
+		children = [
+			html_div(
+				id="loading-output-1"						
+			) # div
+		] # children
+	), # loading
+	html_div( id="output-block" ), 	
+	html_div( dcc_markdown( INFO ))
 end # layout
 
 function do_output( br, hr, tr )
