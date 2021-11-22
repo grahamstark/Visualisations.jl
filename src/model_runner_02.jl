@@ -274,7 +274,7 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, uct, cb, pen, scp )
 		sys.nmt_bens.child_benefit.first_child = cb
 		sys.nmt_bens.pensions.new_state_pension = pen
 		sys.scottish_child_payment.amount = scp
-		sys.ni.primary_class_1_rates[2] = ni_prim
+		sys.ni.primary_class_1_rates[3] = ni_prim
 		sys.ni.secondary_class_1_rates[2:3] .= ni_sec
 
 		results = do_run( sys )
