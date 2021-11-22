@@ -194,8 +194,8 @@ function mr_table( mr1::Histogram, mr2::Histogram)
         df, 
         prec=0, 
         up_is_good=MR_UP_GOOD, 
-        caption="Working age individuals with <a href='https://stb.virtual-worlds.scot/bc-intro.html'>Marginal Effective Tax Rates 
-                (METRs)</a> in the given range. METR is the percentage of the next £1 you earn that is taken away in taxes or 
+        caption="Working age individuals with Marginal Effective Tax Rates
+                (METRs) in the given range. METR is the percentage of the next £1 you earn that is taken away in taxes or 
                 reduced means-tested benefits." )
     # thing_table( MR_LABELS, mr1.weights, mr2.weights, MR_UP_GOOD)
 end
@@ -208,7 +208,7 @@ function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
         df, 
         prec=2, 
         up_is_good=up_is_good, 
-        caption="Standard Inequality Measures; see <a href='https://stb.virtual-worlds.scot/inequality.html'></>" )
+        caption="Standard Inequality Measures." )
 end
 
 function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
@@ -218,7 +218,7 @@ function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
         df, 
         prec=2, 
         up_is_good=up_is_good, 
-        caption="Standard Poverty Measures; see <a href='https://stb.virtual-worlds.scot/poverty.html'></>" )
+        caption="Standard Poverty Measures." )
 end
 
 
