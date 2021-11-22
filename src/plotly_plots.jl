@@ -373,3 +373,190 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
     ]) # row 2
     return html_div([ row1, row2 ])    
 end
+
+
+function it_fieldset()
+    it = html_fieldset([
+        html_legend( "Income Tax"),
+        dbc_row([
+            dbc_col(
+                dbc_label("Basic Rate (%)"; html_for="basic_rate")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "basic_rate",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 20.0,
+                    step = 0.5 )
+            ) # col
+        ]),
+        dbc_row([	
+            dbc_col(
+                dbc_label("Higher Rate (%)"; html_for="higher_rate")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "higher_rate",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 41.0,
+                    step = 0.5 )
+            ) # col
+        ]), # row
+        dbc_row([	
+            dbc_col(
+                dbc_label("Top Rate (%)"; html_for="top_rate")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "top_rate",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 46.0,
+                    step = 0.5 )
+            ) # col
+        ]), # row
+        dbc_row([	
+            dbc_col(
+                dbc_label("Personal Allowance £pa"; html_for="pa")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "pa",
+                    min = 0,
+                    max = 50_000.0,
+                    size = "4",
+                    value = 12_570,
+                    step = 1 )
+            ) # col
+        ]), # row
+    ])
+    return it
+end
+
+function ni_fieldset()
+    ni = html_fieldset([
+        html_legend( "National Insurance"),
+        dbc_row([
+            dbc_col(
+                dbc_label("Employee's Rate(%)"; html_for="ni_prim")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "ni_prim",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 12.0,
+                    step = 0.1 )
+            ) # col
+        ]),
+        
+        dbc_row([
+            dbc_col(
+                dbc_label("Employer's Rate(%)"; html_for="ni_sec")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "ni_sec",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 13.8,
+                    step = 0.1 )
+            ) # col
+        ]), # row
+
+    ])
+    return ni
+end
+
+function ben_fieldset()
+    bens = html_fieldset([
+        html_legend( "Benefits"),
+        dbc_row([
+            dbc_col(
+                dbc_label("Universal Credit Taper (%)"; html_for="uctaper")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "uctaper",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 55.0,
+                    step = 0.5 )
+            ) # col
+        ]),       
+        dbc_row([
+            dbc_col(
+                dbc_label("Child Benefit £pw (1st child)"; html_for="cb")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "cb",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 21.15,
+                    step = 0.05 )
+            ) # col
+        ]), # row
+        dbc_row([
+            dbc_col(
+                dbc_label("New State Pension £pw"; html_for="pen")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "pen",
+                    min = 0,
+                    max = 500,
+                    size = "4",
+                    value = 179.60,
+                    step = 0.10 )
+            ) # col
+        ]), # row
+        dbc_row([
+            dbc_col(
+                dbc_label("Scottish Child Payment"; html_for="scp")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "scp",
+                    min = 0,
+                    max = 50,
+                    size = "4",
+                    value = 10.0,
+                    step = 0.05 )
+            ) # col
+        ]), # row
+
+    ]) 
+    return bens
+end
+
+
+function submit_button()
+    dbc_button(
+        id = "submit-button", 
+        class_name="primary", 
+        color = "primary",
+        name = "Run",
+        value = "Run", 
+        children = "submit"
+    )
+end
