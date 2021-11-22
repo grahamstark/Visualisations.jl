@@ -100,7 +100,7 @@ function get_input_block()
 					max = 50_000.0,
 					size = "4",
 					value = 12_570,
-					step = 10 )
+					step = 1 )
 			) # col
 		]), # row
 	])
