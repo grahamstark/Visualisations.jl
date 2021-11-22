@@ -26,7 +26,7 @@ function load_system()::TaxBenefitSystem
 	#
 	load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 	# uc taper to 55
-	load_file!( sys, "../params/budget_2021_uc_changes.jl")
+	load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "budget_2021_uc_changes.jl"))
 	weeklyise!( sys )
 	return sys
 end
