@@ -99,7 +99,7 @@ function get_input_block()
 		html_legend( "Benefits"),
 		dbc_row([
 			dbc_col(
-				dbc_label("Universal Credit Taper (%)"; html_for="basic_rate")
+				dbc_label("Universal Credit Taper (%)"; html_for="uctaper")
 			),
 			dbc_col(
 				dbc_input(
@@ -112,6 +112,52 @@ function get_input_block()
 					step = 0.5 )
 			) # col
 		]),
+		
+		dbc_row([
+			dbc_col(
+				dbc_label("Child Benefit"; html_for="cb")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "cb",
+					min = 0,
+					max = 100,
+					size = 4,
+					value = 21.15,
+					step = 0.05 )
+			) # col
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("New State Pension"; html_for="pen")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "pen",
+					min = 0,
+					max = 300,
+					size = 4,
+					value = 179.60,
+					step = 0.10 )
+			) # col
+		]), # row
+		dbc_row([
+			dbc_col(
+				dbc_label("Scottish Child Payment"; html_for="scp")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "scp",
+					min = 0,
+					max = 50,
+					size = 4,
+					value = 10.0
+					step = 0.05 )
+			) # col
+		]), # row
 
 	]) 
 
@@ -160,20 +206,25 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	html_div( dcc_markdown( INFO ))
 end # layout
 
-function do_output( br, hr, tr, uct )
+function do_output( br, hr, tr, uct, cb, pen, scp )
 	results = nothing
 	sys = deepcopy( BASE_STATE.sys )
-		
-	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )
+	# 21.15, 179.60, 10.0
+	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
 		uct /= 100.0
+		
 		bincr = br-sys.it.non_savings_rates[2] 
 		sys.it.non_savings_rates[1:3] .+= bincr
 		sys.it.non_savings_rates[4] = hr
 		sys.it.non_savings_rates[5] = tr
 		sys.uc.taper = uct
+		sys.nmt_bens.child_benefit.first_child = cb
+		sys.nmt_bens.pensions.new_state_pension = pen
+		sys.scottish_child_payment.amount = scp
+		
 		results = do_run( sys )
 	else
 		results = ( 
@@ -195,13 +246,18 @@ callback!(
 	State( "basic_rate", "value"),
 	State( "higher_rate", "value"),
 	State( "top_rate", "value"),
-	State( "uctaper", "value")
-	) do n_clicks, basic_rate, higher_rate, top_rate, uctaper 
+	State( "uctaper", "value"),
+	State( "cb", "value"),
+	State( "pen", "value"),
+	State( "scp", "value")
+
+	) do n_clicks, basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp
+
 	println( "n_clicks = $n_clicks")
 	if ! isnothing( n_clicks )
-		return [nothing,do_output( basic_rate, higher_rate, top_rate, uctaper )]
+		return [nothing,do_output( basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp )]
 	end
-	[nothing,do_output( 20, 41, 46, 55 )]
+	[nothing,do_output( 20, 41, 46, 55, 21.15, 179.60, 10.0 )]
 end
 
 run_server(app, "0.0.0.0", 8052; debug=true )
