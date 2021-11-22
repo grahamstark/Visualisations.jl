@@ -88,6 +88,21 @@ function get_input_block()
 					step = 0.5 )
 			) # col
 		]), # row
+		dbc_row([	
+			dbc_col(
+				dbc_label("Personal Allowance £pa"; html_for="pa")
+			),
+			dbc_col(
+				dbc_input(
+					type="number",
+					id = "pa",
+					min = 0,
+					max = 50_000.0,
+					size = "4",
+					value = 12_570,
+					step = 10 )
+			) # col
+		]), # row
 	])
 
 	ni = html_fieldset([
@@ -206,16 +221,16 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	html_div( dcc_markdown( INFO ))
 end # layout
 
-function do_output( br, hr, tr, uct, cb, pen, scp )
+function do_output( br, hr, tr, pa, uct, cb, pen, scp )
 	results = nothing
 	sys = deepcopy( BASE_STATE.sys )
 	# 21.15, 179.60, 10.0
-	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)
+	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
 		uct /= 100.0
-		
+		pa /= WEEKS_PER_YEAR
 		bincr = br-sys.it.non_savings_rates[2] 
 		sys.it.non_savings_rates[1:3] .+= bincr
 		sys.it.non_savings_rates[4] = hr
@@ -253,20 +268,21 @@ callback!(
 	Input("submit-button", "n_clicks"),
 	State( "basic_rate", "value"),
 	State( "higher_rate", "value"),
+	State( "pa", "value"),
 	State( "top_rate", "value"),
 	State( "uctaper", "value"),
 	State( "cb", "value"),
 	State( "pen", "value"),
 	State( "scp", "value")
 
-	) do n_clicks, basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp
+	) do n_clicks, basic_rate, higher_rate, top_rate, pa, uctaper, cb, pen, scp
 
 	println( "n_clicks = $n_clicks")
 	# will return 'nothing' if something is out-of-range or not a number, or if no clicks on submit
-	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp )
-		return [nothing, do_output( basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp )]
+	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, uctaper, cb, pen, scp )
+		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, uctaper, cb, pen, scp )]
 	end
-	[nothing, do_output( 20, 41, 46, 55, 21.15, 179.60, 10.0 )]
+	[nothing, do_output( 20, 41, 46, 12_570, 55, 21.15, 179.60, 10.0 )]
 end
 
 run_server( app, "0.0.0.0", 8052; debug=true )
