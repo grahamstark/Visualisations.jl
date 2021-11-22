@@ -137,7 +137,7 @@ function get_input_block()
 					type="number",
 					id = "pen",
 					min = 0,
-					max = 300,
+					max = 500,
 					size = "4",
 					value = 179.60,
 					step = 0.10 )
@@ -189,8 +189,8 @@ app = dash(
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 
 app.layout = dbc_container(fluid=true, className="p-5") do
-	html_title( "You are The Finance Minister")
-	html_h1("You are The Finance Minister"),
+	html_title( "A Budget for Scotland")
+	html_h1("A Budget for Scotland"),
 	dcc_markdown( PREAMBLE ),
 	get_input_block(),		
 	dcc_loading( 
@@ -237,6 +237,14 @@ function do_output( br, hr, tr, uct, cb, pen, scp )
 	return make_output_table(results,sys)
 end 
 
+function no_nothings( things ...)::Bool
+	for thing in things 
+		if isnothing( thing )  
+			return false
+		end
+	end
+	return true
+end
 
 callback!(
     app,
@@ -254,10 +262,11 @@ callback!(
 	) do n_clicks, basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp
 
 	println( "n_clicks = $n_clicks")
-	if ! isnothing( n_clicks )
-		return [nothing,do_output( basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp )]
+	# will return 'nothing' if something is out-of-range or not a number, or if no clicks on submit
+	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp )
+		return [nothing, do_output( basic_rate, higher_rate, top_rate, uctaper, cb, pen, scp )]
 	end
-	[nothing,do_output( 20, 41, 46, 55, 21.15, 179.60, 10.0 )]
+	[nothing, do_output( 20, 41, 46, 55, 21.15, 179.60, 10.0 )]
 end
 
-run_server(app, "0.0.0.0", 8052; debug=true )
+run_server( app, "0.0.0.0", 8052; debug=true )

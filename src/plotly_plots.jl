@@ -48,13 +48,14 @@ end
 
 function drawDeciles( pre::Vector, post :: Vector )
     v = pre-post;
+    println( "v=$v")
     layout = Layout(
         title="Gain/Loss by decile",
         xaxis_title="Decile",
         yaxis_title="£pw",
         width=350, 
         height=350)
-    return PlotlyJS.Plot( bar( x=1:10, y=v), layout )
+    return PlotlyJS.Plot( bar( x=1:11, y=v), layout )
 end
 
 """
