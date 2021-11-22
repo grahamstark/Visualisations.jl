@@ -53,7 +53,7 @@ function get_input_block()
 					id = "basic_rate",
 					min = 0,
 					max = 100,
-					size = 4,
+					size = "4",
 					value = 20.0,
 					step = 0.5 )
 			) # col
@@ -68,7 +68,7 @@ function get_input_block()
 					id = "higher_rate",
 					min = 0,
 					max = 100,
-					size = 4,
+					size = "4",
 					value = 41.0,
 					step = 0.5 )
 			) # col
@@ -83,7 +83,7 @@ function get_input_block()
 					id = "top_rate",
 					min = 0,
 					max = 100,
-					size = 4,
+					size = "4",
 					value = 46.0,
 					step = 0.5 )
 			) # col
@@ -107,7 +107,7 @@ function get_input_block()
 					id = "uctaper",
 					min = 0,
 					max = 100,
-					size = 4,
+					size = "4",
 					value = 55.0,
 					step = 0.5 )
 			) # col
@@ -123,7 +123,7 @@ function get_input_block()
 					id = "cb",
 					min = 0,
 					max = 100,
-					size = 4,
+					size = "4",
 					value = 21.15,
 					step = 0.05 )
 			) # col
@@ -138,7 +138,7 @@ function get_input_block()
 					id = "pen",
 					min = 0,
 					max = 300,
-					size = 4,
+					size = "4",
 					value = 179.60,
 					step = 0.10 )
 			) # col
@@ -153,7 +153,7 @@ function get_input_block()
 					id = "scp",
 					min = 0,
 					max = 50,
-					size = 4,
+					size = "4",
 					value = 10.0
 					step = 0.05 )
 			) # col
