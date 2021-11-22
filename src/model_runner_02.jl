@@ -235,6 +235,7 @@ function do_output( br, hr, tr, pa, uct, cb, pen, scp )
 		sys.it.non_savings_rates[1:3] .+= bincr
 		sys.it.non_savings_rates[4] = hr
 		sys.it.non_savings_rates[5] = tr
+		sys.it.personal_allowance = pa
 		sys.uc.taper = uct
 		sys.nmt_bens.child_benefit.first_child = cb
 		sys.nmt_bens.pensions.new_state_pension = pen
