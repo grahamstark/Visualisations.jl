@@ -57,7 +57,7 @@ end
 
 app = dash( 
 	external_stylesheets=[dbc_themes.UNITED], 
-	url_base_pathname="/sben/" ) 
+	url_base_pathname="/scotbudg/" ) 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 
 app.layout = dbc_container(fluid=true, className="p-5") do
