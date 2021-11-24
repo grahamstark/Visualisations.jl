@@ -55,7 +55,7 @@ require investigation in the coming months. Notably:
 * Income Tax revenues seem to be overstated by around £1bn pa compared to [official forecasts](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/). Possibly much of this is due to how pension tax relief is treated;
 * measures of inequality seem low compared to official statistics.
 
-Please if you spot anything odd or if you have any suggestions. And I'd very much welcome contributions. You can:
+I'd very much welcome contributions and suggestions. If you spot anything odd or if you have any ideas for how this can be improved, you can:
 
 * [Open an issue on GitHub](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/issues); or
 * [email me](mailto:graham.stark@virtual-worlds.biz).
