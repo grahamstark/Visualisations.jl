@@ -4,7 +4,7 @@ const TAB_CENTRE = Dict( "text-align"=>"center")
 const TAB_RED = Dict( "color"=>"#BB3311")
 const TAB_GREEN = Dict( "color"=>"#33BB11")
 const TAB_BOLD = Dict( "font-weight"=>"Bold")
-    
+const RESERVED = Dict( "background-color"=>"#dddddd")
     
 function u( d ... )
     Dict( union(d...))
@@ -426,7 +426,7 @@ function it_fieldset()
         dbc_row([	
             dbc_col(
                 dbc_label("Personal Allowance £pa"; html_for="pa")
-            ),
+            ), # col
             dbc_col(
                 dbc_input(
                     type="number",
@@ -435,7 +435,8 @@ function it_fieldset()
                     max = 50_000.0,
                     size = "4",
                     value = 12_570,
-                    step = 1 )
+                    step = 1,
+                    style=RESERVED )
             ) # col
         ]), # row
     ])
@@ -457,7 +458,8 @@ function ni_fieldset()
                     max = 100,
                     size = "4",
                     value = 12.0,
-                    step = 0.1 )
+                    step = 0.1,
+                    style=RESERVED )
             ) # col
         ]),
         
@@ -473,7 +475,8 @@ function ni_fieldset()
                     max = 100,
                     size = "4",
                     value = 13.8,
-                    step = 0.1 )
+                    step = 0.1,
+                    style=RESERVED )
             ) # col
         ]), # row
 
@@ -496,7 +499,8 @@ function ben_fieldset()
                     max = 100,
                     size = "4",
                     value = 55.0,
-                    step = 0.5 )
+                    step = 0.5,
+                    style=RESERVED )
             ) # col
         ]),       
         dbc_row([
@@ -511,7 +515,8 @@ function ben_fieldset()
                     max = 100,
                     size = "4",
                     value = 21.15,
-                    step = 0.05 )
+                    step = 0.05,
+                    style=RESERVED )
             ) # col
         ]), # row
         dbc_row([
@@ -526,7 +531,8 @@ function ben_fieldset()
                     max = 500,
                     size = "4",
                     value = 179.60,
-                    step = 0.10 )
+                    step = 0.10,
+                    style=RESERVED )
             ) # col
         ]), # row
         dbc_row([
