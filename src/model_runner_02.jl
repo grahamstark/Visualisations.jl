@@ -48,21 +48,21 @@ causes all three to move in sync.
 
 * No behavioural changes - increasing or decreasing taxes doesn't cause people to change how they work and earn;
 * We model entitlements to benefits and liability to taxes, not receipts and payments - so we may overstate the costs of benefits since some will not be taken up. On taxes, some may be paid with a considerable delay, and some evaded or avoided.
-* See [the blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning* - very boring and rambling)*.
+* See [the blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning - very boring and rambling)*.
 
 #### Known Problems
 
 This is a new model. I'm now reasonably confident of its essential accuracy - it passes an [extensive test suite](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/test) but there are some aspects that
 require investigation in the coming months. Notably:
 
-* Income Tax Revenues seem to be overstated by around £1bn pa. Possibly much of this is due to how pension tax relief is treated;
+* Income Tax Revenues seem to be overstated by around £1bn pa compared to [official forecasts](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/). Possibly much of this is due to how pension tax relief is treated;
 * Measures of inequality seem low compared to official statistics.
 
 ### To Find Out More
 
 You'll have to do some reading, I'm afraid. Some links:
 
-* **Tax Benefit Models**: [A short introduction](https://stb.virtual-worlds.scot/intro.html)  *note: uses an obselete version of this model* | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/);
+* **Tax Benefit Models**: [A short introduction](https://stb.virtual-worlds.scot/intro.html)  *(originally written for the Open University; uses an obselete version of this model* | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/));
 * **Poverty and Inequality**: [My Notes](https://stb.virtual-worlds.scot/poverty.html) | [World Bank Handbook](http://documents.worldbank.org/curated/en/488081468157174849/Handbook-on-poverty-and-inequality) | [Official Figures for Scotland](https://data.gov.scot/poverty/);
 * **Scotland's Finances**: [Scottish Fiscal Commission](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/) | [Scottish Government Budget Documents](https://www.gov.scot/budget/).
 
