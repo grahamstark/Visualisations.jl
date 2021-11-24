@@ -24,16 +24,50 @@ const TOOLTIP_PROPS = Dict(
 		"always_visible"=> true)
 
 const PREAMBLE = """
+
+Every December the Scottish Government [sets its annual budget](https://www.gov.scot/publications/scottish-budget-2021-22/). This page gives you the chance gives you the chance to use ScotBen to experiment with
+some of the most important things that can be changed, and with some that are currently reserved to Westminster (reserved items are <a style='background-color: #CCCCCC'>Grey</a>).
+You can experiment with the difficult choices involved in balancing fairness against the need not to worsen incentives to work and save.
+
+For simplicity, only a few key items can be changed on this page. The [full model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl) allows changing
+practically all aspects of the Scottish fiscal system that directly affect individuals. Full instructions on installing and using the full model on your own computer will follow presently.
+
+
 """
 
 
 
 const INFO = """
 
+#### Key Assumptions
 
-* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Poverty and Inequality Measures](https://github.com/grahamstark/PovertyAndInequalityMeasures.jl);
+* No behavioural changes - increasing or decreasing taxes doesn't cause people to change how they work and earn;
+* We model entitlements to benefits and liability to taxes, not receipts and payments - so we may overstate the costs of benefits since some will not be taken up. On taxes, some may be paid with a considerable delay, and some evaded or avoided.
+* See [the blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning* - very boring and rambling)*.
+
+
+#### Known Problems
+
+This is a new model. I'm now reasonably confident of its essential accuracy - it passes an [extensive test suite]() but there are some aspects that
+require investigation in the coming months. Notably:
+
+* Income Tax Revenues seem to be overstated by around £1bn pa. Possibly much of this is due to how pension tax relief is treated;
+* Measures of inequality seem low compared to official statistics.
+
+Compared to 
+
+### To Find Out More
+
+You'll have to do some reading, I'm afraid. Some links:
+
+* **Tax Benefit Models**: [A short introduction](https://stb.virtual-worlds.scot/intro.html)  *note: uses an obselete version of this model* | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/);
+* **Poverty and Inequality**: [My Notes](https://stb.virtual-worlds.scot/poverty.html) | [World Bank Handbook](http://documents.worldbank.org/curated/en/488081468157174849/Handbook-on-poverty-and-inequality) | [Official Figures for Scotland](https://data.gov.scot/poverty/);
+* **Scotland's Finances**: [Scottish Fiscal Commission](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/).
+
+* Created with [Julia](https://julialang.org/) | [Dash](https://dash-julia.plotly.com/) | [Plotly](https://plotly.com/julia/) | [Poverty and Inequality Measures](https://github.com/grahamstark/PovertyAndInequalityMeasures.jl)
 * Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
 * Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
+
 """
 
 """
