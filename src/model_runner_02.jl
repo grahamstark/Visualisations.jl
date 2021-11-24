@@ -62,7 +62,7 @@ require investigation in the coming months. Notably:
 
 You'll have to do some reading, I'm afraid. Some links:
 
-* **Tax Benefit Models**: [A short introduction](https://stb.virtual-worlds.scot/intro.html)  *(originally written for the Open University; uses an obselete version of this model* | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/));
+* **Tax Benefit Models**: [A short introduction](https://stb.virtual-worlds.scot/intro.html)  *(originally written for the Open University; uses an obselete version of this model*) | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/);
 * **Poverty and Inequality**: [My Notes](https://stb.virtual-worlds.scot/poverty.html) | [World Bank Handbook](http://documents.worldbank.org/curated/en/488081468157174849/Handbook-on-poverty-and-inequality) | [Official Figures for Scotland](https://data.gov.scot/poverty/);
 * **Scotland's Finances**: [Scottish Fiscal Commission](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/) | [Scottish Government Budget Documents](https://www.gov.scot/budget/).
 
