@@ -25,8 +25,8 @@ const TOOLTIP_PROPS = Dict(
 
 const PREAMBLE = """
 
-Every year the Scottish Government [sets its annual budget](https://www.gov.scot/publications/scottish-budget-2021-22/). This page gives you the chance gives you the chance to use ScotBen to experiment with
-some of the most important things that can be changed, and with some that are currently reserved to Westminster (reserved items are shown in Grey).
+Every year the Scottish Government [sets its annual budget](https://www.gov.scot/publications/scottish-budget-2021-22/). This page lets you use a microsimulation tax-benefit model to experiment with
+some of the most important things that can be changed, and with some that are currently reserved to Westminster (reserved items are shown with a grey background).
 You can experiment with the difficult choices involved in balancing fairness against the need not to worsen incentives to work and save.
 
 For simplicity, only a few key items can be changed on this page. The [full model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl) allows changing
@@ -41,22 +41,27 @@ const INFO = """
 
 #### Notes
 
-* Scotland actually has 3 lower rates of income tax rather than the single 20% basic rate shown - currently 19%,20% and 21%. Changing the 20% 'basic rate' higher_rate
+* Scotland actually has 3 lower rates of income tax rather than the single 20% basic rate shown - currently 19%,20% and 21%. Changing the 20% 'basic rate'
 causes all three to move in sync.
 
 #### Key Assumptions
 
 * No behavioural changes - increasing or decreasing taxes doesn't cause people to change how they work and earn;
-* We model entitlements to benefits and liability to taxes, not receipts and payments - so we may overstate the costs of benefits since some will not be taken up. On taxes, some may be paid with a considerable delay, and some evaded or avoided.
-* See [the blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning - very boring and rambling)*.
+* the model reports entitlements to benefits and liability to taxes, not receipts and payments - so we may overstate the costs of benefits since some will not be taken up. On taxes, some may be paid with a considerable delay, and some evaded or avoided.
+* see [the blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning - very boring and rambling)*.
 
 #### Known Problems
 
 This is a new model. I'm now reasonably confident of its essential accuracy - it passes an [extensive test suite](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/test) but there are some aspects that
 require investigation in the coming months. Notably:
 
-* Income Tax Revenues seem to be overstated by around £1bn pa compared to [official forecasts](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/). Possibly much of this is due to how pension tax relief is treated;
-* Measures of inequality seem low compared to official statistics.
+* Income Tax revenues seem to be overstated by around £1bn pa compared to [official forecasts](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/). Possibly much of this is due to how pension tax relief is treated;
+* measures of inequality seem low compared to official statistics.
+
+Please if you spot anything odd or if you have any suggestions. And I'd very much welcome contributions. You can:
+
+* [Open an issue on GitHub](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/issues); or
+* [email me](mailto:graham.stark@virtual-worlds.biz).
 
 ### To Find Out More
 
