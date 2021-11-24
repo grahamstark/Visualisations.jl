@@ -25,9 +25,12 @@ const TOOLTIP_PROPS = Dict(
 
 const PREAMBLE = """
 
-Every year the Scottish Government [sets its annual budget](https://www.gov.scot/publications/scottish-budget-2021-22/). This page lets you use a microsimulation tax-benefit model to experiment with
-some of the most important things that the Scottish Government can change, and with some that they currently can't because they are reserved to Westminster (reserved items are shown with a grey background).
-You can experiment with the difficult choices involved in balancing fairness against the need not to worsen incentives to work and save.
+Every year the Scottish Government [sets its annual budget](https://www.gov.scot/publications/scottish-budget-2021-22/). 
+
+This page lets you use a microsimulation tax-benefit model to experiment with some of the most important things that can be changed in the budget, 
+and with some that currently can't because they are reserved to Westminster (reserved items are shown with a grey background). 
+
+You can experiment with the difficult choices involved in balancing the need for fairness and equality against the need not to discourage people from working and saving.
 
 For simplicity, only a few key items can be changed on this page. The [full model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl) allows changing
 practically all aspects of the Scottish fiscal system that directly affect individuals. Full instructions on installing and using the full model on your own computer will follow presently.
@@ -43,9 +46,10 @@ causes all three to move in sync.
 
 #### Key Assumptions
 
-* No behavioural changes - increasing or decreasing taxes doesn't cause people to change how they work and earn;
-* the model reports entitlements to benefits and liability to taxes, not receipts and payments - so we may overstate the costs of benefits since some will not be taken up. On taxes, some may be paid with a considerable delay, and some evaded or avoided.
-* see [the blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning - very boring and rambling)*.
+* *No behavioural changes*: increasing or decreasing taxes doesn't cause people to change how they work and earn;
+* the model reports *entitlements to benefits and liability to taxes*, not receipts and payments - so we may overstate the costs of benefits since some eligible families may not claim the things they're entitled to. With taxes, some may be paid with a considerable delay, and some evaded or avoided.
+
+See [the model blog](https://stb-blog.virtual-worlds.scot/) for more gory details (*content warning - very boring and rambling)*.
 
 #### Known Problems
 
@@ -64,7 +68,7 @@ I'd very much welcome contributions and suggestions. If you spot anything odd or
 
 You'll have to do some reading, I'm afraid. Some links:
 
-* **Tax Benefit Models**: [A short introduction](https://stb.virtual-worlds.scot/intro.html)  *(originally written for the Open University; uses an obselete version of this model*) | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/);
+* **Tax Benefit Models**: [A short introduction to microsimulation and tax benefit models](https://stb.virtual-worlds.scot/intro.html). Originally written for the Open University, it covers all the essential ideas. | [Blog Posts about the Model](https://stb-blog.virtual-worlds.scot/);
 * **Poverty and Inequality**: [My Notes](https://stb.virtual-worlds.scot/poverty.html) | [World Bank Handbook](http://documents.worldbank.org/curated/en/488081468157174849/Handbook-on-poverty-and-inequality) | [Official Figures for Scotland](https://data.gov.scot/poverty/);
 * **Scotland's Finances**: [Scottish Fiscal Commission](https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/) | [Scottish Government Budget Documents](https://www.gov.scot/budget/).
 
