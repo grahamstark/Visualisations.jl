@@ -26,16 +26,13 @@ const TOOLTIP_PROPS = Dict(
 const PREAMBLE = """
 
 Every year the Scottish Government [sets its annual budget](https://www.gov.scot/publications/scottish-budget-2021-22/). This page lets you use a microsimulation tax-benefit model to experiment with
-some of the most important things that can be changed, and with some that are currently reserved to Westminster (reserved items are shown with a grey background).
+some of the most important things that the Scottish Government can change, and with some that they currently can't because they are reserved to Westminster (reserved items are shown with a grey background).
 You can experiment with the difficult choices involved in balancing fairness against the need not to worsen incentives to work and save.
 
 For simplicity, only a few key items can be changed on this page. The [full model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl) allows changing
 practically all aspects of the Scottish fiscal system that directly affect individuals. Full instructions on installing and using the full model on your own computer will follow presently.
 
-
 """
-
-
 
 const INFO = """
 
