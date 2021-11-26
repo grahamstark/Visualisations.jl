@@ -127,6 +127,7 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, uct, cb, pen, scp )
 
 		bincr = br-sys.it.non_savings_rates[2] 
 		sys.it.non_savings_rates[1:3] .+= bincr
+		sys.it.non_savings_rates[1] = max(0, sys.it.non_savings_rates[1]) 
 		sys.it.non_savings_rates[4] = hr
 		sys.it.non_savings_rates[5] = tr
 		sys.it.personal_allowance = pa
