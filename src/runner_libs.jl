@@ -47,6 +47,7 @@ function initialise()::BaseState
 	settings.income_data_source = ds_frs
 	settings.dump_frames = true
 	settings.do_marginal_rates = true
+	settings.requested_threads = 4
 	sys = load_system()
 	results = do_one_run( settings, [sys] )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )
