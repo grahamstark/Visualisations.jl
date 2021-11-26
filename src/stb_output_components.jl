@@ -1,3 +1,6 @@
+
+# not used!
+
 function draw_lorenz( pre::Vector, post::Vector )
     np = size(pre)[1]
     step = 1/np

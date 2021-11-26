@@ -1,5 +1,5 @@
 module Visualisations
 
-# Write your package code here.
+# nothing to see here; just some runner scripts.
 
 end

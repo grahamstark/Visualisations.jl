@@ -2,13 +2,18 @@
 using Dash
 using PlotlyJS
 using DashBootstrapComponents
+
+#
+# NOT USED! ATTEMPT TO USE ALL-PLOTLY DASHBOARD
+# 
+
 #, DashHtmlComponents, DashCoreComponents
 
 using Markdown
 using DataFrames
 
-include( "run_and_consts.jl")
-include( "plotly_plots.jl")
+include( "runner_libs.jl")
+include( "dash_libs.jl")
 
 const FORM_EXTRA =Dict(
 	"border-bottom"=>"1px dashed #aaaaaa", 
