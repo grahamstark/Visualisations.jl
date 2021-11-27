@@ -34,6 +34,8 @@ const INFO = """
 
 * Scotland actually has 3 lower rates of income tax rather than the single 20% basic rate shown - currently 19%,20% and 21%. Changing the 20% 'basic rate'
 causes all three to move in sync.
+* Likewise, changing the *Universal Credit: single 25+ adult* field changes the rates for young people and couples. 
+* Scotland is [in the process of switching working-age families to Universal Credit from 'Legacy Benefits' (Income Support, Housing Benefit, etc.) ](https://commonslibrary.parliament.uk/constituency-data-universal-credit-roll-out/). I've written a [note on how this is modelled](https://stb-blog.virtual-worlds.scot/articles/2021/11/12/uc-legacy.html) - the code is [here](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl);
 
 #### Key Assumptions
 
@@ -112,16 +114,19 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	html_div( dcc_markdown( INFO ))
 end # layout
 
-function do_output( br, hr, tr, pa, ni_prim, ni_sec, uct, cb, pen, scp )
+function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, scp )
 	results = nothing
 	sys = deepcopy( BASE_STATE.sys )
 	# 21.15, 179.60, 10.0
-	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)
+	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=411.51)||(wtcb!=2_005) 
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
 		uct /= 100.0
 		pa /= WEEKS_PER_YEAR
+		wtcb /= WEEKS_PER_YEAR
+		ucs /= WEEKS_PER_MONTH
+
 		ni_prim /= 100.0
 		ni_sec /= 100.0
 
@@ -132,6 +137,16 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, uct, cb, pen, scp )
 		sys.it.non_savings_rates[5] = tr
 		sys.it.personal_allowance = pa
 		sys.uc.taper = uct
+		sys.lmt.working_tax_credit.basic = wtcb
+
+		ucsd = ucs - sys.uc.age_25_and_over
+		# move main uc allows equally, as in covid uplift
+        sys.uc.age_25_and_over = max(0.0, ucsd+sys.uc.age_25_and_over)
+		sys.uc.age_18_24 = max(0.0, ucsd+sys.uc.age_18_24)		
+		sys.uc.couple_both_under_25 = max(0.0, sys.uc.couple_both_under_25+ucsd)
+		sys.uc.couple_oldest_25_plus = max(0.0,sys.uc.couple_oldest_25_plus+ucsd)
+		
+
 		sys.nmt_bens.child_benefit.first_child = cb
 		sys.nmt_bens.pensions.new_state_pension = pen
 		sys.scottish_child_payment.amount = scp
@@ -164,26 +179,32 @@ callback!(
     Output("model_running",  "children"),
 	Output("output-block", "children"),
 	Input("submit-button", "n_clicks"),
+
 	State( "basic_rate", "value"),
 	State( "higher_rate", "value"),
 	State( "top_rate", "value"),
 	State( "pa", "value"),
+
 	State( "ni_prim", "value"),
 	State( "ni_sec", "value"),
 	
-	State( "uctaper", "value"),
 	State( "cb", "value"),
 	State( "pen", "value"),
+	State( "uctaper", "value"),
+	State( "ucs", "value"),
+	State( "wtcb", "value"),
 	State( "scp", "value")
 
-	) do n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, uctaper, cb, pen, scp
+	) do n_clicks, basic_rate, higher_rate, top_rate, pa, 
+	     ni_prim, ni_sec, 
+		 cb, pen, uctaper, ucs, wtcb, scp
 
 	println( "n_clicks = $n_clicks")
 	# will return 'nothing' if something is out-of-range or not a number, or if no clicks on submit
-	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, uctaper, cb, pen, scp )
-		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, uctaper, cb, pen, scp )]
+	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )
+		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )]
 	end
-	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 55, 21.15, 179.60, 10.0 )]
+	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 411.51, 2_005, 10.0 )]
 end
 
 run_server( app, "0.0.0.0", 8052; debug=true )

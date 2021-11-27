@@ -489,22 +489,6 @@ function ben_fieldset()
         html_legend( "Benefits"),
         dbc_row([
             dbc_col(
-                dbc_label("Universal Credit Taper (%)"; html_for="uctaper")
-            ),
-            dbc_col(
-                dbc_input(
-                    type="number",
-                    id = "uctaper",
-                    min = 0,
-                    max = 100,
-                    size = "4",
-                    value = 55.0,
-                    step = 0.5,
-                    style=RESERVED )
-            ) # col
-        ]),       
-        dbc_row([
-            dbc_col(
                 dbc_label("Child Benefit £pw (1st child)"; html_for="cb")
             ),
             dbc_col(
@@ -534,23 +518,70 @@ function ben_fieldset()
                     step = 0.10,
                     style=RESERVED )
             ) # col
+        ]),
+        dbc_row([
+            dbc_col(
+                dbc_label("Universal Credit Taper (%)"; html_for="uctaper")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "uctaper",
+                    min = 0,
+                    max = 100,
+                    size = "4",
+                    value = 55.0,
+                    step = 0.5,
+                    style=RESERVED )
+            ) # col
+        ]),       
+        dbc_row([
+            dbc_col(
+                dbc_label("Universal Credit: single 25+ adult £pm"; html_for="ucs")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "ucs",
+                    min = 0,
+                    max = 1000,
+                    size = "4",
+                    value = 411.51,
+                    step = 0.01,
+                    style=RESERVED )
+            ) # col
         ]), # row
         dbc_row([
             dbc_col(
-                dbc_label("Scottish Child Payment"; html_for="scp")
+                dbc_label("Working Tax Credit: basic amount £pa"; html_for="wtcb")
+            ),
+            dbc_col(
+                dbc_input(
+                    type="number",
+                    id = "wtcb",
+                    min = 0,
+                    max = 10_000,
+                    size = "6",
+                    value = 2_005,
+                    step = 0.50,
+                    style=RESERVED )
+            ) # col
+        ]), # row
+        dbc_row([
+            dbc_col(
+                dbc_label("Scottish Child Payment; £pw"; html_for="scp")
             ),
             dbc_col(
                 dbc_input(
                     type="number",
                     id = "scp",
                     min = 0,
-                    max = 50,
+                    max = 100,
                     size = "4",
                     value = 10.0,
                     step = 0.05 )
             ) # col
-        ]), # row
-
+        ])
     ]) 
     return bens
 end
