@@ -36,6 +36,7 @@ const INFO = """
 causes all three to move in sync.
 * Likewise, changing the *Universal Credit: single 25+ adult* field changes the rates for young people and couples. 
 * Scotland is [in the process of switching working-age families to Universal Credit from 'Legacy Benefits' (Income Support, Housing Benefit, etc.) ](https://commonslibrary.parliament.uk/constituency-data-universal-credit-roll-out/). I've written a [note on how this is modelled](https://stb-blog.virtual-worlds.scot/articles/2021/11/12/uc-legacy.html) - the code is [here](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl);
+* the [£20pw 'uplift' to Universal Credit and Working Tax Credit](https://www.legislation.gov.uk/uksi/2021/313/pdfs/uksiem_20210313_en.pdf), now [scheduled for removal in April 2022](https://www.gov.uk/government/news/budget-2021-what-you-need-to-know) is modelled already removed. 
 
 #### Key Assumptions
 
