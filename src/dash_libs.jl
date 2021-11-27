@@ -546,7 +546,7 @@ function ben_fieldset()
                     min = 0,
                     max = 1000,
                     size = "4",
-                    value = 411.51,
+                    value = 324.84,
                     step = 0.01,
                     style=RESERVED )
             ) # col

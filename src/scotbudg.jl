@@ -215,7 +215,7 @@ callback!(
 	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )
 		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )]
 	end
-	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 411.51, 2_005, 10.0 )]
+	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0 )]
 end
 
 run_server( app, "0.0.0.0", 8052; debug=true )
