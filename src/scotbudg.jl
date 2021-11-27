@@ -130,22 +130,32 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 		ni_prim /= 100.0
 		ni_sec /= 100.0
 
-		bincr = br-sys.it.non_savings_rates[2] 
-		sys.it.non_savings_rates[1:3] .+= bincr
-		sys.it.non_savings_rates[1] = max(0, sys.it.non_savings_rates[1]) 
+		if br == 0
+			sys.it.non_savings_rates[1:3] .= 0.0
+		else
+			bincr = br-sys.it.non_savings_rates[2] 
+			sys.it.non_savings_rates[1:3] .+= bincr
+			sys.it.non_savings_rates[1] = max(0, sys.it.non_savings_rates[1]) 
+		end
 		sys.it.non_savings_rates[4] = hr
 		sys.it.non_savings_rates[5] = tr
 		sys.it.personal_allowance = pa
 		sys.uc.taper = uct
 		sys.lmt.working_tax_credit.basic = wtcb
 
-		ucsd = ucs - sys.uc.age_25_and_over
-		# move main uc allows equally, as in covid uplift
-        sys.uc.age_25_and_over = max(0.0, ucsd+sys.uc.age_25_and_over)
-		sys.uc.age_18_24 = max(0.0, ucsd+sys.uc.age_18_24)		
-		sys.uc.couple_both_under_25 = max(0.0, sys.uc.couple_both_under_25+ucsd)
-		sys.uc.couple_oldest_25_plus = max(0.0,sys.uc.couple_oldest_25_plus+ucsd)
-		
+		if ucs == 0
+			sys.uc.age_25_and_over = 0.0
+			sys.uc.age_18_24 = 0.0
+			sys.uc.couple_both_under_25 = 0.0
+			sys.uc.couple_oldest_25_plus = 0.0
+		else
+			ucsd = ucs - sys.uc.age_25_and_over
+			# move main uc allows equally, as in covid uplift
+			sys.uc.age_25_and_over = max(0.0, ucsd+sys.uc.age_25_and_over)
+			sys.uc.age_18_24 = max(0.0, ucsd+sys.uc.age_18_24)		
+			sys.uc.couple_both_under_25 = max(0.0, sys.uc.couple_both_under_25+ucsd)
+			sys.uc.couple_oldest_25_plus = max(0.0,sys.uc.couple_oldest_25_plus+ucsd)
+		end
 
 		sys.nmt_bens.child_benefit.first_child = cb
 		sys.nmt_bens.pensions.new_state_pension = pen
