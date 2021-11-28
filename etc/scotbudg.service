@@ -13,6 +13,6 @@ ExecStart=/home/graham_s/julia/vw/Visualisations/etc/scotbudg.sh
 ExecStop=/bin/kill -WINCH ${MAINPID}
 KillSignal=SIGKILL
 PrivateTmp=true
-
+TimeoutStartSec=240
 [Install]
 WantedBy=multi-user.target
