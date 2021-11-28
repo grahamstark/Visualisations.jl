@@ -10,7 +10,7 @@ EnvironmentFile=/etc/systemd/user/gks_environment
 # "so that systemd can identify the main process of the daemon"
 PIDFile=/run/bcd.pid
 # ExecStart=/home/graham_s/bin/bcd.sh
-ExecStart=/home/graham_s/julia/Visualisations/etc/bcd.sh
+ExecStart=/home/graham_s/julia/vw/Visualisations/etc/bcd.sh
 ExecStop=/bin/kill -WINCH ${MAINPID}
 KillSignal=SIGKILL
 PrivateTmp=true
