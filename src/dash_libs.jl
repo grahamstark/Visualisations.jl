@@ -126,15 +126,6 @@ const MR_UP_GOOD = [1,0,0,0,0,0,0,-1,1]
 
 const COST_UP_GOOD = [1,1,1,1,-1,-1,-1,-1,-1,-1,-1]
 
-function extract_incs( d :: DataFrame, targets :: Vector{Symbol}, row = 1 ) :: Vector
-    n = length( targets )[1]
-    out = zeros(n)
-    for i in 1:n
-        out[i] = d[row, targets[i]]
-    end
-    return out
-end
-
 function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     v1 = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
     v2 = extract_incs( incs2, COST_ITEMS ) ./ 1_000_000
@@ -190,6 +181,30 @@ function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     return frame_to_dash_table( df, prec=0, up_is_good=COST_UP_GOOD, 
         caption="Tax Liabilities and Benefit Entitlements, £m pa, 2021/22" )
     # thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
+end
+
+function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
+    n1 = incs1[1,:net_cost]
+    n2 = incs2[1,:net_cost]
+    d = n1 - n2 
+    if d ≈ 0
+        return
+    end
+    d /= 1_000_000
+    colour = "primary"
+    extra = ""
+    change_str = "Under £1m."
+    if abs(d) > 1
+        change_str = f0(abs(d))
+        if d > 0
+            colour = "success"
+            extra = "mn increased net revenue."
+        else
+            colour = "danger"
+            extra = "mn extra net spending."
+        end
+    end
+    return dbc_alert( ["Net effect of your changes: £", html_strong( change_str ), extra ], color = colour )
 end
 
 function mr_table( mr1, mr2 )
@@ -290,7 +305,7 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
 			results.summary.deciles[1][:,3],
 			BASE_STATE.summary.deciles[1][:,3]))),
         html_td(
-            costs_table(
+             costs_table(
                 BASE_STATE.summary.income_summary[1],
                 results.summary.income_summary[1])),
         html_td( 
@@ -347,7 +362,8 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
             html_h4(" Revenues and Costs"),
             costs_table(
                 BASE_STATE.summary.income_summary[1],
-                results.summary.income_summary[1])
+                results.summary.income_summary[1]),
+            overall_cost( BASE_STATE.summary.income_summary[1], results.summary.income_summary[1])
         ]), # row1 col2
         dbc_col([      
                 html_h4("Incentives - Marginal Effective Tax Rates.")

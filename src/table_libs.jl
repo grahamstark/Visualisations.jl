@@ -32,16 +32,25 @@ const COST_LABELS = [
     "Scottish Benefits" ]
 
 const MR_LABELS = 
-    ["0 or negative", 
-     "< 10.0%", 
-     "10-20.0%", 
-     "20-30.0%", 
-     "30-50.0%", 
-     "50-80.0%", 
-     "80-100.0%", 
+    ["Negative or Zero",
+     "Under 10%", 
+     "10-20%", 
+     "20-30%", 
+     "30-50%", 
+     "50-80%", 
+     "80-100%", 
      "Above 100%"]
 
 
+function extract_incs( d :: DataFrame, targets :: Vector{Symbol}, row = 1 ) :: Vector
+    n = length( targets )[1]
+    out = zeros(n)
+    for i in 1:n
+        out[i] = d[row, targets[i]]
+    end
+    return out
+end
+    
 function f0( n :: Number ) :: String 
 	format(n, commas=true, precision=0 )
 	# , autoscale=:finance
@@ -67,6 +76,7 @@ end
 
 
 function mr_dataframe( mr1::Histogram, mr2::Histogram, mean1::Real, mean2 :: Real ) :: DataFrame
+    println( "mr1.weights=$(mr1.weights) mean1=$mean1")
     change = mr2.weights - mr1.weights
     df = DataFrame( Item=MR_LABELS, Before=mr1.weights, After=mr2.weights, Change=change)
     mchange = mean2 - mean1
