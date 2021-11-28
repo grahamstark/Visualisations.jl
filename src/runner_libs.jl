@@ -45,7 +45,7 @@ function initialise()::BaseState
 	settings.means_tested_routing = modelled_phase_in
     settings.run_name="run-$(date_string())"
 	settings.income_data_source = ds_frs
-	settings.dump_frames = true
+	settings.dump_frames = false
 	settings.do_marginal_rates = true
 	settings.requested_threads = 4
 	sys = load_system()
