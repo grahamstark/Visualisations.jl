@@ -119,7 +119,10 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 	results = nothing
 	sys = deepcopy( BASE_STATE.sys )
 	# 21.15, 179.60, 10.0
-	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=411.51)||(wtcb!=2_005) 
+
+	# 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0 
+
+	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=324.84)||(wtcb!=2_005) 
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
@@ -213,8 +216,10 @@ callback!(
 	println( "n_clicks = $n_clicks")
 	# will return 'nothing' if something is out-of-range or not a number, or if no clicks on submit
 	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )
+		println( "running the live calc version")
 		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )]
 	end
+	println( "doing the do-nothing version")
 	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0 )]
 end
 
