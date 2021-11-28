@@ -122,7 +122,7 @@ function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good:
     table_body = html_tbody(rows)
     return dbc_table([table_header,table_body], bordered = false)
 end 
-const MR_UP_GOOD = [1,0,0,0,0,0,0,-1,1]
+const MR_UP_GOOD = [1,0,0,0,0,0,0,-1,-1]
 
 const COST_UP_GOOD = [1,1,1,1,-1,-1,-1,-1,-1,-1,-1]
 
@@ -193,18 +193,21 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
     d /= 1_000_000
     colour = "primary"
     extra = ""
-    change_str = "Under £1m."
+    change_str = "In total, your changes cost less than £1m"
+    change_str = ""
     if abs(d) > 1
-        change_str = f0(abs(d))
+        change_val = f0(abs(d))
         if d > 0
             colour = "success"
-            extra = "mn increased net revenue."
+            change_str = "In total, your changes raise £"
+            extra = "m."
         else
+            change_str = "In total, your changes cost £"
             colour = "danger"
-            extra = "mn extra net spending."
+            extra = "m."
         end
     end
-    return dbc_alert( ["Net effect of your changes: £", html_strong( change_str ), extra ], color = colour )
+    return dbc_alert( [change_str, html_strong( change_val ), extra ], color = colour )
 end
 
 function mr_table( mr1, mr2 )
