@@ -4,6 +4,7 @@ const TAB_CENTRE = Dict( "text-align"=>"center")
 const TAB_RED = Dict( "color"=>"#BB3311")
 const TAB_GREEN = Dict( "color"=>"#33BB11")
 const TAB_BOLD = Dict( "font-weight"=>"Bold")
+const TAB_TOTAL = Dict( "font-weight"=>"Bold", "background-color"=>"#ccccee" )
 const RESERVED = Dict( "background-color"=>"#dddddd")
     
 function u( d ... )
@@ -121,7 +122,7 @@ function thing_table( names::Vector{String}, v1::Vector, v2::Vector, up_is_good:
     table_body = html_tbody(rows)
     return dbc_table([table_header,table_body], bordered = false)
 end 
-const MR_UP_GOOD = [1,0,0,0,0,0,0,-1]
+const MR_UP_GOOD = [1,0,0,0,0,0,0,-1,1]
 
 const COST_UP_GOOD = [1,1,1,1,-1,-1,-1,-1,-1,-1,-1]
 
@@ -144,7 +145,8 @@ function frame_to_dash_table(
     df :: DataFrame;
     up_is_good :: Vector{Int},
     prec :: Int = 2, 
-    caption :: String = "" )
+    caption :: String = "",
+    totals_col :: Int = -1 )
     table_header = 
         html_thead(
             html_tr([html_th(""), 
@@ -169,11 +171,12 @@ function frame_to_dash_table(
         if ds != "-" && r.Change > 0
             ds = "+$(ds)"
         end 
+        row_style = i == totals_col ? TAB_TOTAL : Dict()
         row = html_tr( [
             html_th( r.Item, style=TAB_LEFT),
             html_td(format(r.Before, commas=true, precision=prec),style=TAB_RIGHT),
             html_td(format(r.After, commas=true, precision=prec),style=TAB_RIGHT),
-            html_td( ds, style=u(TAB_RIGHT,colour))])
+            html_td( ds, style=u(TAB_RIGHT,colour))], style=row_style)
         push!( rows, row )
     end
     table_body = html_tbody(rows)
@@ -189,15 +192,19 @@ function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     # thing_table( COST_LABELS, v1, v2, COST_UP_GOOD )
 end
 
-function mr_table( mr1::Histogram, mr2::Histogram)
-    df = mr_dataframe( mr1, mr2 )
-    return frame_to_dash_table( 
+function mr_table( mr1, mr2 )
+    df = mr_dataframe( mr1.hist, mr2.hist, mr1.mean, mr2.mean )
+    n = size(df)[1]
+    table = frame_to_dash_table( 
         df, 
         prec=0, 
         up_is_good=MR_UP_GOOD, 
         caption="Working age individuals with Marginal Effective Tax Rates
                 (METRs) in the given range. METR is the percentage of the next £1 you earn that is taken away in taxes or 
-                reduced means-tested benefits." )
+                reduced means-tested benefits.",
+        totals_col = n )   
+    return table
+
     # thing_table( MR_LABELS, mr1.weights, mr2.weights, MR_UP_GOOD)
 end
 
