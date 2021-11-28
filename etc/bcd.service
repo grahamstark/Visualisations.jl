@@ -9,7 +9,8 @@ EnvironmentFile=/etc/systemd/user/gks_environment
 # The PID file is optional, but recommended in the manpage
 # "so that systemd can identify the main process of the daemon"
 PIDFile=/run/bcd.pid
-ExecStart=/home/graham_s/bin/bcd.sh
+# ExecStart=/home/graham_s/bin/bcd.sh
+ExecStart=/home/graham_s/julia/Visualisations/etc/bcd.sh
 ExecStop=/bin/kill -WINCH ${MAINPID}
 KillSignal=SIGKILL
 PrivateTmp=true
