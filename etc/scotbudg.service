@@ -3,7 +3,7 @@ Description=Dash Server for Budget Constraints (bcd)
 After=network.target remote-fs.target nss-lookup.target
 
 [Service]
-# Type=forking
+Type=forking
 User=graham_s
 EnvironmentFile=/etc/systemd/user/gks_environment
 # The PID file is optional, but recommended in the manpage
