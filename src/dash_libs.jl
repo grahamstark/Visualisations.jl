@@ -189,7 +189,7 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
     
     eni1 = incs1[1,:employers_ni]
     eni2 = incs2[1,:employers_ni]
-    d = (n1+eni1) - (n2+eni2)
+    d = (n1-eni1) - (n2-eni2)
     if d ≈ 0
         return
     end
