@@ -197,7 +197,7 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
     colour = "primary"
     extra = ""
     change_str = "In total, your changes cost less than £1m"
-    change_str = ""
+    change_val = ""
     if abs(d) > 1
         change_val = f0(abs(d))
         if d > 0
