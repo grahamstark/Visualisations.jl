@@ -194,7 +194,7 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
         return
     end
     d /= 1_000_000
-    colour = "primary"
+    colour = "info"
     extra = ""
     change_str = "In total, your changes cost less than £1m"
     change_val = ""
@@ -205,8 +205,8 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
             change_str = "In total, your changes raise £"
             extra = "m."
         else
-            change_str = "In total, your changes cost £"
             colour = "danger"
+            change_str = "In total, your changes cost £"
             extra = "m."
         end
     end
