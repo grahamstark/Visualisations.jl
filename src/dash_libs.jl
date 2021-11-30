@@ -189,7 +189,7 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
     
     eni1 = incs1[1,:employers_ni]
     eni2 = incs2[1,:employers_ni]
-    d = (n1+eni1) - (n2+eni2)
+    d = (n1-eni1) - (n2-eni2)
     if d ≈ 0
         return
     end
@@ -484,7 +484,7 @@ function ni_fieldset()
                     type="number",
                     id = "ni_prim",
                     min = 0,
-                    max = 100,
+                    max = 50,
                     size = "4",
                     value = 12.0,
                     step = 0.1,
@@ -501,7 +501,7 @@ function ni_fieldset()
                     type="number",
                     id = "ni_sec",
                     min = 0,
-                    max = 100,
+                    max = 50,
                     size = "4",
                     value = 13.8,
                     step = 0.1,
