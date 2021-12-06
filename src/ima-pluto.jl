@@ -45,7 +45,8 @@ end
 # ╔═╡ 38beba12-681c-4d02-a247-8388e0b7df9b
 md"""
 
-# A Tax Benefit Model for Scotland
+# ScotBen 
+### A Microsimulation Tax Benefit Model for Scotland
 
 Graham Stark [gks56@open.ac.uk](gks56@open.ac.uk)/[graham.stark@virtual-worlds.biz](graham.stark@virtual-worlds.biz)
 
@@ -122,20 +123,24 @@ Scotben is an open source microsimulation model tax-benefit of Scotland. Brand n
 md"""
 ## Why?
 
-* Independence vs the Union: what would the budget of an independent Scotland budget look like?
-* Relationship with rUK is complicated;
-* Standard of Debate in Scotland not high!
-* I was bored! This was my lockdown distraction. I'd been thinking about building this for several years, though.
+* Scottish Independence: the debate is about all sorts of things, but inevitably it's also about money: what would the budget of an independent Scotland look like?
+* Scotland already has a measure of fiscal autonomy (most income tax, a few benefits, some enviromental taxes). What can be done with the powers we already have? 
+* The standard of debate in Scotland (on all sides) is not high! This is my modest attempt to help;
+* Scotland is sufficiently different from the rest of the UK (rUK) for a specialised model;
+  - weight data specifically to Scottish demographics and uprate to Scotland-specific forecasts;
+  - model the Scotland-specific taxes and benefits carefully.
+* I was bored! This was my lockdown distraction. I'd been thinking about building this for several years, though;
+* I know something about this: I worked for many years on the Institute for Fiscal Studies' TAXBEN, which was a good model in its day, and since then I've built [many different microsimulations](https://www.virtual-worlds.scot/demonstrations/) for clients all over the world.
 
 """
 
 # ╔═╡ 067fd91d-77c6-436e-880b-45772b27d17a
 md"""
 ## How?
-* Conventional Tax Benefit Model - similar in outline to e.g. IFS Taxben, IPPR
-* Highly modular design: bolt things together to make e.g. forecasting models, social care sims etc.
+* Conventional Tax Benefit Model - similar in outline to e.g. IFS Taxben and its descendants such as the, IPPR model;
+* Highly modular design: it's made up of components that can easily be bolted  together to make e.g. forecasting models, social care simulations, etc.
 * Static model - no non-takeup, labour supply etc. But get the structure right and these things are much easier;
-* [Test first development](https://testing.googleblog.com/2007/01/introducing-testing-on-toilet.html) principle - write unit tests and then just enough code to make them pass - the [model test suite](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/test) is almost as big as the model itself.
+* [Test first development](https://testing.googleblog.com/2007/01/introducing-testing-on-toilet.html) principle - write 'unit tests' describing how each tax and benefit should be calculated, and then just enough model code to make the tests pass - the [model test suite](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/test) is almost as big as the model itself.
 
 """
 
@@ -150,13 +155,6 @@ md"""
 * [Julia has a huge collection of contributed packages](https://juliahub.com) - including standard econometrics routines, data handling, graphics, differential equations and much else;
 * This presentation is itself a Julia program, written using [Pluto](https://github.com/fonsp/Pluto.jl). The model and its data are actually loaded directly in to this presentation and we'll interact with them very briefly in a minute.
 """
-
-# ╔═╡ 2e9567f8-10f6-46d0-b32d-39df2038aaf7
-begin
-	x = 99
-	x + 1
-
-end
 
 # ╔═╡ 444b957f-0bcb-4703-9477-dcfcdc320ca6
 md"""
@@ -175,13 +173,15 @@ Divided into [packages](https://julialang.org/packages/) and [modules](https://d
 
 #### High Level generic packages:
 
+These can be used directly in any model written in Julia. (And are fairly easy to port to [other](https://github.com/grahamstark/tax_benefit_model_components/blob/master/src/python/piecewise_linear_generator.py) [languages](https://github.com/grahamstark/tax_benefit_model_components/blob/master/src/python/weight_generator_tests.py)).
+
 * [Budget Constraints](https://github.com/grahamstark/BudgetConstraints.jl);
 * [Data Weighting](https://github.com/grahamstark/SurveyDataWeighting.jl);
 * [Poverty & Inequality](https://github.com/grahamstark/PovertyAndInequalityMeasures.jl).
 
 #### The Model
 
-[The Model is itself a package](https://github.com/grahamstark/ScottishTaxBenefitModel.jl). Intermally, it's broken down into a collection of semi-independent modules, for example: 
+[The Model is itself a package](https://github.com/grahamstark/ScottishTaxBenefitModel.jl). Internally, it's broken down into a collection of semi-independent modules, for example: 
 
 * [a household](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/ModelHousehold.jl);
 * [the fiscal system parameters](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBParameters.jl);
@@ -288,7 +288,6 @@ finally, you can download this presentation from [https://virtual-worlds.scot/im
 # ╟─ed1ca53b-0b7c-47e6-b4c8-9167731a49fb
 # ╟─067fd91d-77c6-436e-880b-45772b27d17a
 # ╟─0dfaf005-b39a-44c3-8b51-005feac8d78b
-# ╟─2e9567f8-10f6-46d0-b32d-39df2038aaf7
 # ╟─444b957f-0bcb-4703-9477-dcfcdc320ca6
 # ╟─9512f4de-46ac-4f85-84c9-7a37ab391143
 # ╟─2334e293-57f7-4b80-ad50-f889c8f6bab0

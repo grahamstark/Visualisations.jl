@@ -16,6 +16,7 @@ using .STBIncomes
 using .STBOutput
 using .ExampleHelpers
 using .Runner
+using .SimplePovertyCounts: GroupPoverty
 using .GeneralTaxComponents: WEEKS_PER_YEAR, WEEKS_PER_MONTH
 using .Utils:md_format
 

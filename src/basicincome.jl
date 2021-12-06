@@ -64,6 +64,47 @@ You'll have to do some reading, I'm afraid. Some links:
 
 """
 
+function one_mt_box( name :: String, prefix :: String )
+	dbc_row([
+		dbc_col( dbc_label(name) ),
+		dbc_col(
+			dcc_radioitems(
+			options =[
+				Dict("label" => "Keep as-is", "value" => "$(prefix)_nc"),
+				Dict("label" => "Abolish", "value" => "$(prefix)_abolish"),
+				Dict("label" => "Include UBI as income", "value" => "$(prefix)_asincome")
+			],
+			value="$(prefix)_nc") # radio
+		) # col
+	]) # row
+end
+
+function bi_ben_fieldset()
+	bi = html_fieldset([
+		html_legend( "Treatment of Existing Benefits"),
+		one_mt_box( "Universal Credit", "uc" ),		
+		one_mt_box( "Working Tax Credit", "wtc" ),
+		one_mt_box( "Child Tax Credit", "ctc" ),
+		one_mt_box( "Housing Benefit/CT Rebates", "hb" ),
+		dbc_row([
+			dbc_col( 
+                dbc_label("Retain Sickness Benefits?"; html_for="sickben")
+			),
+			dbc_col( 
+				
+			)
+		])
+    ])
+	bi
+end
+
+function bi_ben_fieldset()
+	ben = html_fieldset([
+
+	])
+	ben
+end
+
 """
 Create the block of sliders and radios on the LHS
 """
@@ -71,8 +112,8 @@ function get_input_block()
 	return dbc_form([
 		dbc_row([
 			dbc_col( it_fieldset() ),
-			dbc_col( ni_fieldset() ),
-			dbc_col( bi_fieldset() )			
+			dbc_col( bi_fieldset() ),
+			dbc_col( ben_fieldset() )			
 		])
 		dbc_row([
 			dbc_col([

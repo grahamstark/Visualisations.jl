@@ -240,7 +240,11 @@ function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
         caption="Standard Inequality Measures." )
 end
 
-function pov_table( pov1 :: PovertyMeasures, pov2 :: PovertyMeasures )
+function pov_table( 
+    pov1 :: PovertyMeasures, 
+    pov2 :: PovertyMeasures,
+    ch1  :: GroupPoverty, 
+    ch2  :: GroupPoverty )
     df = pov_dataframe( pov1, pov2 )
     up_is_good = fill( -1, 6 )
     return frame_to_dash_table( 
@@ -332,7 +336,9 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
         html_td(
 			pov_table(
 				BASE_STATE.summary.poverty[1],
-				results.summary.poverty[1])),
+				results.summary.poverty[1],
+                BASE_STATE.child_poverty[1],
+                results.summary.child_poverty[1])),
         html_td( ineq_table(
             BASE_STATE.summary.inequality[1],
             results.summary.inequality[1])),
@@ -384,7 +390,10 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
             html_h4("Poverty"),
 			pov_table(
 				BASE_STATE.summary.poverty[1],
-				results.summary.poverty[1])
+				results.summary.poverty[1],
+				BASE_STATE.summary.child_poverty[1],
+				results.summary.child_poverty[1]
+                )
         ]), # row2 col 1
         dbc_col( [
             html_h4("Inequality"),
