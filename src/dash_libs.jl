@@ -245,8 +245,8 @@ function pov_table(
     pov2 :: PovertyMeasures,
     ch1  :: GroupPoverty, 
     ch2  :: GroupPoverty )
-    df = pov_dataframe( pov1, pov2 )
-    up_is_good = fill( -1, 6 )
+    df = pov_dataframe( pov1, pov2, ch1, ch2 )
+    up_is_good = fill( -1, 7 )
     return frame_to_dash_table( 
         df, 
         prec=2, 
