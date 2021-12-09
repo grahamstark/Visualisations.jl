@@ -10,7 +10,6 @@ causes all three to move in sync.
 * the [£20pw 'uplift' to Universal Credit and Working Tax Credit](https://www.legislation.gov.uk/uksi/2021/313/pdfs/uksiem_20210313_en.pdf), now [scheduled for removal in April 2022](https://www.gov.uk/government/news/budget-2021-what-you-need-to-know) is modelled as already removed. 
 
 Poverty and Inequality: 
-
 * based on [equivalised before housing costs income](https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/household-income-definition/). 
 * uses 60% of *Scottish* (not UK) median income as poverty line (official target uses the UK median).
 * poverty line is [relative](https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/poverty-definition/) - so may be different after your changes.
