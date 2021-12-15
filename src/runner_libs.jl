@@ -21,6 +21,8 @@ using .SimplePovertyCounts: GroupPoverty
 using .GeneralTaxComponents: WEEKS_PER_YEAR, WEEKS_PER_MONTH
 using .Utils:md_format
 
+using UUIDs
+
 
 function load_system()::TaxBenefitSystem
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
@@ -44,6 +46,7 @@ end
 
 function initialise()::BaseState
     settings = Settings()
+	settings.uuid = UUIDs.uuid4()
 	settings.means_tested_routing = modelled_phase_in
     settings.run_name="run-$(date_string())"
 	settings.income_data_source = ds_frs
@@ -53,7 +56,7 @@ function initialise()::BaseState
 	sys = load_system()
 
 	tot = 0
-	obs = Observable( Progress("",0,0,0))
+	obs = Observable( Progress(settings.uuid,"",0,0,0,0))
 	of = on(obs) do p
 		# global tot
 		println(p)

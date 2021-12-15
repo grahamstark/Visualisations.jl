@@ -1,0 +1,169 @@
+#loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.nonsig{
+    color #333;
+}
+
+.positive_strong,
+.positive_med,
+.positive_weak{
+    color: #393;
+}
+
+
+.negative_strong,
+.negative_med,
+.negative_weak{
+    color: #933;
+}
+
+.negative_strong,
+.positive_strong{
+    font-weight: bold;
+}
+
+#input-section-if-any{
+    /*width:100%;*/
+    font-family: "Gill Sans", "Gill Sans MT", sans-serif;
+    font-size: 12pt;
+
+    display:inline-grid;
+    padding: 10px;
+    grid-template-columns: 35% auto;
+    /*min-height:600px;*/
+}
+
+#output-block{
+    min-height:600px;
+}
+
+#params-block{
+    min-height:600px;
+}
+
+/* see: https://stackoverflow.com/questions/5713410/how-to-equally-distribute-columns-width-in-html-table-when-the-number-of-them-is */
+.stb-table{
+    width: 95%;
+    table-layout: fixed;
+    vertical-align: top;
+    text-align: left;
+    font-size: 11pt;
+}
+
+.stb-table td{
+    vertical-align: top;
+    text-align: left;
+    min-height: 150px;
+}
+
+.stb-table td p, .stb-table td ul{
+    font-size: 11pt;
+    width: 100%;
+}
+
+.stb-table td ul{
+    list-style: none;
+    padding:0;
+}
+
+.stb-table td > h4{
+    font-size: 11pt;
+    align: center;
+}
+
+
+
+
+section{
+    width:100%;
+    display:block;
+}
+
+
+.fixtable{
+    border-collapse:collapse;
+    border:0;
+
+}
+
+.small-numeric-input{
+    width:3em;
+}
+
+/*
+    kill the title block written by pandoc from the metadata
+    see: https://pandoc.org/MANUAL.html#extension-yaml_metadata_block
+*/
+.title{
+    display:none;
+}
+
+
+/**
+small hacks since we're appending notes and references to every page.
+**/
+.references{
+    border-top: 2px solid silver;
+    width: 55%;
+    /** note: this just aligns
+    the biblio with the p elements in the Tufte stuff **/
+}
+
+.references:before{
+    font-weight:bold;
+    font-size:110%;
+    content: 'References';
+}
+
+.footnotes{
+    border-top: 1px dashed silver;
+    color: #444;
+    font-size: 90%;
+}
+
+#topnav, #bottomnav{
+    size: 110%;
+    font-weight: bold;
+    text-align: center;
+}
+
+#activity{
+    font-style: italic;
+}
+
+fieldset{
+    display: inline-table;
+}
+
+fieldset > label{
+    display: table-row;
+
+}
+
+fieldset > input{
+    display: table-cell;
+}
+
+fieldset > legend{
+    color: grey;
+}
+
+fieldset{
+    border: 1px solid silver;
+}
+
+section{
+    text-align: justify;
+}

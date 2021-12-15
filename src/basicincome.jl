@@ -26,8 +26,8 @@ function one_mt_box( name :: String, prefix :: String )
 			dcc_radioitems(
 			options =[
 				Dict("label" => "Keep as-is", "value" => "$(prefix)_nc"),
-				Dict("label" => "Abolish", "value" => "$(prefix)_abolish"),
-				Dict("label" => "Include UBI as income", "value" => "$(prefix)_asincome")
+				Dict("label" => "Abolish Completely", "value" => "$(prefix)_abolish"),
+				Dict("label" => "Keep Housing Benefits only", "value" => "$(prefix)_asincome")
 			],
 			value="$(prefix)_nc") # radio
 		) # col
@@ -37,10 +37,19 @@ end
 function bi_ben_fieldset()
 	bi = html_fieldset([
 		html_legend( "Treatment of Existing Benefits"),
-		one_mt_box( "Universal Credit", "uc" ),		
-		one_mt_box( "Working Tax Credit", "wtc" ),
-		one_mt_box( "Child Tax Credit", "ctc" ),
-		one_mt_box( "Housing Benefit/CT Rebates", "hb" ),
+		one_mt_box( "Means Tested Benefits", "mtbs" ),		
+
+		dbc_row([
+			dbc_col( 
+                dbc_label("Make BI Taxable?"; html_for="bi_tax")
+			),
+			dbc_col( 
+				dbc_checkbox( id="bi_tax", value=false)
+			)
+
+
+		]
+		),
 		dbc_row([
 			dbc_col( 
                 dbc_label("Retain Sickness Benefits?"; html_for="sickben")
