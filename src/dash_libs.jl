@@ -619,8 +619,24 @@ function ben_fieldset()
                     value = 10.0,
                     step = 0.05 )
             ) # col
-        ])
-    ]) 
+        ]),
+        dbc_row([
+            dbc_col(
+                dbc_label("Scottish Child Payment; maximum age"; html_for="scp")
+            ),
+            dbc_col(
+                dcc_slider(
+					id = "scp_age",
+					min = 1,
+					max = 15,
+					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:15]),
+					value = 5,
+					step = 1
+				)
+            ) # col
+        ]),
+         # row
+    ])  # fieldset
     return bens
 end
 

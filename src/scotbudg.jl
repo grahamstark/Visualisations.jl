@@ -73,14 +73,14 @@ app.layout = dbc_container(fluid=true, className="p-5") do
 	html_div( dcc_markdown( ENDNOTES ))
 end # layout
 
-function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, scp )
+function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, scp, scp_age )
 	results = nothing
 	sys = deepcopy( BASE_STATE.sys )
 	# 21.15, 179.60, 10.0
 
 	# 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0 
 
-	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=324.84)||(wtcb!=2_005) 
+	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=324.84)||(wtcb!=2_005) || (scp_age != 5)
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
@@ -122,6 +122,7 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 		sys.nmt_bens.child_benefit.first_child = cb
 		sys.nmt_bens.pensions.new_state_pension = pen
 		sys.scottish_child_payment.amount = scp
+		sys.scottish_child_payment.maximum_age = scp_age
 		sys.ni.primary_class_1_rates[3] = ni_prim
 		sys.ni.secondary_class_1_rates[2:3] .= ni_sec
 
@@ -165,20 +166,21 @@ callback!(
 	State( "uctaper", "value"),
 	State( "ucs", "value"),
 	State( "wtcb", "value"),
-	State( "scp", "value")
+	State( "scp", "value"),
+	State( "scp_age", "value")
 
 	) do n_clicks, basic_rate, higher_rate, top_rate, pa, 
 	     ni_prim, ni_sec, 
-		 cb, pen, uctaper, ucs, wtcb, scp
+		 cb, pen, uctaper, ucs, wtcb, scp, scp_age
 
 	println( "n_clicks = $n_clicks")
 	# will return 'nothing' if something is out-of-range or not a number, or if no clicks on submit
-	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )
+	if no_nothings( n_clicks, basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp, scp_age )
 		println( "running the live calc version")
-		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp )]
+		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp, scp_age )]
 	end
 	println( "doing the do-nothing version")
-	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0 )]
+	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0, 5 )]
 end
 
 run_server( app, "0.0.0.0", 8052; debug=true )
