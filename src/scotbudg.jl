@@ -1,6 +1,7 @@
 using Dash
 using PlotlyJS
 using DashBootstrapComponents
+using Observables
 using Formatting
 using PovertyAndInequalityMeasures
 using StatsBase
