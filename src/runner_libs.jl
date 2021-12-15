@@ -14,6 +14,7 @@ using .FRSHouseholdGetter
 using .STBParameters
 using .STBIncomes
 using .STBOutput
+using .Monitor
 using .ExampleHelpers
 using .Runner
 using .SimplePovertyCounts: GroupPoverty
@@ -50,7 +51,16 @@ function initialise()::BaseState
 	settings.do_marginal_rates = true
 	settings.requested_threads = 4
 	sys = load_system()
-	results = do_one_run( settings, [sys] )
+
+	tot = 0
+	obs = Observable( Progress("",0,0,0))
+	of = on(obs) do p
+		# global tot
+		println(p)
+		tot += p.step
+		println(tot)
+	end
+	results = do_one_run( settings, [sys], obs )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )
 	summary = summarise_frames( results, settings )
 	popn = summary.inequality[1].total_population
@@ -65,8 +75,16 @@ end
 const BASE_STATE = initialise()
 
 function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
-	println( "running!!")
-    results = do_one_run( BASE_STATE.settings, [sys] )
+	tot = 0
+	obs = Observable( Progress("",0,0,0))
+	tot = 0
+	of = on(obs) do p
+		# global tot
+		println(p)
+		tot += p.step
+		println(tot)
+	end
+    results = do_one_run( BASE_STATE.settings, [sys], obs )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
 	println( "gl=$gl");   
