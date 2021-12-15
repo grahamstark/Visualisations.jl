@@ -2,55 +2,207 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="keywords" content="OU, Stuff" />
-    <title>DD226 Microsim Demo</title>
-    <script type='text/javascript' src='/js/jquery.js'></script>
-    <script type='text/javascript' src='/js/jquery-ui/jquery-ui.min.js'></script>
-
-    <!-- vega graphics -->
-    <script type="text/javascript" src="/js/vega-lite.min.js"></script>
-    <script type="text/javascript" src="/js/vega.js"></script>
-    <script type="text/javascript" src="/js/vega-embed.min.js"></script>
-
-    <script type='text/javascript' src="/js/stb-support.js"></script>
-    <script type='text/javascript' src="/js/mustache.min.js"></script>
-      <!--
-    <link rel='stylesheet' href='/css/tacit.min.css'/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="Economics, Scotland" />
+    <title>ScotBen - Basic Incomes</title>
+    
+    <!---
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="css/journal.css" rel="stylesheet"/>
+    <link href="css/litera.css" rel="stylesheet"/>
     -->
-    <link rel='stylesheet' href='/css/font-awsome-all.min.css'/>
-    <link rel='stylesheet' href='/css/tufte.css'/>
-    <link rel='stylesheet' href='/css/latex.css'/>
-
-
-
-
-    <style>
-        .params-block{
-            display: block;
-            float: left
-        }
-        .output-block{
-            display: block;
-            float: left
-        }
-
-    </style>
+    <link href="css/united.css" rel="stylesheet"/>
 </head>
 <body>
-    <div id="ou-org">
-    <article>
-        <section>
+   <div class='container'>
         <header>
-            <h1>A Scottish Tax Benefit Model</h1>
+            <h1>Scottish Tax Benefit Model</h1>
         </header>
-    <nav>
-        <ul>
-            <li><a href='intro.html'>Intro</a></li>
-            <li><a href='https://github.com/grahamstark/'>Code</a></li>
-            <li><a href='https://virtual-worlds.scot/blog/'>Blog</a></li>
-        </ul>
-    </nav>
-    </section>
+        <nav class="navbar nav-pills navbar-expand-lg">
+            <ul class="nav">
+                <li class="nav-item"><a class='nav-link' href='https://stb.virtual-worlds.scot/scotbudg/'>A Scottish Budget</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href='#'>Basic Income</a></li>
+                <li class="nav-item"><a class='nav-link' href='https://stb.virtual-worlds.scot/bcd/'>Budget Constraints</a></li>
+                <li class="nav-item"><a class='nav-link' href='https://stb-blog.virtual-worlds.scot/'>Blog</a></li>
+            </ul>
+        </nav>
+        <div class='container'>
+            <div class='row'>
+                <div class='col'><!-- 1st col -->
+                    <form action='post'>
+                        <div class='container'>
+                            <div class='row'>
+                                <div class='col'>       
+                                        <h4>Income Tax</h4>                                                             
+                                        <div class="row">
+                                            <div class='col'>
+                                                <label for='it-basic_rate' class='form-label'>Basic Rate (%)</label>
+                                                <input id='it-basic_rate' class="form-control w-25" type='number'  min='0' max='100' step='0.5' size='4' value='20'/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class='col'>
+                                                <label for='it-higher_rate' class='form-label'>Higher Rate (%)</label>
+                                                <input id='it-higher_rate' type='number'  min='0' value='41' max='100' step='0.5' class='form-control w-25'/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class='col'>
+                                                <label for='it-top_rate' class='form-label'>Top Rate (%)</label>
+                                                <input id='it-top_rate' type='number'  min='0' max='100' value='46' step='0.5' class='form-control w-25'/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class='col'>
+                                                <label for='it-pa' class='form-label'>Personal Allowance £pa</label>
+                                                <input id='it-pa' type='number'  min='0' max='50000' value='12750' step='1' class='form-control w-50'/>
+                                            </div>
+                                        </div>
+                                </div><!-- col -->
+                                <div class='col'>  <!-- 2nd col -->                    
+                                    <h4>Basic Income</h4>                                                             
+                                    <div class="row">
+                                        <div class='col'>
+                                            <label for='bi-adult' class='form-label'>Adult £pa</label>
+                                            <input id='bi-adult' type='number'  min='0' max='30000' step='1' class='form-control  w-50' value='4800'/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <label for='bi-pensioner' class='form-label'>Universal Pension £pa</label>
+                                            <input id='bi-pensioner' type='number'  min='0' max='30000' step='1' class='form-control w-50' value='8780'/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <label for='bi-pens-age' class='form-label'>Pension Age</label>
+                                            <input id='bi-pens-age' type='number'  min='60' max='100' step='1' class='form-control w-25' value='66'/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <label for='bi-child' class='form-label'>Child £pa</label>
+                                            <input id='bi-child' type='number'  min='0' max='30000' step='1' class='form-control w-50' value='3000'/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <label for='bi-adult-age' class='form-label'>Age of Adulthood</label>
+                                            <input id='bi-adult-age' type='number'  min='12' max='100' step='1' class='form-control w-25' value='17'/>
+                                        </div>
+                                    </div>
+                                </div><!-- 2nd col -->
+                                <div class='col'>   <!-- 3rd col -->                                 
+                                    <h4>Treatment of Other Benefits</h4>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <p>What do with means-tested benefits?</p>
+                                            <div class='form-check'>
+                                                <label for='ubi-mtbens-keep-as-is'class='form-check-label'>Keep As-Is</label>
+                                                <input class="form-check-input"  type='radio'  aria-label="Default select example"  name='ubi-mtbens' id='ubi-mtbens-keep-as-is'/>
+                                            </div>
+                                            <div class='form-check'>
+                                                <label for='ubi-mtbens-keep-abolish' class='form-check-label'>Abolish Completely</label>
+                                                <input class="form-check-input"  type='radio'  aria-label="Default select example"  name='ubi-mtbens' id='ubi-mtbens-keep-abolish' checked='checked'/>
+                                            </div>
+                                            <div class='form-check'>
+                                                <label for='ubi-mtbens-keep-housing' class='form-check-label'>Keep Housing Support</label>
+                                                <input class="form-check-input"  type='radio'  aria-label="Default select example"  name='ubi-mtbens' id='ubi-mtbens-keep-housing' />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class='col'>
+                                        <h5>How to treat non-means-tested Benefits?</h5>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <input class="form-check-input" type="checkbox" value="" id="ubi-abolish-sick">
+                                            <label for='ubi-abolish-sick' class='form-check-abel'>Abolish Sickness and Disability Benefits?</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <input class="form-check-input" type="checkbox" value="" id="ubi-abolish-pensions" checked='checked'>
+                                            <label for='ubi-abolish-pensions' class='form-check-abel'>Abolish State Pensions?</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <input class="form-check-input" type="checkbox" value="" id="ubi-abolish-esa" checked='checked'>
+                                            <label for='ubi-abolish-esa' class='form-check-abel'>Abolish JSA and ESA?</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <input class="form-check-input" type="checkbox" value="" id="ubi-abolish-others" checked='checked'>
+                                            <label for='ubi-abolish-others' class='form-check-abel'>Abolish Other Benefits</label>
+                                        </div>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class='col'>
+                                            <h5>How to treat income from UBI?</h5>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <input class="form-check-input" type="checkbox" value="" id="ubi-as-mt-income" checked='checked'>
+                                            <label for='ubi-as-mt-income' class='form-check-abel'>Treat UBI As Income for Means-Tested Benefits?</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class='col'>
+                                            <input class="form-check-input" type="checkbox" value="" id="ubi-taxable" >
+                                            <label for='ubi-taxable' class='form-check-abel'>Make UBI As Income Taxable?</label>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- col -->
+                            </div><!-- row -->
+                            <div class='row p-3'>
+                                <div class="col-12">
+                                    <button class="btn btn-primary" type="submit">Run the Model</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div><!-- container -->
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col'>
+                    <div id='output-fields'>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- jquery -->
+        <script type='text/javascript' src='js/jquery.js'></script>
+        <script type='text/javascript' src='js/jquery-ui/jquery-ui.min.js'></script>
+        <!-- bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+        <!-- vega graphics -->
+        <script type="text/javascript" src="js/vega-lite.min.js"></script>
+        <script type="text/javascript" src="js/vega.js"></script>
+        <script type="text/javascript" src="js/vega-embed.min.js"></script>
+
+        <!-- templates -->
+        <script type='text/javascript' src="/js/stb-support.js"></script>
+        <script type='text/javascript' src="/js/mustache.min.js"></script>
+        <script type='text/javascript'>
+            $(document).ready(function(){
+                // $( "#input-fields").load( "includes/bi-input.html");
+            });
+        </script>
+        <footer>
+            <div>
+                <a href='https://github.com/grahamstark/ScottishTaxBenefitModel.jl'>Code</a> | 
+                <a href='https://virtual-worlds.scot/'>Virtual Worlds</a> | 
+            </div>
+        </footer>
+    </div>
 </body>
 </html>
