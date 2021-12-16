@@ -23,6 +23,7 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+CairoMakie = "0.6"
 Formatting = "0.4"
 Pluto = "0.17"
 StatsBase = "0.33"
