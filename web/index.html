@@ -175,9 +175,41 @@
                 </div>
             </div>
             <div class='row'>
+                <div class='col' id="progress-indicator"></div>
+            </div>
+            <div class='row'>
                 <div class='col'>
                     <div id='output-fields'>
-
+                        <div class='row'>
+                            <div class='col'>
+                                <h4>Gainers and Losers</h4>
+                                <div class='row'>
+                                    <div class='col' id="gain-lose-table">,</div>
+                                    <div class='col' id="deciles-graph">,</div>
+                                </div>
+                            </div>
+                            <div class='col'>
+                                <h4>Revenues and Costs</h4>
+                                <div id="costs-table"></div>
+                            </div>                            
+                            <div class='col'>
+                                <h4>Incentives - Marginal Effective Tax Rates</h4>
+                                <div id="mr-table"></div>
+                            </div>                            
+                        </div><!-- row -->
+                        <div class='row'>
+                            <div class='col'>
+                                <h4>Poverty</h4>
+                                <div id='pov-table'></div>
+                            </div>
+                            <div class='col'>
+                                <h4>Inequality</h4>
+                                <div id='ineq-table'></div>
+                            </div>
+                            <div class='col'>
+                                <div id='lorenz'></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -185,6 +217,7 @@
         <!-- jquery -->
         <script type='text/javascript' src='js/jquery.js'></script>
         <script type='text/javascript' src='js/jquery-ui/jquery-ui.min.js'></script>
+        <script type='text/javascript' src='js/jquery.periodicalupdater.js'></script>
         <!-- bootstrap -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 

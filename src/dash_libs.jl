@@ -237,7 +237,7 @@ function ineq_table( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
         df, 
         prec=2, 
         up_is_good=up_is_good, 
-        caption="Standard Inequality Measures." )
+        caption="Standard Inequality Measures, using Before Housing Costs Equivalised Net Income." )
 end
 
 function pov_table( 
@@ -251,7 +251,7 @@ function pov_table(
         df, 
         prec=2, 
         up_is_good=up_is_good, 
-        caption="Standard Poverty Measures." )
+        caption="Standard Poverty Measures, using Before Housing Costs Equivalised Net Income." )
 end
 
 

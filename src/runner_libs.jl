@@ -23,6 +23,7 @@ using .Utils:md_format
 
 using UUIDs
 
+PROGRESS = Dict{UUID,Any}()
 
 function load_system()::TaxBenefitSystem
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
@@ -58,10 +59,8 @@ function initialise()::BaseState
 	tot = 0
 	obs = Observable( Progress(settings.uuid,"",0,0,0,0))
 	of = on(obs) do p
-		# global tot
-		println(p)
 		tot += p.step
-		println(tot)
+		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
 	results = do_one_run( settings, [sys], obs )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )
@@ -72,25 +71,26 @@ function initialise()::BaseState
 		losers=0.0,
 		nc=popn, 
 		popn = popn )	
+	delete!( PROGRESS, settings.uuid )
 	return BaseState( sys, settings, results, summary, gainlose )
 end
 
 const BASE_STATE = initialise()
 
 function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
-	tot = 0
 	obs = Observable( Progress("",0,0,0))
 	tot = 0
 	of = on(obs) do p
-		# global tot
-		println(p)
 		tot += p.step
-		println(tot)
+		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
-    results = do_one_run( BASE_STATE.settings, [sys], obs )
+	setttings = deepcopy( BASE_STATE.settings )
+	settings.uuid = UUIDs.uuid4()
+    results = do_one_run( settings, [sys], obs )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
 	println( "gl=$gl");   
+	delete!( PROGRESS, settings.uuid )
 	return (results=results, summary=outf,gain_lose=gl)
 end 
 
