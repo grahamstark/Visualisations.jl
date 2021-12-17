@@ -34,8 +34,8 @@ const DEFAULT_SERVER="http://localhost:$DEFAULT_PORT/"
 
 
 @debug "server starting up"
-
-include("runner_libs.jl")
+include( "uses.jl")
+include( "runner_libs.jl" )
 include( "static_texts.jl")
 include( "table_libs.jl")
 
@@ -75,8 +75,9 @@ function d100( v :: Number ) :: Number
    v/100.0
 end
 
-function web_map_params( req  :: Dict, defaults = MiniTB.DEFAULT_PARAMS ) :: MiniTB.TBParameters
+function web_map_params( req  :: Dict )
    querydict = req[:parsed_querystring]
+   #==
    tbparams = deepcopy( defaults )
    tbparams.it_allow = get_if_set("it_allow", querydict, tbparams.it_allow, operation=weeklyise )
    tbparams.it_rate[1] = get_if_set("it_rate_1", querydict, tbparams.it_rate[1], operation=d100 )
@@ -91,9 +92,10 @@ function web_map_params( req  :: Dict, defaults = MiniTB.DEFAULT_PARAMS ) :: Min
    @debug "DEFAULT_PARAMS\n$DEFAULT_PARAMS"
    @debug "tbparams\n$tbparams"
    tbparams
+   =#
 end
 
-function main_run_to_json( tbparams :: MiniTB.TBParameters ):: String
+function main_run_to_json( ) # tbparams :: MiniTB.TBParameters ):: String
    results = do_one_run( tbparams, num_households, num_people, NUM_REPEATS )
    summary_output = summarise_results!( results=results, base_results=BASE_STATE )
    JSON.json( summary_output )
@@ -119,17 +121,6 @@ function add_headers( json :: AbstractString ) :: Dict
        :headers => headers,
        :body=> json
     )
-end
-
-function get_js_monitor_code( uuid :: UUID )/
-   data = "{uuid:'$uuid'}";
-   path = "/ubi/progress/";
-   func = "
-   function( remoteData, success, xhr, handle ){
-      \$('#progress_indicator').html( remoteData );
-   }\n";
-   return "
-   var updater = $.PeriodicalUpdater( '$path', { data:$data }, $function );";
 end
 
 #

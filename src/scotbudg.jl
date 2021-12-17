@@ -1,15 +1,3 @@
-using Dash
-using PlotlyJS
-using DashBootstrapComponents
-using Observables
-using Formatting
-using PovertyAndInequalityMeasures
-using StatsBase
-
-#, DashHtmlComponents, DashCoreComponents
-
-using Markdown
-using DataFrames
 
 include( "static_texts.jl")
 include( "runner_libs.jl")

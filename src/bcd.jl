@@ -1,19 +1,5 @@
 
-using Dash
-using PlotlyJS
-using DashBootstrapComponents
-using ScottishTaxBenefitModel
-using .BCCalcs
-using .ModelHousehold
-using .Utils
-using .Definitions
-using .SingleHouseholdCalculations
-using .RunSettings
-using .ExampleHouseholdGetter
-using .STBParameters
-using .ExampleHelpers
-using Markdown
-using DataFrames
+include( "uses.jl")
 
 const FORM_EXTRA =Dict(
 	"border-bottom"=>"1px dashed #aaaaaa", 
