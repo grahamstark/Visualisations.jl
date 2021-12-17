@@ -699,7 +699,7 @@ stb.runInequality = function( ){
 var updater;
 var uuid;
 
-function updateSTB( ){
+stb.updateSTB = function(){
     $.ajax({ 
         // make the UBI bit a variable
         url: "/sbsrv/bi/progress/",
@@ -723,14 +723,14 @@ function updateSTB( ){
 
 // see: https://stackoverflow.com/questions/11338774/serialize-form-data-to-json
 // note this doesn't work with checkbox groups
-function getFormData(){
-    var unindexed_array = $(#mainform).serializeArray();
+stb.getFormData = function(){
+    var unindexed_array = $("#mainform").serializeArray();
     var indexed_array = {};
     console.log( "unindexed_array" + unindexed_array);
     $.map(unindexed_array, function(n, i){
         indexed_array[n['name']] = n['value'];
     });
-    console.log( "json" + json);
+    console.log( "indexed_array=" + indexed_array);
     return indexed_array;
 }
 
@@ -740,7 +740,7 @@ stb.runModel = function(){
     console.log( "fdata"+fdata )
     $.ajax(
         // make the UBI bit a variable
-        { url: "/sbsrv/bi/run/",
+        { url: "localhost:8054/bi/run/",
          method: 'get',
          dataType: 'json',
          data: fdata,
