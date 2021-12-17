@@ -695,55 +695,59 @@ stb.runInequality = function( ){
      });
 }
 
-function updateSTB( )
 
-var updater = 
-var uuid = '';
+var updater;
+var uuid;
 
-stb.runModel = function( which_action ){
+function updateSTB( ){
+    $.ajax({ 
+        // make the UBI bit a variable
+        url: "/sbsrv/bi/progress/",
+        method: 'get',
+        dataType: 'json',
+        data: {
+                uuid:uuid
+        },
+        success: function( result ){
+            if( result.status == "run" ){
+                console.log( "run status"+result )
+                stb.drawProgressBar( result );
+            } else if ( result.status == "complete" ){
+                console.log( "run complete")
+                updater.stop();
+                stb.createMainOutputs( result );
+            }
+        }
+    });
+}
+
+// see: https://stackoverflow.com/questions/11338774/serialize-form-data-to-json
+// note this doesn't work with checkbox groups
+function getFormData(){
+    var unindexed_array = $(#mainform).serializeArray();
+    var indexed_array = {};
+    console.log( "unindexed_array" + unindexed_array);
+    $.map(unindexed_array, function(n, i){
+        indexed_array[n['name']] = n['value'];
+    });
+    console.log( "json" + json);
+    return indexed_array;
+}
+
+stb.runModel = function(){
     console.log( "run model called");
-    var it_allow = $("#it_allow").val();
-    var it_rate_1 = $("#it_rate_1").val();
-    var it_rate_2 = $("#it_rate_2").val();
-    var it_band = $("#it_band").val();
-    var benefit1 = $("#benefit1").val();
-    var benefit2 = $("#benefit2").val();
-    var ben2_l_limit = $("#ben2_l_limit").val();
-    var ben2_taper = $("#ben2_taper").val();
-    var ben2_u_limit = $("#ben2_u_limit").val();
-    var basic_income = $("#basic_income").val();
-    // $( '#output').html( "<div/>", {id:'loader'}); // a spinner
+    var fdata = stb.getFormData();
     $.ajax(
-        { url: "/oustb/run/",
+        // make the UBI bit a variable
+        { url: "/sbsrv/bi/run/",
          method: 'get',
          dataType: 'json',
-         data: {
-             it_allow: it_allow,
-             it_rate_1: it_rate_1,
-             it_rate_2: it_rate_2,
-             it_band: it_band,
-             benefit1: benefit1,
-             benefit2: benefit2,
-             ben2_l_limit: ben2_l_limit,
-             ben2_taper: ben2_taper,
-             ben2_u_limit: ben2_u_limit,
-             basic_income: basic_income
-         },
+         data: fdata,
          success: function( result ){
              uuid = result.uuid
-             console.log( "stb; call OK");
+             console.log( "stb; call OK "+uuid );
              console.log( "result " + result );
-
-             // var r = JSON.parse( ""+result );
-             if( which_action == "stb" ){ // main model
-                 stb.createMainOutputs( result );
-             } else if(( which_action == "bc" ) || ( which_action == "zbc" ) || (which_action == "ztbc")){
-                 stb.createBCOutputs( result ); // bc model
-             } else if( which_action == "ineq" ){
-                 stb.createInequalityTable( result ); // bc model
-             } else {
-                 console.log( "unknown instruction " + which_action )
-             }
+             updater = $.PeriodicalUpdater( '/ubi/progress/', {uuid:uuid}, updateSTB );
          }
      });
 }

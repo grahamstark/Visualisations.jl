@@ -155,7 +155,7 @@ function get_progress( uuid :: UUID )
    if haskey( PROGRES, uuid )
       p = PROGRESS[uuid]
    end   
-
+   json = 
    add_headers( json )
 end
 
@@ -171,9 +171,8 @@ end
    # handle main stb run a bit differently so we can
    # check & cache the results.
    # page("/stb", req -> web_do_one_run_cached( req )),
-   page( "/ubi/progress/:uuid", req -> get_progress((req[:params][:uuid]))), # note no Headers
-   page( "ubi/output/:uuid", req -> get_output((req[:params][:uuid]))), # note no Headers
-   page("/ubi/run", req -> do_in_thread( web_do_one_bi, req )),
+   page( "/bi/progress/:uuid", req -> get_progress((req[:params][:uuid]))), # note no Headers
+   page("/bi/run/", req -> do_in_thread( web_do_one_bi, req )),
    Mux.notfound(),
 )
 
