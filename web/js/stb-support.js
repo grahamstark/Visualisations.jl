@@ -737,6 +737,7 @@ function getFormData(){
 stb.runModel = function(){
     console.log( "run model called");
     var fdata = stb.getFormData();
+    console.log( "fdata"+fdata )
     $.ajax(
         // make the UBI bit a variable
         { url: "/sbsrv/bi/run/",
