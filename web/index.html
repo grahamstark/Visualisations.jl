@@ -166,7 +166,7 @@
                             </div><!-- row -->
                             <div class='row p-3'>
                                 <div class="col-12">
-                                    <button class="btn btn-primary" type="submit">Run the Model</button>
+                                    <button class="btn btn-primary" type="submit" id='runbutton'>Run the Model</button>
                                 </div>
 
                             </div>
@@ -230,6 +230,12 @@
         <script type='text/javascript' src="/js/stb-support.js"></script>
         <script type='text/javascript' src="/js/mustache.min.js"></script>
         <script type='text/javascript'>
+
+            $('#runbutton').on( 'click', function(){
+                console.log( "pressed" );
+                stb.runModel( "stb");
+            });
+
             $(document).ready(function(){
                 // $( "#input-fields").load( "includes/bi-input.html");
             });

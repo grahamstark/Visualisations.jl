@@ -693,7 +693,12 @@ stb.runInequality = function( ){
              stb.loadInequalityTable( result, data );
          }
      });
- }
+}
+
+function updateSTB( )
+
+var updater = 
+var uuid = '';
 
 stb.runModel = function( which_action ){
     console.log( "run model called");
@@ -709,7 +714,7 @@ stb.runModel = function( which_action ){
     var basic_income = $("#basic_income").val();
     // $( '#output').html( "<div/>", {id:'loader'}); // a spinner
     $.ajax(
-        { url: "/oustb/"+which_action+"/",
+        { url: "/oustb/run/",
          method: 'get',
          dataType: 'json',
          data: {
@@ -725,8 +730,10 @@ stb.runModel = function( which_action ){
              basic_income: basic_income
          },
          success: function( result ){
+             uuid = result.uuid
              console.log( "stb; call OK");
              console.log( "result " + result );
+
              // var r = JSON.parse( ""+result );
              if( which_action == "stb" ){ // main model
                  stb.createMainOutputs( result );
