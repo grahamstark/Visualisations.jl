@@ -95,16 +95,22 @@ function web_map_params( req  :: Dict )
    =#
 end
 
-function main_run_to_json( ) # tbparams :: MiniTB.TBParameters ):: String
-   results = do_one_run( tbparams, num_households, num_people, NUM_REPEATS )
-   summary_output = summarise_results!( results=results, base_results=BASE_STATE )
-   JSON.json( summary_output )
+function main_run_to_json( sys) # tbparams :: MiniTB.TBParameters ):: String
+
+   results = do_run( sys )
+   #results = do_one_run( tbparams, num_households, num_people, NUM_REPEATS )
+   #summary_output = summarise_results!( results=results, base_results=BASE_STATE )
+   JSON.json( results )
 end
 
-function web_do_one_run( req :: Dict ) :: AbstractString
+function web_do_one_bi( req :: Dict ) :: AbstractString
+   println("web_to_bi")
    @info "web_do_one_run; running on thread $(Threads.threadid())"
+   @info "req = " req
+
    tbparams = web_map_params( req )
-   json = main_run_to_json( tbparams )
+   sys = deepcopy( BASE_STATE.sys )
+   json = main_run_to_json( sys )
    # headers could include (e.g.) a timestamp, so add after caching
 end # do_one_run
 
@@ -146,8 +152,7 @@ function get_progress( uuid :: UUID )
    if haskey( PROGRES, uuid )
       p = PROGRESS[uuid]
    end   
-   json = 
-   add_headers( json )
+   json = add_headers( json )
 end
 
 #
