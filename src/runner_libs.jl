@@ -104,7 +104,7 @@ function do_run_a( sys :: TaxBenefitSystem, settings :: Settings ) :: Tuple
 end
 
 
-function submitjob( sys :: TaxBenefitSystem, settings :: Settings )
+function submit_job( sys :: TaxBenefitSystem, settings :: Settings )
     uuid = UUIDs.uuid4()
 	settings.uuid = uuid
     put!( IN_QUEUE, Params(uuid, sys, settings ))

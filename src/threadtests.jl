@@ -90,11 +90,8 @@ function clearjobs(n)
     end
 end
 
-n = 32
-function start_handlers(n)
-    for i in 1:n # start 4 tasks to process requests in parallel
-        errormonitor(@async calc())
-    end
-
-    errormonitor(@async clearjobs(n))
+n = 4
+for i in 1:n # start 4 tasks to process requests in parallel
+    errormonitor(@async calc())
 end
+errormonitor(@async clearjobs(n))
