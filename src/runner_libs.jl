@@ -26,7 +26,9 @@ IN_QUEUE = Channel{Params}(QSIZE)
 OUT_QUEUE = Channel{Output}(QSIZE)
 
 
-obs = Observable( Progress("",0,0,0))
+obs = Observable( 
+	Progress(UUID("00000000-0000-0000-0000-000000000000"),"",
+	0,0,0,0))
 tot = 0
 of = on(obs) do p
 	tot += p.step
