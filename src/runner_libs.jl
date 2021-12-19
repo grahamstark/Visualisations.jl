@@ -4,8 +4,6 @@
 # import everything we might reasonably need.#
 #
 
-PROGRESS = Dict{UUID,Any}()
-STASHED_RESULTS = Dict{UUID,Any}()
 const QSIZE = 32
 
 # fixme extend to multiple systems
@@ -15,15 +13,18 @@ struct Params
 	settings     :: Settings
 end
 
-struct Output
+struct AllOutput
 	uuid         :: UUID
 	results      :: NamedTuple
 	summary      :: NamedTuple
 	gain_lose    :: NamedTuple
 end
 
+PROGRESS = Dict{UUID,Any}()
+STASHED_RESULTS = Dict{UUID,AllOutput}()
+
 IN_QUEUE = Channel{Params}(QSIZE)
-OUT_QUEUE = Channel{Output}(QSIZE)
+OUT_QUEUE = Channel{AllOutput}(QSIZE)
 
 
 obs = Observable( 
@@ -99,7 +100,7 @@ function do_run_a( sys :: TaxBenefitSystem, settings :: Settings ) :: Tuple
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
 	println( "gl=$gl");   
-	put!(OUT_QUEUE, (uuid=settings.uuid, results=results, summary=outf,gain_lose=gl))
+	put!(OUT_QUEUE, AllOutput(settings.uuid, results, outf, gl))
 end
 
 
