@@ -5,6 +5,39 @@
 #
 
 PROGRESS = Dict{UUID,Any}()
+STASHED_RESULTS = Dict{UUID,Any}()
+const QSIZE = 32
+
+# fixme extend to multiple systems
+struct Params 
+	uuid         :: UUID
+	sys          :: TaxBenefitSystem
+	settings     :: Settings
+end
+
+struct Output
+	uuid         :: UUID
+	results      :: NamedTuple
+	summary      :: NamedTuple
+	gain_lose    :: NamedTuple
+end
+
+IN_QUEUE = Channel{Params}(QSIZE)
+OUT_QUEUE = Channel{Output}(QSIZE)
+
+
+obs = Observable( Progress("",0,0,0))
+tot = 0
+of = on(obs) do p
+	tot += p.step
+	PROGRESS[p.uuid] = (progress=p,total=tot)
+end
+
+
+function calc_one()
+	params = take!( IN_QUEUE )
+	res = do_run_a( params.sys, params.settings )
+end
 
 function load_system()::TaxBenefitSystem
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
@@ -58,6 +91,39 @@ end
 
 const BASE_STATE = initialise()
 
+function do_run_a( sys :: TaxBenefitSystem, settings :: Settings ) :: Tuple
+	global obs
+	results = do_one_run( settings, [sys], obs )
+	outf = summarise_frames( results, BASE_STATE.settings )
+	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
+	println( "gl=$gl");   
+	put!(OUT_QUEUE, (uuid=settings.uuid, results=results, summary=outf,gain_lose=gl))
+end
+
+
+function submitjob( sys :: TaxBenefitSystem, settings :: Settings )
+    uuid = UUIDs.uuid4()
+	settings.uuid = uuid
+    put!( IN_QUEUE, Params(uuid, sys, settings ))
+    return uuid
+end
+
+function take_jobs()
+	while true
+		res = take!( OUT_QUEUE )
+		STASHED_RESULTS[ res.uuid ] = res
+	end
+end
+
+#=
+function start_handlers(n::Int)
+	for i in 1:n # start n tasks to process requests in parallel
+		errormonitor(@async calc_one())
+	end
+	errormonitor(@async take_jobs())
+end
+=#
+
 function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	obs = Observable( Progress("",0,0,0))
 	tot = 0
@@ -66,7 +132,7 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
 	setttings = deepcopy( BASE_STATE.settings )
-	settings.uuid = UUIDs.uuid4()
+	settings.uuid = uuid
     results = do_one_run( settings, [sys], obs )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 

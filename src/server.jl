@@ -39,8 +39,6 @@ include( "runner_libs.jl" )
 include( "static_texts.jl")
 include( "table_libs.jl")
 
-STASHED_RESULTS = Dict{UUID,Any}()
-
 function get_thing( thing::AbstractArray, key :: AbstractString, default :: AbstractString )
    for i in thing
       if i[1] == key
