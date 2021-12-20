@@ -4,7 +4,7 @@
 #
 using Mux
 import Mux.WebSockets
-using JSON
+using JSON3
 using HttpCommon
 using Logging, LoggingExtras
 using UUIDs
@@ -40,6 +40,8 @@ include( "runner_libs.jl" )
 include( "static_texts.jl")
 include( "table_libs.jl")
 
+# example for json3 StructTypes.@Struct T
+
 function get_thing( thing::AbstractArray, key :: AbstractString, default :: AbstractString )
    for i in thing
       if i[1] == key
@@ -64,7 +66,7 @@ function errorCatch( app, req  :: Dict )
       showerror(io, e)
       err_text = takebuf_string(io)
       @error err_text
-      resp = withHeaders(JSON.json(Dict("message" => err_text, "error" => true)), req)
+      resp = withHeaders(JSON3.write(Dict("message" => err_text, "error" => true)), req)
       resp[:status] = 500
       return resp
    end
@@ -75,8 +77,9 @@ function d100( v :: Number ) :: Number
 end
 
 function web_map_params( req  :: Dict ) :: TaxBenefitSystem
-   querydict = req[:parsed_querystring]
+   # querydict = req[:parsed_querystring]
    sys = deepcopy( BASE_STATE.sys )
+   
    #==
    tbparams = deepcopy( defaults )
    tbparams.it_allow = get_if_set("it_allow", querydict, tbparams.it_allow, operation=weeklyise )
@@ -96,11 +99,11 @@ function web_map_params( req  :: Dict ) :: TaxBenefitSystem
    return sys
 end
 
-function web_map_settings( req  :: Dict ) :: TaxBenefitSystem
-   querydict = req[:parsed_querystring]
-   sys = deepcopy( BASE_STATE.sys )
+function web_map_settings( req  :: Dict ) :: Settings
+   # querydict = req[:parsed_querystring]
+   settings = deepcopy( BASE_STATE.settings )
 
-   return sys
+   return settings
 end
 
 # Headers -- set Access-Control-Allow-Origin for either dev or prod
@@ -142,10 +145,13 @@ function get_progress( uuid :: UUID )
    json = add_headers( json )
 end
 
-function submit_model( req :: Dict ) :: String
-   uuid = submit_job( sys, settings )
-   json = add_headers( JSON.json( uuid ))
-   return json
+function submit_model( req :: Dict )
+    sys = web_map_params( req )
+    settings = web_map_settings( req )
+    uuid = submit_job( sys, settings )
+    @debug "uuid = $uuid"
+    json = add_headers( JSON3.write( uuid ))
+    return json
 end
 
 #

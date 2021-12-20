@@ -3,9 +3,13 @@ using Test
 
 include( "../src/server_libs.jl")
 
+ggs = ""
+
 @testset "Server" begin
     # Write your tests here.
+    global ggs
     d = Dict()
-    js = submit_model( d )
+    ggs = submit_model( d )
     println( js )
+     
 end

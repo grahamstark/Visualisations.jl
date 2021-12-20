@@ -7,7 +7,7 @@
 const QSIZE = 32
 
 # fixme extend to multiple systems
-struct Params 
+struct ParamsAndSettings 
 	uuid         :: UUID
 	sys          :: TaxBenefitSystem
 	settings     :: Settings
@@ -15,26 +15,16 @@ end
 
 struct AllOutput
 	uuid         :: UUID
-	results      :: NamedTuple
-	summary      :: NamedTuple
-	gain_lose    :: NamedTuple
+	results      
+	summary      
+	gain_lose    
 end
 
 PROGRESS = Dict{UUID,Any}()
 STASHED_RESULTS = Dict{UUID,AllOutput}()
 
-IN_QUEUE = Channel{Params}(QSIZE)
+IN_QUEUE = Channel{ParamsAndSettings}(QSIZE)
 OUT_QUEUE = Channel{AllOutput}(QSIZE)
-
-
-obs = Observable( 
-	Progress(UUID("00000000-0000-0000-0000-000000000000"),"",
-	0,0,0,0))
-tot = 0
-of = on(obs) do p
-	tot += p.step
-	PROGRESS[p.uuid] = (progress=p,total=tot)
-end
 
 
 function calc_one()
@@ -94,20 +84,31 @@ end
 
 const BASE_STATE = initialise()
 
-function do_run_a( sys :: TaxBenefitSystem, settings :: Settings ) :: Tuple
+function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
 	global obs
+
+	obs = Observable( 
+		Progress(settings.uuid, "",0,0,0,0))
+		# UUID("00000000-0000-0000-0000-000000000000"),"",		
+	tot = 0
+	of = on(obs) do p
+		tot += p.step
+		PROGRESS[p.uuid] = (progress=p,total=tot)
+	end
 	results = do_one_run( settings, [sys], obs )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
-	println( "gl=$gl");   
-	put!(OUT_QUEUE, AllOutput(settings.uuid, results, outf, gl))
+	println( "gl=$gl");  
+
+	aout = AllOutput( settings.uuid, results, outf, gl ) 
+	put!( OUT_QUEUE, aout )
 end
 
 
 function submit_job( sys :: TaxBenefitSystem, settings :: Settings )
     uuid = UUIDs.uuid4()
 	settings.uuid = uuid
-    put!( IN_QUEUE, Params(uuid, sys, settings ))
+    put!( IN_QUEUE, ParamsAndSettings(uuid, sys, settings ))
     return uuid
 end
 

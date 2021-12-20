@@ -1,8 +1,8 @@
 window.stb = {}; // Create global container
 
 stb.createBlock = function( title, key ){
-    var block = $("<div/>",{id: key, class:'fixme' });
-    var title = $("<h3>").text( title )
+    block = block,
+    title = title,
     return block;
 }
 
@@ -736,19 +736,55 @@ stb.getFormData = function(){
 
 stb.runModel = function(){
     console.log( "run model called");
-    var fdata = stb.getFormData();
+    var it_basic_rate = $("#it-basic-rate").val();
+    var it_higher_rate = $("#it-higher-rate").val();
+    var it_top_rate = $("#it-top-rate").val();
+    var it_pa = $("#it-pa").val();
+    var bi_adult = $("#bi-adult").val();
+    var bi_pensioner = $("#bi-pensioner").val();
+    var bi_pens_age = $("#bi-pens-age").val();
+    var bi_child = $("#bi-child").val();
+    var bi_adult_age = $("#bi-adult-age").val();
+    var ubi_mtbens_keep_as_is = $("#ubi-mtbens-keep-as-is").val();
+    var ubi_mtbens_abolish = $("#ubi-mtbens-abolish").val();
+    var ubi_mtbens_keep_housing = $("#ubi-mtbens-keep-housing").val();
+    var ubi_abolish_sick = $("#ubi-abolish-sick").val();
+    var ubi_abolish_pensions = $("#ubi-abolish-pensions").val();
+    var ubi_abolish_esa = $("#ubi-abolish-esa").val();
+    var ubi_abolish_others = $("#ubi-abolish-others").val();
+    var ubi_as_mt_income = $("#ubi-as-mt-income").val();
+    var ubi_taxable = $("#ubi-taxable").val();
     console.log( "fdata"+fdata )
     $.ajax(
         // make the UBI bit a variable
         { url: "localhost:8054/bi/run/",
          method: 'get',
          dataType: 'json',
-         data: fdata,
+         data: {
+            it_basic_rate = it_basic_rate,
+            it_higher_rate = it_higher_rate,
+            it_top_rate = it_top_rate,
+            it_pa = it_pa,
+            bi_adult = bi_adult,
+            bi_pensioner = bi_pensioner,
+            bi_pens_age = bi_pens_age,
+            bi_child = bi_child,
+            bi_adult_age = bi_adult_age,
+            ubi_mtbens_keep_as_is = ubi_mtbens_keep_as_is,
+            ubi_mtbens_abolish = ubi_mtbens_abolish,
+            ubi_mtbens_keep_housing = ubi_mtbens_keep_housing,
+            ubi_abolish_sick = ubi_abolish_sick,
+            ubi_abolish_pensions = ubi_abolish_pensions,
+            ubi_abolish_esa = ubi_abolish_esa,
+            ubi_abolish_others = ubi_abolish_others,
+            ubi_as_mt_income = ubi_as_mt_income,
+            ubi_taxable = ubi_taxable        
+         },
          success: function( result ){
              uuid = result.uuid
              console.log( "stb; call OK "+uuid );
              console.log( "result " + result );
-             updater = $.PeriodicalUpdater( '/ubi/progress/', {uuid:uuid}, updateSTB );
+             updater = $.PeriodicalUpdater( '/bi/progress/', {uuid:uuid}, updateSTB );
          }
      });
 }
