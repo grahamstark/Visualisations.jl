@@ -185,7 +185,7 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
     poverty = pov_table(
         BASE_STATE.summary.poverty[1],
         results.summary.poverty[1],
-        BASE_STATE.child_poverty[1],
+        BASE_STATE.summary.child_poverty[1],
         results.summary.child_poverty[1])
     inequality = ineq_table(
         BASE_STATE.summary.inequality[1],

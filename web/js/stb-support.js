@@ -788,7 +788,7 @@ stb.runModel = function(){
     var ubi_taxable = $("#ubi-taxable").val();
     $.ajax(
         // make the UBI bit a variable
-        { url: "localhost:8054/bi/run/",
+        { url: "http://localhost:8054/bi/run/",
          method: 'get',
          dataType: 'json',
          data: {
@@ -815,9 +815,11 @@ stb.runModel = function(){
              uuid = result.uuid
              console.log( "stb; call OK "+uuid );
              console.log( "result " + result );
-             updater = $.PeriodicalUpdater( '/bi/progress/'+uuid, {}, stb.updateSTB );
-         }, error: function( xq, textStatus, errorThrown ){
-            console.log( "ERROR" + errorThrown + "xq "+xq + "textStatus " + textStatus );
+             var uri = '/bi/progress/'+uuid;
+             updater = $.PeriodicalUpdater( uri, {}, stb.updateSTB );
+         }, 
+         error: function( xq, textStatus, errorThrown ){
+            console.log( "ERROR" + errorThrown + "; xq "+xq + "textStatus " + textStatus );
          }
 
      });
