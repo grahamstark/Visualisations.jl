@@ -699,26 +699,63 @@ stb.runInequality = function( ){
 var updater;
 var uuid;
 
-stb.updateSTB = function(){
-    $.ajax({ 
-        // make the UBI bit a variable
-        url: "/sbsrv/bi/progress/",
-        method: 'get',
-        dataType: 'json',
-        data: {
-                uuid:uuid
-        },
-        success: function( result ){
-            if( result.status == "run" ){
-                console.log( "run status"+result )
-                stb.drawProgressBar( result );
-            } else if ( result.status == "complete" ){
-                console.log( "run complete")
-                updater.stop();
-                stb.createMainOutputs( result );
-            }
-        }
-    });
+stb.drawProgressBar = function( result ){
+    // https://getbootstrap.com/docs/5.0/components/progress/
+    var pct = 100 * result.count / result.total;
+    var prog = 
+        "<p>Model Running</p>"+
+        "<div class='progress  bg-success progress-bar-animated progress-bar-striped'>"+
+        "<div class='progress-bar' role='progressbar' "+
+            "aria-valuenow='" + result.count + "'" + 
+            "aria-valuemin='0' " +
+            "aria-valuemax='" + result.total+"'>"+
+            pct + "%" +
+            "</div> "+
+            "</div>";
+    $("#progress-indicator").html( prog );
+}
+
+stb.createMainOutputs = function( result ){
+    $("#gain-lose-table").html( result.gain_lose );
+    $("#deciles-graph").html( "DEC GRAPH HERE");
+    $("costs-table").html( result.costs );
+    $("mr-table").html( results.mrs );
+    $("pov-table").html( results.poverty );
+    $("ineq-table").html( results.inequality );
+    $("lorenz").html( "LORENZ GRAPH HERE");
+}
+
+stb.updateSTB = function( result, success, xhr, handle ) ){
+    console.log( "updateSTB sucess=" + success + "| result = " + result );
+    switch( result.phase ){
+        case 'missing':
+            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            break;
+        case 'start':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run starting: starting pre-run routines.</div>");
+            break;
+        case 'weights':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Generating sample weights (may take some time..).</div>");
+            break;
+        case 'disability_eligibility':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calibrating Disability Benefits.</div>");
+            break;
+        case 'starting':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Pre-routines completed; run starting.</div>");
+            break;
+        case 'run':
+            stb.drawProgressBar( result );
+            break;
+        case 'dumping_frames':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calculations complete; now generating output.</div>");
+            break;
+        case 'end':
+            stb.createMainOutputs( result );
+            break;  
+        default:
+            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            break;                                      
+    }
 }
 
 // see: https://stackoverflow.com/questions/11338774/serialize-form-data-to-json
@@ -784,7 +821,7 @@ stb.runModel = function(){
              uuid = result.uuid
              console.log( "stb; call OK "+uuid );
              console.log( "result " + result );
-             updater = $.PeriodicalUpdater( '/bi/progress/', {uuid:uuid}, updateSTB );
+             updater = $.PeriodicalUpdater( '/bi/progress/'+uuid, {}, stb.updateSTB );
          }
      });
 }

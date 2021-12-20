@@ -29,8 +29,6 @@ using .Utils:md_format, qstrtodict
 
 import Base.Threads.@spawn
 
-const DEFAULT_PORT=8054
-const DEFAULT_SERVER="http://localhost:$DEFAULT_PORT/"
 const NUM_HANDLERS = 4
 
 @debug "server starting up"
@@ -138,12 +136,18 @@ logger = FileLogger("/var/tmp/stb_log.txt")
 global_logger(logger)
 LogLevel( Logging.Info )
 
-function get_progress( uuid :: UUID )
-    state = ""
-    if haskey( PROGRESS, uuid )
+function get_progress( u :: AbstractString ) :: Dict
+    uuid = UUID(u)
+    state = ( uuid=u, phase="missing", count=0, total=0 )
+    if haskey( STASHED_RESULTS, uuid )
+        state = results_to_html( uuid, STASHED_RESULTS[uuid])
+        delete!( PROGRESS, uuid )
+        # Fixme move 
+    elseif haskey( PROGRESS, uuid )
         p = PROGRESS[uuid]
-        state = ( phase=p.progress.phase, count=p.progress.count, total=p.total )
+        state = ( uuid=p.uuid, phase=p.progress.phase, count=p.progress.count, total=p.total )
     end   
+    
     json = JSON3.write( state )
     return add_headers( json )    
 end
@@ -174,10 +178,6 @@ end
    Mux.notfound(),
 )
 
-port = DEFAULT_PORT
-if length(ARGS) > 0
-   port = parse(Int64, ARGS[1])
-end
 #
 # Set up 
 #

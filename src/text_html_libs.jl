@@ -170,3 +170,38 @@ function gain_lose_table( gl :: NamedTuple )
     table *= "</tbody></table>"
     return table
 end
+
+function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
+
+    gain_lose = gain_lose_table( resylts.gain_lose )
+    gains_by_decile = results.summary.deciles[1][:,3] -
+			    BASE_STATE.summary.deciles[1][:,3]
+    costs = costs_table( 
+        BASE_STATE.summary.income_summary[1],
+        results.summary.income_summary[1])
+    mrs = mr_table(
+        BASE_STATE.summary.metrs[1], 
+        results.summary.metrs[1] )       
+    poverty = pov_table(
+        BASE_STATE.summary.poverty[1],
+        results.summary.poverty[1],
+        BASE_STATE.child_poverty[1],
+        results.summary.child_poverty[1])
+    inequality = ineq_table(
+        BASE_STATE.summary.inequality[1],
+        results.summary.inequality[1])
+    lorenz_pre = BASE_STATE.summary.deciles[1][:,2]
+    lorenz_post = results.summary.deciles[1][:,2]
+    out = ( 
+        phase = "end", 
+        uuid = uuid,
+        gain_lose = gain_lose, 
+        gains_by_decile = gains_by_decile,
+        costs = costs, 
+        mrs = mrs, 
+        poverty=poverty, 
+        inequality=inequality, 
+        lorenz_pre=lorenz_pre, 
+        lorenz_post=lorenz_post )
+    return out
+end

@@ -10,6 +10,5 @@ ggs = ""
     global ggs
     d = Dict()
     ggs = submit_model( d )
-    println( js )
-     
+    println( ggs )
 end
