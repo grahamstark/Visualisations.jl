@@ -178,19 +178,22 @@ end
 
 function make_example_card( i )
     card = "
-    <div class='card' style='width: 18rem;'>
-    <img src='images/families/' class='card-img-top' alt='...'>
-    <div class='card-body'>
-      <h5 class='card-title'>Family $i</h5>
-      <p class='card-text'>Description of Family.</p>
-    </div>
-  </div>
+    <div class='col'>
+        <div class='card' style='width: 12rem;'>
+            <img src='images/families/family$i.gif'  alt='...' width='100' height='140'>
+            <p class='text-success'>'&#x1F881;'£22pw</p>
+            <div class='card-body'>
+                <h5 class='card-title'>Family $i</h5>
+                <p class='card-text'>Description of Family.</p>
+            </div>
+        </div>
+    </div><!-- col -->
     ";
-
+    return card
 end
 
 function make_examples( )
-    cards = "<div>"
+    cards = "<div class='row'>"
     for i in 1:9
         cards *= make_example_card(i)
     end

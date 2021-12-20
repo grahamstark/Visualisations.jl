@@ -719,13 +719,14 @@ stb.drawProgressBar = function( result ){
 }
 
 stb.createMainOutputs = function( result ){
-    console.log( result.inequality )
-    $("#examples").html( result.examples )
+    console.log( result.inequality );
+    console.log( result.examples );
+    $("#examples").html( result.examples );
     $("#gain-lose-table").html( result.gain_lose );
     stb.createDecileBarChart( 
         "#deciles-graph", 
         result, 
-        false )
+        false );
     $("#costs-table").html( result.costs );
     $("#mr-table").html( result.mrs );
     $("#pov-table").html( result.poverty );
