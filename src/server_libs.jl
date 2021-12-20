@@ -2,6 +2,7 @@
 # see: https://github.com/JuliaWeb/Mux.jl
 # and:
 #
+using HTTP
 using Mux
 import Mux.WebSockets
 using JSON3
@@ -35,8 +36,10 @@ const NUM_HANDLERS = 4
 
 include( "uses.jl")
 include( "runner_libs.jl" )
+include( "display_constants.jl")
 include( "static_texts.jl")
 include( "table_libs.jl")
+include( "text_html_libs.jl")
 
 # example for json3 StructTypes.@Struct T
 
@@ -145,7 +148,7 @@ function get_progress( u :: AbstractString ) :: Dict
         # Fixme move 
     elseif haskey( PROGRESS, uuid )
         p = PROGRESS[uuid]
-        state = ( uuid=p.uuid, phase=p.progress.phase, count=p.progress.count, total=p.total )
+        state = ( uuid=p.progress.uuid, phase=p.progress.phase, count=p.progress.count, total=p.total )
     end   
     
     json = JSON3.write( state )
@@ -153,10 +156,11 @@ function get_progress( u :: AbstractString ) :: Dict
 end
 
 function submit_model( req :: Dict )
+    @debug "submit_model called"
     sys = web_map_params( req )
     settings = web_map_settings( req )
     uuid = submit_job( sys, settings )
-    @debug "uuid = $uuid"
+    @debug "submit_model uuid=$uuid"    
     json = add_headers( JSON3.write( uuid ))
     return json
 end

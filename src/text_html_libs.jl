@@ -63,7 +63,7 @@ function frame_to_table(
         b = format(r.Before, commas=true, precision=prec)
         a = format(r.After, commas=true, precision=prec)
         row = "<tr $row_style><th class='text-left'>$(r.Item)<td class='text-right'>$b</td><td class='text-right'>$a</td></tr>"
-        $table *= row
+        table *= row
     end
     table *= "</tbody></table>"
     return table
@@ -173,7 +173,7 @@ end
 
 function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
 
-    gain_lose = gain_lose_table( resylts.gain_lose )
+    gain_lose = gain_lose_table( results.gain_lose )
     gains_by_decile = results.summary.deciles[1][:,3] -
 			    BASE_STATE.summary.deciles[1][:,3]
     costs = costs_table( 
