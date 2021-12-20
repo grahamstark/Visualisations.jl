@@ -179,10 +179,10 @@ end
 function make_example_card( i )
     card = "
     <div class='col'>
-        <div class='card' style='width: 12rem;'>
+        <div class='card' style='width: 10rem;'>
             <img src='images/families/family$i.gif'  alt='...' width='100' height='140'>
-            <p class='text-success'>'&#x1F881;'£22pw</p>
             <div class='card-body'>
+                <p class='text-success'>&#x1F881;&nbsp;£22pw</p>
                 <h5 class='card-title'>Family $i</h5>
                 <p class='card-text'>Description of Family.</p>
             </div>
