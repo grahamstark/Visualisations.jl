@@ -139,10 +139,13 @@ global_logger(logger)
 LogLevel( Logging.Info )
 
 function get_progress( uuid :: UUID )
-   if haskey( PROGRESS, uuid )
-      p = PROGRESS[uuid]
-   end   
-   json = add_headers( json )
+    state = ""
+    if haskey( PROGRESS, uuid )
+        p = PROGRESS[uuid]
+        state = ( phase=p.progress.phase, count=p.progress.count, total=p.total )
+    end   
+    json = JSON3.write( state )
+    return add_headers( json )    
 end
 
 function submit_model( req :: Dict )
