@@ -24,7 +24,7 @@ function thing_table(
             end # neg diff   
         end # non zero diff
         ds = diff[i] ≈ 0 ? "-" : fp(diff[i])
-        row = "<tr><td>$(names[i])</td><td class='text-right'>$(f2(v1[i]))</td><td class='text-right'>$(f2(v2[i]))</td><td class='text-right $colour'>$ds</td></tr>"
+        row = "<tr><td>$(names[i])</td><td style='text-align:right'>$(f2(v1[i]))</td><td style='text-align:right'>$(f2(v2[i]))</td><td class='text-right $colour'>$ds</td></tr>"
         table *= row
     end
     table *= "</tbody></table>"
@@ -37,17 +37,17 @@ function frame_to_table(
     prec :: Int = 2, 
     caption :: String = "",
     totals_col :: Int = -1 )
-    table = "<table class='table table-borderless table-sm'>"
+    table = "<table class='table table-sm'>"
     table *= "<thead>
         <tr>
-            <th></th><th class='text-right'>Before</th><th class='text-right'>After</th><th class='text-right'>Change</th>            
+            <th></th><th style='text-align:right'>Before</th><th style='text-align:right'>After</th><th style='text-align:right'>Change</th>            
         </tr>
         </thead>"
     table *= "<caption>$caption</caption>"
     i = 0
     for r in eachrow( df )
         i += 1
-        colour = "text-primary"
+        colour = ""
         if (up_is_good[i] !== 0) && (! (r.Change ≈ 0))
             if r.Change > 0
                 colour = up_is_good[i] == 1 ? "text-success" : "text-danger"
@@ -62,7 +62,11 @@ function frame_to_table(
         row_style = i == totals_col ? "class='text-bold table-info' " : ""
         b = format(r.Before, commas=true, precision=prec)
         a = format(r.After, commas=true, precision=prec)
-        row = "<tr $row_style><th class='text-left'>$(r.Item)<td class='text-right'>$b</td><td class='text-right'>$a</td></tr>"
+        row = "<tr $row_style><th class='text-left'>$(r.Item)</th>
+                  <td style='text-align:right'>$b</td>
+                  <td style='text-align:right'>$a</td>
+                  <td style='text-align:right' class='$colour'>$ds</td>
+                </tr>"
         table *= row
     end
     table *= "</tbody></table>"
@@ -155,21 +159,45 @@ function gain_lose_table( gl :: NamedTuple )
     losepct = md_format(100*gl.losers/gl.popn)
     gainpct = md_format(100*gl.gainers/gl.popn)
     ncpct = md_format(100*gl.nc/gl.popn)
-    table = "<table class='table table-borderless table-sm'>"
+    caption = "Individuals living in households where net income has risen, fallen, or stayed the same respectively."
+    table = "<table class='table table-sm'>"
     table *= "<thead>
         <tr>
-            <th></th><th class='text-right'></th><th class='text-right'>%</th><th class='text-right'>Change</th>            
-        </tr>
+            <th></th><th style='text-align:right'></th><th style='text-align:right'>%</th>
+        </tr>";
+    table *= "<caption>$caption</caption>"
+    table *= "
         </thead>
         <tbody>"
-    caption = "Individuals living in households where net income has risen, fallen, or stayed the same respectively."
-    table *= "<caption>$caption</caption>"
-    table *= "<tr><th>Gainers</th><td class='text-right'>$gain</td><td class='text-right'>$(gainpct))</td></tr>"
-    table *= "<tr><th>Losers</th><td class='text-right'>$lose</td><td class='text-right'>$(losepct))</td></tr>"
-    table *= "<tr><th>Unchanged</th><td class='text-right'>$nc</td><td class='text-right'>$(ncpct))</td></tr>"
+        table *= "<tr><th>Gainers</th><td style='text-align:right'>$gain</td><td style='text-align:right'>$(gainpct)</td></tr>"
+        table *= "<tr><th>Losers</th><td style='text-align:right'>$lose</td><td style='text-align:right'>$(losepct)</td></tr>"
+    table *= "<tr><th>Unchanged</th><td style='text-align:right'>$nc</td><td style='text-align:right'>$(ncpct)</td></tr>"
     table *= "</tbody></table>"
     return table
 end
+
+function make_example_card( i )
+    card = "
+    <div class='card' style='width: 18rem;'>
+    <img src='images/families/' class='card-img-top' alt='...'>
+    <div class='card-body'>
+      <h5 class='card-title'>Family $i</h5>
+      <p class='card-text'>Description of Family.</p>
+    </div>
+  </div>
+    ";
+
+end
+
+function make_examples( )
+    cards = "<div>"
+    for i in 1:9
+        cards *= make_example_card(i)
+    end
+    cards *= "</div>"
+    return cards;
+end
+
 
 function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
 
@@ -202,6 +230,8 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
         poverty=poverty, 
         inequality=inequality, 
         lorenz_pre=lorenz_pre, 
-        lorenz_post=lorenz_post )
+        lorenz_post=lorenz_post,
+        examples = make_examples() )
+    
     return out
 end

@@ -30,6 +30,7 @@
             <div class='row'>
                 <div class='col'><!-- 1st col -->
                     <form id='mainform'>
+                        
                         <div class='container-fluid'>
                             <div class='row'>
                                 <div class='col'>       
@@ -159,14 +160,11 @@
                                             <label for='ubi-taxable' class='form-check-label'>Make UBI Income Taxable?</label>
                                         </div>
                                     </div>
-
-
-
                                 </div>
                             </div><!-- row -->
                             <div class='row p-3'>
                                 <div class="col-12">
-                                    <button class="btn btn-primary" type="submit" id='runbutton'>Run the Model</button>
+                                    <input type='button' class="btn btn-primary" type="submit" id='runbutton' value='Run the Model'/>
                                 </div>
 
                             </div>
@@ -175,11 +173,16 @@
                 </div>
             </div>
             <div class='row'>
-                <div class='col' id="progress-indicator"></div>
+                <div class='col-4'></div>
+                <div class='col-4' id="progress-indicator"></div>
+                <div class='col-4'></div>
             </div>
             <div class='row'>
                 <div class='col'>
                     <div id='output-fields'>
+                        <div class='row'>
+                            <div class='col' class='#examples'></div>
+                        </div>
                         <div class='row'>
                             <div class='col'>
                                 <h4>Gainers and Losers</h4>
