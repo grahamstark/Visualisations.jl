@@ -143,14 +143,17 @@ function get_progress( u :: AbstractString ) :: Dict
    uuid = UUID(u)
    state = ( uuid=u, phase="missing", count=0, total=0 )
    if haskey( PROGRESS, uuid )
+      @debug "get_progress entered uuid=|$u| key is in progress;"
       p = PROGRESS[uuid]
+      @debug "phase is $(p.progress.phase)"
       if p.progress.phase == "end"
          state = results_to_html( uuid, STASHED_RESULTS[uuid])
          delete!( PROGRESS, uuid )
       else
          state = ( uuid=p.progress.uuid, phase=p.progress.phase, count=p.progress.count, total=11_000 )
       end
-   end       
+   end  
+   @debug "PROGRESS now $PROGRESS"     
    json = JSON3.write( state )
    return add_headers( json )    
 end

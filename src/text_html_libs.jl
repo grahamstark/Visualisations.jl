@@ -245,11 +245,14 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
 end
 
 function make_examples( example_results :: Vector )
+    println( "make_examples entering")
     cards = "<div class='row'>"
-    for i in 1:size( EXAMPLE_HHS )[1]
+    n = size( EXAMPLE_HHS )[1]
+    for i in 1:n
         cards *= make_example_card( EXAMPLE_HHS[i], example_results[i])
     end
     cards *= "</div>"
+    println( "make_examples exiting")
     return cards;
 end
 
@@ -275,8 +278,10 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
         results.summary.inequality[1])
     lorenz_pre = BASE_STATE.summary.deciles[1][:,2]
     lorenz_post = results.summary.deciles[1][:,2]
+    println( "before example_text")
     example_text = make_examples( results.examples )
-    out = ( 
+    println( "example_text $example_text")
+    outt = ( 
         phase = "end", 
         uuid = uuid,
         gain_lose = gain_lose, 
@@ -288,6 +293,6 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
         lorenz_pre=lorenz_pre, 
         lorenz_post=lorenz_post,
         examples = example_text )
-    
-    return out
+    println( "results_to_html exiting")
+    return outt
 end
