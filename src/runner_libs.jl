@@ -248,8 +248,7 @@ struct ExampleHH
 	hh :: Household 
 end
 
-function make_examples()::Vector{ExampleHH}
-	exs = [
+const EXAMPLE_HHS = [
 		ExampleHH("family1","Single Person, £25k", "Single female, aged 25, earning £25,000",
 			make_hh(
 				head_earn = 25_000/52.0,
@@ -319,7 +318,4 @@ function make_examples()::Vector{ExampleHH}
 				spouse_age = 80,
 				marrstat = Married_or_Civil_Partnership ))
 	]
-
-	exs
-end
 
