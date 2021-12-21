@@ -175,6 +175,12 @@ function gain_lose_table( gl :: NamedTuple )
     table *= "</tbody></table>"
     return table
 end
+#=
+ choice of arrows/numbers for the tables - we use various uncode blocks;
+ see: https://en.wikipedia.org/wiki/Arrow_(symbol)
+ Of 'arrows', only 'arrows_3' displays correctly in Windows, I think,
+ arrows_1 is prettiest
+=#
 
 const ARROWS_3 = Dict([
     "nonsig"          => "&#x25CF;",
@@ -185,7 +191,16 @@ const ARROWS_3 = Dict([
     "negative_med"    => "&#x2193;",
     "negative_weak"   => "&#x21e3;" ])
 
-function make_example_card( hh :: ExampleHH, res :: Tuple ) :: String
+const ARROWS_1 = Dict([
+    "nonsig"          => "",
+    "positive_strong" => "&#x1F881;",
+    "positive_med"    => "&#x1F871;",
+    "positive_weak"   => "&#x1F861;",
+    "negative_strong" => "&#x1F883;",
+    "negative_med"    => "&#x1F873;",
+    "negative_weak"   => "&#x1F863;" ])
+    
+function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
     change = res.pres.bhc_net_income - res.pres.bhc_net_income
     gnum = format( abs(change), commas=true, precision=2 )
     glclass = "";
@@ -211,8 +226,9 @@ function make_example_card( hh :: ExampleHH, res :: Tuple ) :: String
     else
         glstr = "nonsig"
         glclass = "text-body"
+        gnum = "";
     end
-    changestr = ARROWS_3[glstr]*gnum*"pw"
+    changestr = gnum != "" ? "&nbsp;"*ARROWS_3[glstr]*gnum*"pw" : "No Change"
     card = "
     <div class='col'>
         <div class='card' style='width: 10rem;'>
@@ -222,16 +238,16 @@ function make_example_card( hh :: ExampleHH, res :: Tuple ) :: String
                 <h5 class='card-title'>$(hh.label)</h5>
                 <p class='card-text'>$(hh.description)</p>
             </div>
-        </div>
+        </div><!-- card -->
     </div><!-- col -->
-    ";
+";
     return card
 end
 
 function make_examples( example_results :: Vector )
     cards = "<div class='row'>"
-    for i in size( EXAMPLES )[1]
-        cards *= make_example_card( EXAMPLES[i], example_results[i])
+    for i in 1:size( EXAMPLE_HHS )[1]
+        cards *= make_example_card( EXAMPLE_HHS[i], example_results[i])
     end
     cards *= "</div>"
     return cards;
@@ -239,7 +255,7 @@ end
 
 
 function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
-
+    println( "results_to_html entered")
     gain_lose = gain_lose_table( results.gain_lose )
     gains_by_decile = results.summary.deciles[1][:,3] -
 			    BASE_STATE.summary.deciles[1][:,3]
@@ -259,6 +275,7 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
         results.summary.inequality[1])
     lorenz_pre = BASE_STATE.summary.deciles[1][:,2]
     lorenz_post = results.summary.deciles[1][:,2]
+    example_text = make_examples( results.examples )
     out = ( 
         phase = "end", 
         uuid = uuid,
@@ -270,7 +287,7 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
         inequality=inequality, 
         lorenz_pre=lorenz_pre, 
         lorenz_post=lorenz_post,
-        examples = make_examples() )
+        examples = example_text )
     
     return out
 end

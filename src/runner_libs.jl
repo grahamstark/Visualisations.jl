@@ -143,7 +143,7 @@ function make_hh(
 	head_earn           :: Real = 0.0,
 	head_hours          :: Real = 0.0,
 	head_age            :: Int = 25,
-	head_private_pens   :: Real = 0.0
+	head_private_pens   :: Real = 0.0,
 	spouse_earn         :: Real = 0.0,
 	spouse_hours        :: Real = 0.0,
 	spouse_age          :: Int = 0,
@@ -151,7 +151,7 @@ function make_hh(
 	hh = deepcopy(get_example( single_hh ))
 	head = get_head(hh)
 	head.age = head_age
-	head.marital_status = marital_status
+	head.marital_status = marrstat
 	empty!(head.income)
 	head.income[wages] = head_earn
 	head.income[private_pensions] = head_private_pens
@@ -186,7 +186,7 @@ function make_hh(
 		add_spouse!( hh, spouse_age, sex )
 		sp = get_spouse(hh)
 		enable!(sp)
-		sp.marital_status = marital_status
+		sp.marital_status = marrstat
 		empty!(sp.income)
 		sp.income[wages] = spouse_earn
 		sp.income[private_pensions] = spouse_private_pens
@@ -245,7 +245,7 @@ const EXAMPLE_HHS = [
 			make_hh(
 				head_earn = 0.0,
 				head_hours = 0,
-				head_age = 30
+				head_age = 30,
 				spouse_earn = 0.0,
 				spouse_hours = 0,
 				spouse_age = 30,
@@ -255,7 +255,7 @@ const EXAMPLE_HHS = [
 			make_hh(
 				head_earn = 12_000/52.0,
 				head_hours = 30,
-				head_age = 35
+				head_age = 35,
 				spouse_earn = 0.0,
 				spouse_hours = 0,
 				spouse_age = 35,
@@ -267,7 +267,7 @@ const EXAMPLE_HHS = [
 				hcost = 220.0,
 				head_earn = 35_000/52.0,
 				head_hours = 40,
-				head_age = 35
+				head_age = 35,
 				spouse_earn = 0.0,
 				spouse_hours = 0,
 				spouse_age = 35,
@@ -279,7 +279,7 @@ const EXAMPLE_HHS = [
 				hcost = 320.0,
 				head_earn = 35_000/52.0,
 				head_hours = 40,
-				head_age = 35
+				head_age = 35,
 				spouse_earn = 35_000.0/52,
 				spouse_hours = 40,
 				spouse_age = 35,
@@ -304,10 +304,10 @@ const EXAMPLE_HHS = [
 
 function calc_examples( base :: TaxBenefitSystem, sys :: TaxBenefitSystem, settings :: Settings ) :: Vector
 	v = []
-	for hh in EXAMPLE_HHS
-		bres = do_one_calc( hh, base, settings )
-		pres = do_one_calc( hh, sys, settings )
-		push!( v, ( bres, pres ))
+	for ehh in EXAMPLE_HHS
+		bres = do_one_calc( ehh.hh, base, settings )
+		pres = do_one_calc( ehh.hh, sys, settings )
+		push!( v, ( bres=bres, pres=pres ))
 	end
 	return v
 end
