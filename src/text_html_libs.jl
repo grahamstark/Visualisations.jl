@@ -176,15 +176,51 @@ function gain_lose_table( gl :: NamedTuple )
     return table
 end
 
-function make_example_card( i )
+const ARROWS_3 = Dict([
+    "nonsig"          => "&#x25CF;",
+    "positive_strong" => "&#x21c8;",
+    "positive_med"    => "&#x2191;",
+    "positive_weak"   => "&#x21e1;",
+    "negative_strong" => "&#x21ca;",
+    "negative_med"    => "&#x2193;",
+    "negative_weak"   => "&#x21e3;" ])
+
+function make_example_card( hh :: ExampleHH, res :: Tuple ) :: String
+    change = res.pres.bhc_net_income - res.pres.bhc_net_income
+    gnum = format( abs(change), commas=true, precision=2 )
+    glclass = "";
+    glstr = ""
+    if change > 20.0
+        glstr = "positive_strong"
+        glclass = "text-success"
+    elseif change > 10.0
+        glstr = "positive_med"
+        glclass = "text-success"
+    elseif change > 0.01
+        glstr = "positive_weak"
+        glclass = "text-success"
+    elseif change < -0.01
+        glstr = "negative_weak"
+        glclass = "text-danger"
+    elseif change < -10
+        glstr = "negative_med"
+        glclass = "text-danger"
+    elseif change < -20.0
+        glstr = "negative_strong"
+        glclass = "text-danger"
+    else
+        glstr = "nonsig"
+        glclass = "text-body"
+    end
+    changestr = ARROWS_3[glstr]*gnum*"pw"
     card = "
     <div class='col'>
         <div class='card' style='width: 10rem;'>
-            <img src='images/families/family$i.gif'  alt='...' width='100' height='140'>
+            <img src='images/families/$(hh.picture).gif'  alt='Picture of Family' width='100' height='140'>
             <div class='card-body'>
-                <p class='text-success'>&#x1F881;&nbsp;£22pw</p>
-                <h5 class='card-title'>Family $i</h5>
-                <p class='card-text'>Description of Family.</p>
+                <p class='$glclass'>$changestr</p>
+                <h5 class='card-title'>$(hh.label)</h5>
+                <p class='card-text'>$(hh.description)</p>
             </div>
         </div>
     </div><!-- col -->
@@ -192,10 +228,10 @@ function make_example_card( i )
     return card
 end
 
-function make_examples( )
+function make_examples( example_results :: Vector )
     cards = "<div class='row'>"
-    for i in 1:9
-        cards *= make_example_card(i)
+    for i in size( EXAMPLES )[1]
+        cards *= make_example_card( EXAMPLES[i], example_results[i])
     end
     cards *= "</div>"
     return cards;

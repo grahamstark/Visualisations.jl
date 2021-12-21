@@ -128,23 +128,6 @@ function start_handlers(n::Int)
 end
 =#
 
-function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
-	obs = Observable( Progress("",0,0,0))
-	tot = 0
-	of = on(obs) do p
-		tot += p.step
-		PROGRESS[p.uuid] = (progress=p,total=tot)
-	end
-	setttings = deepcopy( BASE_STATE.settings )
-	settings.uuid = uuid
-    results = do_one_run( settings, [sys], obs )
-	outf = summarise_frames( results, BASE_STATE.settings )
-	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
-	println( "gl=$gl");   
-	delete!( PROGRESS, settings.uuid )
-	return (results=results, summary=outf,gain_lose=gl)
-end 
-
 """
 Retrieve one of the model's example households & overwrite a few fields
 to make things simpler.
@@ -319,3 +302,30 @@ const EXAMPLE_HHS = [
 				marrstat = Married_or_Civil_Partnership ))
 	]
 
+function calc_examples( base :: TaxBenefitSystem, sys :: TaxBenefitSystem, settings :: Settings ) :: Vector
+	v = []
+	for hh in EXAMPLE_HHS
+		bres = do_one_calc( hh, base, settings )
+		pres = do_one_calc( hh, sys, settings )
+		push!( v, ( bres, pres ))
+	end
+	return v
+end
+
+function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
+	obs = Observable( Progress("",0,0,0))
+	tot = 0
+	of = on(obs) do p
+		tot += p.step
+		PROGRESS[p.uuid] = (progress=p,total=tot)
+	end
+	setttings = deepcopy( BASE_STATE.settings )
+	settings.uuid = uuid
+    results = do_one_run( settings, [sys], obs )
+	outf = summarise_frames( results, BASE_STATE.settings )
+	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
+	println( "gl=$gl");   
+	delete!( PROGRESS, settings.uuid )
+	exres = calc_examples( BASE_STATE.sys, sys, settings )
+	return (results=results, summary=outf,gain_lose=gl, examples=exres )
+end 
