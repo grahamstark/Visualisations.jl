@@ -2,6 +2,7 @@ using Visualisations
 using Test
 
 include( "../src/uses.jl")
+include( "examples.jl")
 include( "../src/runner_libs.jl" )
 include( "../src/display_constants.jl")
 include( "../src/static_texts.jl")
