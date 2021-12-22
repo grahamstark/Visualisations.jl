@@ -1,0 +1,18 @@
+[Unit]
+Description=Server for UBI Stand-Alone sim
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+# Type=forking
+User=graham_s
+EnvironmentFile=/etc/systemd/user/gks_environment
+# The PID file is optional, but recommended in the manpage
+# "so that systemd can identify the main process of the daemon"
+PIDFile=/run/bcd.pid
+ExecStart=/home/graham_s/julia/vw/Visualisations/etc/ubi.sh
+ExecStop=/bin/kill -WINCH ${MAINPID}
+KillSignal=SIGKILL
+PrivateTmp=true
+TimeoutStartSec=360
+[Install]
+WantedBy=multi-user.target
