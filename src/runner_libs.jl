@@ -88,7 +88,7 @@ const BASE_STATE = initialise()
 
 function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
 	global obs
-
+	@debug "do_run_a entered"
 	obs = Observable( 
 		Progress(settings.uuid, "",0,0,0,0))
 		# UUID("00000000-0000-0000-0000-000000000000"),"",		
@@ -100,7 +100,6 @@ function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
 	results = do_one_run( settings, [sys], obs )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
-	println( "gl=$gl");  
 	exres = calc_examples( BASE_STATE.sys, sys, settings )
 	aout = AllOutput( settings.uuid, results, outf, gl, exres ) 
 	put!( OUT_QUEUE, aout )
