@@ -163,8 +163,10 @@ function get_progress( u :: AbstractString ) :: Dict
       p = PROGRESS[uuid]
       @debug "phase is $(p.progress.phase)"
       if p.progress.phase == "end"
-         state = results_to_html( uuid, STASHED_RESULTS[uuid])
+         res = STASHED_RESULTS[uuid]
+         state = results_to_html( uuid, res )
          delete!( PROGRESS, uuid )
+         CACHED_RESULTS[res.cache_key]= state
       else
          state = ( uuid=p.progress.uuid, phase=p.progress.phase, count=p.progress.count, total=11_000 )
       end
@@ -175,13 +177,16 @@ function get_progress( u :: AbstractString ) :: Dict
 end
 
 function submit_model( req :: Dict )
-    @debug "submit_model called"
-    sys = web_map_params( req )
-    settings = web_map_settings( req )
-    uuid = submit_job( sys, settings )
-    @debug "submit_model uuid=$uuid"    
-    json = add_headers( JSON3.write( uuid ))
-    return json
+   if haskey( CACHED_RESULTS, req[:query] )
+      return CACHED_RESULTS[req[:query]]
+   end
+   @debug "submit_model called"
+   sys = web_map_params( req )
+   settings = web_map_settings( req )
+   uuid = submit_job( sys, req[:query], settings )
+   @debug "submit_model uuid=$uuid"    
+   json = add_headers( JSON3.write( uuid ))
+   return json
 end
 
 #
@@ -207,4 +212,3 @@ end
 for i in 1:NUM_HANDLERS # start n tasks to process requests in parallel
    errormonitor(@async calc_one())
 end
-# errormonitor(@async take_jobs())

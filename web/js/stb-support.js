@@ -833,11 +833,15 @@ stb.runModel = function(){
             ubi_taxable: ubi_taxable  }      
         }).done( 
              function( result ){
-                uuid = result
-                console.log( "stb; call OK "+uuid );
-                console.log( "result " + result );
-                var uri = '/bi/progress/'+uuid;
-                updater = $.PeriodicalUpdater( uri, {}, stb.updateSTB );
+                if( result. ){
+
+                } else {                
+                    uuid = result;
+                    console.log( "stb; call OK "+uuid );
+                    console.log( "result " + result );
+                    var uri = '/bi/progress/'+uuid;
+                    updater = $.PeriodicalUpdater( uri, {}, stb.updateSTB );
+                }
         }).fail(function( jqXHR, textStatus, errorThrown ){
             console.log( "failed with " + textStatus + " errorThrown "+errorThrown );
             console.log( "jqXHR.statusCode" + jqXHR.status + " text" + jqXHR.statusText );

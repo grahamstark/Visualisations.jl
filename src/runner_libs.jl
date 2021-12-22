@@ -9,12 +9,14 @@ const QSIZE = 32
 # fixme extend to multiple systems
 struct ParamsAndSettings 
 	uuid         :: UUID
+	cache_key    :: String
 	sys          :: TaxBenefitSystem
 	settings     :: Settings
 end
 
 struct AllOutput
 	uuid         :: UUID
+	cache_key    :: String 
 	results     
 	summary    
 	gain_lose
@@ -42,7 +44,7 @@ function calc_one()
 		@debug "calc_one entered"
 		params = take!( IN_QUEUE )
 		@debug "params taken from IN_QUEUE; got params uuid=$(params.settings.uuid)"
-		aout = do_run_a( params.sys, params.settings )
+		aout = do_run_a( params.cache_key, params.sys, params.settings )
 		@debug "model run OK; putting results into STASHED_RESULTS"
 		STASHED_RESULTS[ aout.uuid ] = aout
 	end
@@ -101,7 +103,7 @@ end
 
 const BASE_STATE = initialise()
 
-function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
+function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
 	global obs
 	@debug "do_run_a entered"
 	obs = Observable( 
@@ -116,16 +118,16 @@ function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
 	exres = calc_examples( BASE_STATE.sys, sys, settings )
-	aout = AllOutput( settings.uuid, results, outf, gl, exres ) 
+	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
 	return aout;
 end
 
 
-function submit_job( sys :: TaxBenefitSystem, settings :: Settings )
+function submit_job( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
     uuid = UUIDs.uuid4()
 	@debug "submit_job entered uuid=$uuid"
 	settings.uuid = uuid
-    put!( IN_QUEUE, ParamsAndSettings(uuid, sys, settings ))
+    put!( IN_QUEUE, ParamsAndSettings(uuid, cache_key, sys, settings ))
 	@debug "submit exiting queue is now $IN_QUEUE"
     return uuid
 end
