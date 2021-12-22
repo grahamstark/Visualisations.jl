@@ -22,18 +22,31 @@ struct AllOutput
 end
 
 PROGRESS = Dict{UUID,Any}()
+
+# FIXME we can simplify this by directly creating the outputs
+# as a string and just saving that in STASHED_RESULTS
 STASHED_RESULTS = Dict{UUID,AllOutput}()
 
+# Save results by query string & just return that
+# TODO complete this.
+CACHED_RESULTS = Dict{String,String}()
+
 IN_QUEUE = Channel{ParamsAndSettings}(QSIZE)
-OUT_QUEUE = Channel{AllOutput}(QSIZE)
 
-
+"""
+Wait to pull a job off the job queue and sent it
+to the calculator. FIXME should also just generate text output.
+"""
 function calc_one()
-	params = take!( IN_QUEUE )
-	@debug "calc_one entered"
-	aout = do_run_a( params.sys, params.settings )
-	@debug "calc_one exiting"
-	put!( OUT_QUEUE, aout )
+	while true
+		@debug "calc_one entered"
+		params = take!( IN_QUEUE )
+		@debug "params taken from IN_QUEUE; got params uuid=$(params.settings.uuid)"
+		aout = do_run_a( params.sys, params.settings )
+		@debug "model run OK; putting results into STASHED_RESULTS"
+		STASHED_RESULTS[ aout.uuid ] = aout
+	end
+	# put!( OUT_QUEUE, aout )
 end
 
 function load_system()::TaxBenefitSystem
@@ -116,26 +129,6 @@ function submit_job( sys :: TaxBenefitSystem, settings :: Settings )
 	@debug "submit exiting queue is now $IN_QUEUE"
     return uuid
 end
-
-function take_jobs()
-	while true
-		@debug "take jobs loop start"
-		res = take!( OUT_QUEUE )
-		@debug "OUT_QUEUE is $OUT_QUEUE"
-		STASHED_RESULTS[ res.uuid ] = res
-		@debug "take jobs loop end"
-	end
-end
-
-#=
-function start_handlers(n::Int)
-	for i in 1:n # start n tasks to process requests in parallel
-		errormonitor(@async calc_one())
-	end
-	errormonitor(@async take_jobs())
-end
-=#
-
 
 """
 Old runner version used in scotbudg 

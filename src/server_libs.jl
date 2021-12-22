@@ -207,4 +207,4 @@ end
 for i in 1:NUM_HANDLERS # start n tasks to process requests in parallel
    errormonitor(@async calc_one())
 end
-errormonitor(@async take_jobs())
+# errormonitor(@async take_jobs())

@@ -743,7 +743,7 @@ stb.updateSTB = function( result, success, xhr, handle ){
     console.log( "updateSTB success=" + success + "| result.phase = " + result.phase );
     switch( result.phase ){
         case 'missing':
-            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run "+result.uuid+" is waiting to start found.</div>");
             break;
         case 'start':
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run starting: starting pre-run routines.</div>");
