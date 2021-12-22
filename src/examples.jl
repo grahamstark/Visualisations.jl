@@ -85,12 +85,7 @@ function make_hh(
 		age += 1
 		add_child!( hh, age, sex )
 	end
-	set_wage!( head, 0, 10 )
-	for (pid,pers) in hh.people
-		# println( "age=$(pers.age) empstat=$(pers.employment_status) " )
-		empty!( pers.income )
-		empty!( pers.assets )
-	end
+	# set_wage!( head, 0, 10 )
 	return hh
 end
 

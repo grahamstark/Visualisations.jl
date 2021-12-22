@@ -198,7 +198,15 @@ const ARROWS_1 = Dict([
     "negative_weak"   => "&#x1F863;" ])
     
 function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
-    change = res.pres.bhc_net_income - res.pres.bhc_net_income
+    change = res.pres.bhc_net_income - res.bres.bhc_net_income
+
+    i2sp = inctostr(res.pres.income )
+    i2sb = inctostr(res.bres.income )
+    
+    println( hh.label )
+    println( "after hh income $i2sp")
+    println( "before hh income $i2sb")
+
     gnum = format( abs(change), commas=true, precision=2 )
     glclass = "";
     glstr = ""
@@ -225,13 +233,13 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
         glclass = "text-body"
         gnum = "";
     end
-    changestr = gnum != "" ? "&nbsp;"*ARROWS_3[glstr]*gnum*"pw" : "No Change"
+    changestr = gnum != "" ? "&nbsp;"*ARROWS_3[glstr]*"&nbsp;&pound;"* gnum*"pw" : "No Change"
     card = "
     <div class='col'>
         <div class='card' style='width: 12rem;'>
             <img src='images/families/$(hh.picture).gif'  alt='Picture of Family' width='100' height='140'>
             <div class='card-body'>
-                <p class='$glclass'>$changestr</p>
+                <p class='$glclass'><strong>$changestr</strong></p>
                 <h5 class='card-title'>$(hh.label)</h5>
                 <p class='card-text'>$(hh.description)</p>
             </div>
