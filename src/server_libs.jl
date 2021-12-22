@@ -35,6 +35,7 @@ const NUM_HANDLERS = 4
 @debug "server starting up"
 
 include( "uses.jl")
+include( "logger.jl")
 include( "examples.jl")
 include( "runner_libs.jl" )
 include( "display_constants.jl")
@@ -153,12 +154,6 @@ function do_in_thread( the_func::Function, req :: Dict ) :: Dict
    json = fetch( response )
    add_headers( json )
 end
-
-# configure logger; see: https://docs.julialang.org/en/v1/stdlib/Logging/index.html
-# and: https://github.com/oxinabox/LoggingExtras.jl
-logger = FileLogger("/var/tmp/stb_log.txt")
-global_logger(logger)
-LogLevel( Logging.Debug )
 
 function get_progress( u :: AbstractString ) :: Dict
    uuid = UUID(u)

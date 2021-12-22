@@ -30,7 +30,8 @@ OUT_QUEUE = Channel{AllOutput}(QSIZE)
 
 function calc_one()
 	params = take!( IN_QUEUE )
-	res = do_run_a( params.sys, params.settings )
+	@debug "calc_one entered"
+	do_run_a( params.sys, params.settings )
 end
 
 function load_system()::TaxBenefitSystem
@@ -103,20 +104,26 @@ function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
 	exres = calc_examples( BASE_STATE.sys, sys, settings )
 	aout = AllOutput( settings.uuid, results, outf, gl, exres ) 
 	put!( OUT_QUEUE, aout )
+	
 end
 
 
 function submit_job( sys :: TaxBenefitSystem, settings :: Settings )
     uuid = UUIDs.uuid4()
+	@debug "submit_job entered uuid=$uuid"
 	settings.uuid = uuid
     put!( IN_QUEUE, ParamsAndSettings(uuid, sys, settings ))
+	@debug "submit exiting queue is now $IN_QUEUE"
     return uuid
 end
 
 function take_jobs()
 	while true
+		@debug "take jobs loop start"
 		res = take!( OUT_QUEUE )
+		@debug "OUT_QUEUE is $OUT_QUEUE"
 		STASHED_RESULTS[ res.uuid ] = res
+		@debug "take jobs loop end"
 	end
 end
 
@@ -145,7 +152,6 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
     results = do_one_run( settings, [sys], obs )
 	outf = summarise_frames( results, BASE_STATE.settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
-	println( "gl=$gl");   
 	delete!( PROGRESS, settings.uuid )	
 	return (results=results, summary=outf,gain_lose=gl  )
 end 
