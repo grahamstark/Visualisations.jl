@@ -1,10 +1,5 @@
 window.stb = {}; // Create global container
 
-stb.createBlock = function( title, key ){
-    block = block,
-    title = title,
-    return block;
-}
 
 // font-awsome free..
 const UP_ARROW="fas fa-arrow-alt-circle-up";
@@ -266,7 +261,7 @@ stb.createTargetting = function( result ){
 const GOLDEN_RATIO = 1.618
 
 stb.createLorenzCurve = function( targetId, result, thumbnail ){
-    var height = 400;
+    var height = 300;
     var xtitle = "Population Share";
     var ytitle = "Income Share";
     var title = "Lorenz Curve"
@@ -278,17 +273,22 @@ stb.createLorenzCurve = function( targetId, result, thumbnail ){
     }
     var width = Math.trunc( GOLDEN_RATIO*height);
     var data=[];
-    console.log( "deciles" + result.deciles.toString());
-    console.log( "deciles[0][0] length" + result.deciles[0][0].length );
+    console.log( "deciles" + result.lorenz_pre.toString());
+    console.log( "lorenz_pre length" + result.lorenz_pre.length );
     // deciles levels are rhs. so push a 0,0
     data.push( {"popn1":0, "pre":0 });
-    for( var i = 0; i < result.deciles[0][0].length; i++){
-        data.push( {"popn1":result.deciles[0][0][i], "pre":result.deciles[0][1][i] });
+    popn = 0.0;
+    incr = 1/result.lorenz_pre.length;
+    for( var i = 0; i < result.lorenz_pre.length; i++){
+        popn += incr;
+        data.push( {"popn1":popn, "pre":result.lorenz_pre[i] });
     }
     // var data_post= [];
     data.push( {"popn2":0, "post":0 });
-    for( var i = 0; i < result.deciles[1][0].length; i++){
-        data.push( {"popn2":result.deciles[1][0][i], "post":result.deciles[1][1][i] });
+    popn = 0.0;
+    for( var i = 0; i < result.lorenz_post.length; i++){
+        popn += incr;
+        data.push( {"popn2":popn, "post":result.lorenz_post[i] });
     }
     data.push( {"popn3":0.0, "base":0.0});
     data.push( {"popn3":1.0, "base":1.0});
@@ -350,9 +350,9 @@ stb.createLorenzCurve = function( targetId, result, thumbnail ){
 }
 
 stb.createDecileBarChart = function( targetId, result, thumbnail ){
-    var height = 400;
+    var height = 300;
     var xtitle = "Deciles";
-    var ytitle = "Gains in &#163; pw";
+    var ytitle = "Gains in £s p.w.";
     var title = "Gains By Decile"
     if( thumbnail ){
         var height = 70;
@@ -362,11 +362,11 @@ stb.createDecileBarChart = function( targetId, result, thumbnail ){
     }
     var width = Math.trunc( GOLDEN_RATIO*height);
     var data=[];
-    console.log( "deciles" + result.deciles.toString());
-    console.log( "deciles[0][2] length" + result.deciles[0][2].length );
-    for( var i = 0; i < result.deciles[2][2].length; i++){
+    console.log( "deciles" + result.gains_by_decile.toString());
+    console.log( "lorenz_pre[2] length" + result.gains_by_decile.length );
+    for( var i = 0; i < result.gains_by_decile.length; i++){
         var dec = (i+1);
-        data.push( {"decile":dec, "gain":result.deciles[2][2][i] });
+        data.push( {"decile":dec, "gain":result.gains_by_decile[i] });
     }
     var deciles_vg = {
         "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
@@ -534,7 +534,7 @@ stb.createBCOutputs = function( result ){
 }
 
 // singles series version of above - FIXME really refactor these ..
-stb.createOneLorenz = function( targetId, deciles, thumbnail ){
+stb.createOneLorenz = function( targetId, lorenz_pre, lorenz_post, thumbnail ){
     var height = 400;
     var xtitle = "Population Share";
     var ytitle = "Income Share";
@@ -547,12 +547,12 @@ stb.createOneLorenz = function( targetId, deciles, thumbnail ){
     }
     var width = Math.trunc( GOLDEN_RATIO*height);
     var data=[];
-    console.log( "deciles="+JSON.stringify(deciles));
-    console.log( "deciles[0] length" + deciles[0].length );
+    console.log( "deciles="+JSON.stringify(lorenz_pre));
+    console.log( "lorenz_pre length" + lorenz_pre.length );
     // deciles levels are rhs. so push a 0,0
     data.push( {"popn":0, "income":0 });
-    for( var i = 0; i < deciles[0].length; i++){
-        data.push( {"popn":deciles[0][i], "income":deciles[1][i] });
+    for( var i = 0; i < lorenz_pre.length; i++){
+        data.push( {"popn":lorenz_pre[i], "income":lorenz_post[i] });
     }
     // diagonal in grey
     data.push( {"popn_tot":0.0, "income_tot":0.0});
@@ -699,26 +699,79 @@ stb.runInequality = function( ){
 var updater;
 var uuid;
 
-stb.updateSTB = function(){
-    $.ajax({ 
-        // make the UBI bit a variable
-        url: "/sbsrv/bi/progress/",
-        method: 'get',
-        dataType: 'json',
-        data: {
-                uuid:uuid
-        },
-        success: function( result ){
-            if( result.status == "run" ){
-                console.log( "run status"+result )
-                stb.drawProgressBar( result );
-            } else if ( result.status == "complete" ){
-                console.log( "run complete")
-                updater.stop();
-                stb.createMainOutputs( result );
-            }
-        }
-    });
+stb.drawProgressBar = function( result ){
+    // https://getbootstrap.com/docs/5.0/components/progress/
+    console.log( "result.count" + result.count + "result.total" + result.total );
+    var pct = Math.trunc(100 * result.count / result.total);
+    var prog = 
+        "<p>Model Running</p>"+
+        "<div class='progress'>"+
+        "<div class='progress-bar bg-success progress-bar-animated progress-bar-striped' role='progressbar' "+
+            "aria-valuenow='" + pct + "' " + 
+            "style='width: "+pct+"%' " +
+            "aria-valuemin='0' " +
+            "aria-valuemax='100'>"+
+            pct + "%" +
+            "</div> "+
+            "</div>";
+    console.log( "prog="+prog )
+    $("#progress-indicator").html( prog );
+}
+
+stb.createMainOutputs = function( result ){
+    console.log( result.inequality );
+    console.log( result.examples );
+    console.log( result.overall_costs )
+    $("#examples").html( result.examples );
+    $("#gain-lose-table").html( result.gain_lose );
+    stb.createDecileBarChart( 
+        "#deciles-graph", 
+        result, 
+        false );
+    $("#costs-table").html( result.costs );
+    $("#overall-costs").html( result.overall_costs )
+    $("#mr-table").html( result.mrs );
+    $("#pov-table").html( result.poverty );
+    $("#ineq-table").html( result.inequality );
+    stb.createLorenzCurve( 
+        "#lorenz", 
+        result,
+        false );
+}
+
+stb.updateSTB = function( result, success, xhr, handle ){
+    console.log( "updateSTB success=" + success + "| result.phase = " + result.phase );
+    switch( result.phase ){
+        case 'missing':
+            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            break;
+        case 'start':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run starting: starting pre-run routines.</div>");
+            break;
+        case 'weights':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Generating sample weights (may take some time..).</div>");
+            break;
+        case 'disability_eligibility':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calibrating Disability Benefits.</div>");
+            break;
+        case 'starting':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Pre-routines completed; run starting.</div>");
+            break;
+        case 'run':
+            stb.drawProgressBar( result );
+            break;
+        case 'dumping_frames':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calculations complete; now generating output.</div>");
+            break;
+        case 'end':
+            $("#progress-indicator").html( "<div></div>" );
+            stb.createMainOutputs( result );
+            updater.stop();
+            break;  
+        default:
+            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            break;                                      
+    }
 }
 
 // see: https://stackoverflow.com/questions/11338774/serialize-form-data-to-json
@@ -745,46 +798,56 @@ stb.runModel = function(){
     var bi_pens_age = $("#bi-pens-age").val();
     var bi_child = $("#bi-child").val();
     var bi_adult_age = $("#bi-adult-age").val();
-    var ubi_mtbens_keep_as_is = $("#ubi-mtbens-keep-as-is").val();
-    var ubi_mtbens_abolish = $("#ubi-mtbens-abolish").val();
-    var ubi_mtbens_keep_housing = $("#ubi-mtbens-keep-housing").val();
-    var ubi_abolish_sick = $("#ubi-abolish-sick").val();
-    var ubi_abolish_pensions = $("#ubi-abolish-pensions").val();
-    var ubi_abolish_esa = $("#ubi-abolish-esa").val();
-    var ubi_abolish_others = $("#ubi-abolish-others").val();
-    var ubi_as_mt_income = $("#ubi-as-mt-income").val();
-    var ubi_taxable = $("#ubi-taxable").val();
-    console.log( "fdata"+fdata )
+    var ubi_mtbens_keep_as_is = $("#ubi-mtbens-keep-as-is").prop('checked');
+    var ubi_mtbens_abolish = $("#ubi-mtbens-abolish").prop('checked');
+    var ubi_mtbens_keep_housing = $("#ubi-mtbens-keep-housing").prop('checked');
+    var ubi_abolish_sick = $("#ubi-abolish-sick").prop('checked');
+    var ubi_abolish_pensions = $("#ubi-abolish-pensions").prop('checked');
+    var ubi_abolish_esa = $("#ubi-abolish-esa").prop('checked');
+    var ubi_abolish_others = $("#ubi-abolish-others").prop('checked');
+    var ubi_as_mt_income = $("#ubi-as-mt-income").prop('checked');
+    var ubi_taxable = $("#ubi-taxable").prop('checked');
     $.ajax(
         // make the UBI bit a variable
-        { url: "localhost:8054/bi/run/",
+        { url: "http://ubi-local:8054/bi/run/",
          method: 'get',
          dataType: 'json',
          data: {
-            it_basic_rate = it_basic_rate,
-            it_higher_rate = it_higher_rate,
-            it_top_rate = it_top_rate,
-            it_pa = it_pa,
-            bi_adult = bi_adult,
-            bi_pensioner = bi_pensioner,
-            bi_pens_age = bi_pens_age,
-            bi_child = bi_child,
-            bi_adult_age = bi_adult_age,
-            ubi_mtbens_keep_as_is = ubi_mtbens_keep_as_is,
-            ubi_mtbens_abolish = ubi_mtbens_abolish,
-            ubi_mtbens_keep_housing = ubi_mtbens_keep_housing,
-            ubi_abolish_sick = ubi_abolish_sick,
-            ubi_abolish_pensions = ubi_abolish_pensions,
-            ubi_abolish_esa = ubi_abolish_esa,
-            ubi_abolish_others = ubi_abolish_others,
-            ubi_as_mt_income = ubi_as_mt_income,
-            ubi_taxable = ubi_taxable        
-         },
-         success: function( result ){
-             uuid = result.uuid
-             console.log( "stb; call OK "+uuid );
-             console.log( "result " + result );
-             updater = $.PeriodicalUpdater( '/bi/progress/', {uuid:uuid}, updateSTB );
+            it_basic_rate: it_basic_rate,
+            it_higher_rate: it_higher_rate,
+            it_top_rate: it_top_rate,
+            it_pa: it_pa,
+            bi_adult: bi_adult,
+            bi_pensioner: bi_pensioner,
+            bi_pens_age: bi_pens_age,
+            bi_child: bi_child,
+            bi_adult_age: bi_adult_age,
+            ubi_mtbens_keep_as_is: ubi_mtbens_keep_as_is,
+            ubi_mtbens_abolish: ubi_mtbens_abolish,
+            ubi_mtbens_keep_housing: ubi_mtbens_keep_housing,
+            ubi_abolish_sick: ubi_abolish_sick,
+            ubi_abolish_pensions: ubi_abolish_pensions,
+            ubi_abolish_esa: ubi_abolish_esa,
+            ubi_abolish_others: ubi_abolish_others,
+            ubi_as_mt_income: ubi_as_mt_income,
+            ubi_taxable: ubi_taxable  }      
+        }).done( 
+             function( result ){
+                uuid = result
+                console.log( "stb; call OK "+uuid );
+                console.log( "result " + result );
+                var uri = 'http://ubi-local:8054/bi/progress/'+uuid;
+                updater = $.PeriodicalUpdater( uri, {}, stb.updateSTB );
+        }).fail(function( jqXHR, textStatus, errorThrown ){
+            console.log( "failed with " + textStatus + " errorThrown "+errorThrown );
+            console.log( "jqXHR.statusCode" + jqXHR.status + " text" + jqXHR.statusText );
+
+        });
+        /*
+        }, 
+         error: function( xq, textStatus, errorThrown ){
+            console.log( "ERROR" + errorThrown + "; xq "+xq + "textStatus " + textStatus );
          }
-     });
+         */
+     // });
 }

@@ -319,9 +319,7 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
                 BASE_STATE.summary.income_summary[1],
                 results.summary.income_summary[1])),
         html_td( 
-            [
-                
-                mr_table( 
+            [mr_table( 
                     BASE_STATE.summary.metrs[1], 
                     results.summary.metrs[1] )
             ],style=TAB_CENTRE )

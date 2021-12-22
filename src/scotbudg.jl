@@ -1,5 +1,6 @@
 
 include( "uses.jl")
+include( "display_constants.jl")
 include( "static_texts.jl")
 include( "runner_libs.jl")
 include( "table_libs.jl")
