@@ -80,16 +80,13 @@ function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
 end
 
 
-function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
+function overall_cost( incs1:: DataFrame, incs2:: DataFrame ) :: String
     n1 = incs1[1,:net_cost]
     n2 = incs2[1,:net_cost]
-    
+    # add in employer's NI
     eni1 = incs1[1,:employers_ni]
     eni2 = incs2[1,:employers_ni]
     d = (n1-eni1) - (n2-eni2)
-    if d ≈ 0
-        return
-    end
     d /= 1_000_000
     colour = "alert-info"
     extra = ""
@@ -107,8 +104,8 @@ function overall_cost( incs1:: DataFrame, incs2:: DataFrame )
             extra = "m."
         end
     end
-    d = "<div class='alert $colour'>$change_str<strong>$change_val</strong>$extra</div>"
-    return d
+    costs = "<div class='alert $colour'>$change_str<strong>$change_val</strong>$extra</div>"
+    return costs
 end
 
 function mr_table( mr1, mr2 )
@@ -231,7 +228,7 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
     changestr = gnum != "" ? "&nbsp;"*ARROWS_3[glstr]*gnum*"pw" : "No Change"
     card = "
     <div class='col'>
-        <div class='card' style='width: 10rem;'>
+        <div class='card' style='width: 12rem;'>
             <img src='images/families/$(hh.picture).gif'  alt='Picture of Family' width='100' height='140'>
             <div class='card-body'>
                 <p class='$glclass'>$changestr</p>
@@ -265,6 +262,10 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
     costs = costs_table( 
         BASE_STATE.summary.income_summary[1],
         results.summary.income_summary[1])
+    overall_costs = overall_cost( 
+        BASE_STATE.summary.income_summary[1],
+        results.summary.income_summary[1])
+    println( "overall_costs=$overall_costs")
     mrs = mr_table(
         BASE_STATE.summary.metrs[1], 
         results.summary.metrs[1] )       
@@ -287,6 +288,7 @@ function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
         gain_lose = gain_lose, 
         gains_by_decile = gains_by_decile,
         costs = costs, 
+        overall_costs = overall_costs,
         mrs = mrs, 
         poverty=poverty, 
         inequality=inequality, 

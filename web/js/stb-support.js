@@ -721,6 +721,7 @@ stb.drawProgressBar = function( result ){
 stb.createMainOutputs = function( result ){
     console.log( result.inequality );
     console.log( result.examples );
+    console.log( result.overall_costs )
     $("#examples").html( result.examples );
     $("#gain-lose-table").html( result.gain_lose );
     stb.createDecileBarChart( 
@@ -728,6 +729,7 @@ stb.createMainOutputs = function( result ){
         result, 
         false );
     $("#costs-table").html( result.costs );
+    $("#overall-costs").html( result.overall_costs )
     $("#mr-table").html( result.mrs );
     $("#pov-table").html( result.poverty );
     $("#ineq-table").html( result.inequality );
@@ -796,15 +798,15 @@ stb.runModel = function(){
     var bi_pens_age = $("#bi-pens-age").val();
     var bi_child = $("#bi-child").val();
     var bi_adult_age = $("#bi-adult-age").val();
-    var ubi_mtbens_keep_as_is = $("#ubi-mtbens-keep-as-is").val();
-    var ubi_mtbens_abolish = $("#ubi-mtbens-abolish").val();
-    var ubi_mtbens_keep_housing = $("#ubi-mtbens-keep-housing").val();
-    var ubi_abolish_sick = $("#ubi-abolish-sick").val();
-    var ubi_abolish_pensions = $("#ubi-abolish-pensions").val();
-    var ubi_abolish_esa = $("#ubi-abolish-esa").val();
-    var ubi_abolish_others = $("#ubi-abolish-others").val();
-    var ubi_as_mt_income = $("#ubi-as-mt-income").val();
-    var ubi_taxable = $("#ubi-taxable").val();
+    var ubi_mtbens_keep_as_is = $("#ubi-mtbens-keep-as-is").prop('checked');
+    var ubi_mtbens_abolish = $("#ubi-mtbens-abolish").prop('checked');
+    var ubi_mtbens_keep_housing = $("#ubi-mtbens-keep-housing").prop('checked');
+    var ubi_abolish_sick = $("#ubi-abolish-sick").prop('checked');
+    var ubi_abolish_pensions = $("#ubi-abolish-pensions").prop('checked');
+    var ubi_abolish_esa = $("#ubi-abolish-esa").prop('checked');
+    var ubi_abolish_others = $("#ubi-abolish-others").prop('checked');
+    var ubi_as_mt_income = $("#ubi-as-mt-income").prop('checked');
+    var ubi_taxable = $("#ubi-taxable").prop('checked');
     $.ajax(
         // make the UBI bit a variable
         { url: "http://ubi-local:8054/bi/run/",

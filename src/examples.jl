@@ -106,7 +106,7 @@ const EXAMPLE_HHS = [
 			make_hh(
 				head_earn = 25_000/52.0,
 				head_hours = 40 )),
-		ExampleHH("family2","Single Parent, £25k", "Working single parent, 1 3-year old daughter, earning £25,000",
+		ExampleHH("family2","Single Parent, £25k", "Working single parent, earning £25,000, with one 3-year old daughter",
 			make_hh(
 				head_earn = 25_000/52.0,
 				head_hours = 40,
@@ -162,7 +162,7 @@ const EXAMPLE_HHS = [
 				hcost = 150.0,
 				head_age = 80,
 				marrstat = Single )),
-		ExampleHH("family9","Pensioner couple, both aged 80", "A pensioner, both aged 80, with £100pw private pension.",
+		ExampleHH("family9","Pensioner couple, both aged 80", "A pensioner couple, both aged 80, with £100pw private pension.",
 			make_hh(
 				tenure  = Mortgaged_Or_Shared,
 				hcost = 150.0,
