@@ -2,7 +2,7 @@ using Visualisations
 using Test
 
 include( "../src/uses.jl")
-include( "examples.jl")
+include( "../src/examples.jl")
 include( "../src/runner_libs.jl" )
 include( "../src/display_constants.jl")
 include( "../src/static_texts.jl")
@@ -13,14 +13,6 @@ include( "../src/server_libs.jl")
 sys = load_system()
 settings = BASE_STATE.settings
 
-
-
-@testset "Server" begin
-    # Write your tests here.
-    d = Dict()
-    ggs = submit_model( d )
-    println( ggs )
-end
 
 @testset "Examples" begin    
     exres = calc_examples( sys, sys, settings )
@@ -53,11 +45,16 @@ end
             "ubi_mtbens_keep_as_is" => false, 
             "bi_child" => 3000 ))
     msys = web_map_params( req )
-
+    println( msys )
 end
 
 @testset "Queuing" begin
-    
 
+        for i in 1:10
+            uuid = submit_job( sys, settings )
+            @info "iter $i; submitted job $uuid "
+            @info "iter $i IN_QUEUE=$IN_QUEUE"
+            @info "iter $i OUT_QUEUE=$OUT_QUEUE"
+        end
 
 end

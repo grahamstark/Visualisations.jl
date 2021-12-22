@@ -31,7 +31,9 @@ OUT_QUEUE = Channel{AllOutput}(QSIZE)
 function calc_one()
 	params = take!( IN_QUEUE )
 	@debug "calc_one entered"
-	do_run_a( params.sys, params.settings )
+	aout = do_run_a( params.sys, params.settings )
+	@debug "calc_one exiting"
+	put!( OUT_QUEUE, aout )
 end
 
 function load_system()::TaxBenefitSystem
@@ -102,8 +104,7 @@ function do_run_a( sys :: TaxBenefitSystem, settings :: Settings )
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
 	exres = calc_examples( BASE_STATE.sys, sys, settings )
 	aout = AllOutput( settings.uuid, results, outf, gl, exres ) 
-	put!( OUT_QUEUE, aout )
-	
+	return aout;
 end
 
 

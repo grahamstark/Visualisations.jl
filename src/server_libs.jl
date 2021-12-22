@@ -202,7 +202,7 @@ end
 )
 
 #
-# Set up 
+# Set up job queues 
 #
 for i in 1:NUM_HANDLERS # start n tasks to process requests in parallel
    errormonitor(@async calc_one())
