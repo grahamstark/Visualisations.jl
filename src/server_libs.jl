@@ -92,11 +92,11 @@ function web_map_params( req  :: Dict ) :: TaxBenefitSystem
    sys.ubi.retirement_age = d["bi_pens_age"]
    sys.ubi.mt_bens_treatment = 
       if d["ubi_mtbens_abolish"]
-
+         ub_abolish
       elseif d["ubi_mtbens_keep_as_is"]
-
+         ub_as_is
       elseif d["ubi_mtbens_keep_housing"]
-
+         ub_keep_housing
       else
          @assert false "no assignment for ubi.mt_bens_treatment"
       end   
@@ -116,7 +116,8 @@ function web_map_params( req  :: Dict ) :: TaxBenefitSystem
       sys.it.non_savings_rates[1] = max(0, sys.it.non_savings_rates[1]) 
    end
    sys.it.non_savings_rates[4] = d["it_higher_rate"] / 100.0
-   sys.it.non_savings_rates[5] = d["it_top_rate"] / 100.0      
+   sys.it.non_savings_rates[5] = d["it_top_rate"] / 100.0     
+   make_ubi_pre_adjustments!( sys )
    return sys
 end
 
