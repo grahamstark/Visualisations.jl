@@ -137,20 +137,20 @@ end
 
 
 """
-Old version still used in scotbudg 
+Old runner version used in scotbudg 
 """
 function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
-	obs = Observable( Progress("",0,0,0))
+	settings = deepcopy( BASE_STATE.settings )
+	settings.uuid = UUIDs.uuid4()
+	obs = Observable(Progress(settings.uuid, "",0,0,0,0))
 	tot = 0
 	of = on(obs) do p
 		tot += p.step
 		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
-	setttings = deepcopy( BASE_STATE.settings )
-	settings.uuid = uuid
     results = do_one_run( settings, [sys], obs )
-	outf = summarise_frames( results, BASE_STATE.settings )
-	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
+	outf = summarise_frames( results, settings )
+	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], settings ) 
 	delete!( PROGRESS, settings.uuid )	
 	return (results=results, summary=outf,gain_lose=gl  )
 end 
