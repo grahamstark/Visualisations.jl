@@ -85,9 +85,9 @@ function web_map_params( req  :: Dict ) :: TaxBenefitSystem
    d = req[:parsed_querystring]
 
    sys.ubi.abolished = false 
-   sys.ubi.adult_amount = d["bi_adult"]
-   sys.ubi.child_amount = d["bi_child"]
-   sys.ubi.universal_pension  = d["bi_pensioner"]
+   sys.ubi.adult_amount = d["bi_adult"]/WEEKS_PER_YEAR
+   sys.ubi.child_amount = d["bi_child"]/WEEKS_PER_YEAR
+   sys.ubi.universal_pension  = d["bi_pensioner"]/WEEKS_PER_YEAR
    sys.ubi.adult_age = d["bi_adult_age"]
    sys.ubi.retirement_age = d["bi_pens_age"]
    sys.ubi.mt_bens_treatment = 
