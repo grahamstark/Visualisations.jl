@@ -259,7 +259,7 @@ end
 function results_to_html( 
     uuid :: UUID, 
     base_results :: AllOutput, 
-    results :: AllOutput ) :: NamedTuple
+    results      :: AllOutput ) :: NamedTuple
     @debug "results_to_html entered with uuid $uuid"
 
     gain_lose = gain_lose_table( results.gain_lose )

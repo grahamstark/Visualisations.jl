@@ -33,6 +33,7 @@ import Base.Threads.@spawn
 @debug "server starting up"
 
 include( "uses.jl")
+include( "types.jl")
 include( "logger.jl")
 include( "examples.jl")
 include( "display_constants.jl")
@@ -155,6 +156,13 @@ function do_in_thread( the_func::Function, req :: Dict ) :: Dict
    add_headers( json )
 end
 
+function get_results( u :: AbstractString ):: Dict
+   uuid = UUID(u)
+   if haskey( CACHED_RESULTS[res.cache_key])
+
+   end
+end
+
 function get_progress( u :: AbstractString ) :: Dict
    uuid = UUID(u)
    state = ( uuid=u, phase="missing", count=0, total=0 )
@@ -166,8 +174,8 @@ function get_progress( u :: AbstractString ) :: Dict
          @debug "get_progress: phase end"
          state = STASHED_RESULTS[uuid]
          delete!( PROGRESS, uuid )
-         @debug "caching results with key $(res.cache_key)"
-         CACHED_RESULTS[res.cache_key]= state
+         @debug "caching results with key $(state.cache_key)"
+         CACHED_RESULTS[state.cache_key]= state
       else
          state = ( uuid=p.progress.uuid, phase=p.progress.phase, count=p.progress.count, total=11_000 )
       end

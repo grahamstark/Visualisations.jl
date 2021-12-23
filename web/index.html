@@ -261,11 +261,45 @@
             });
         </script>
         <footer>
-            <div>
-                <a href='https://github.com/grahamstark/ScottishTaxBenefitModel.jl'>Code</a> | 
-                <a href='https://virtual-worlds.scot/'>Virtual Worlds</a> | 
-            </div>
+            <h4 id="notes">Notes</h4>
+            <ul>
+            <li>Scotland actually has 3 lower rates of income tax rather than the single 20% basic rate shown - currently 19%,20% and 21%. Changing the 20% ‘basic rate’ causes all three to move in sync.</li>
+            <li>Likewise, changing the <em>Universal Credit: single 25+ adult</em> field changes the rates for young people and couples.</li>
+            <li>Scotland is <a href="https://commonslibrary.parliament.uk/constituency-data-universal-credit-roll-out/">in the process of switching working-age families to Universal Credit from ‘Legacy Benefits’ (Income Support, Housing Benefit, etc.)</a>. I’ve written a <a href="https://stb-blog.virtual-worlds.scot/articles/2021/11/12/uc-legacy.html">note on how this is modelled</a> - the code is <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl">here</a>;</li>
+            <li>the <a href="https://www.legislation.gov.uk/uksi/2021/313/pdfs/uksiem_20210313_en.pdf">£20pw ‘uplift’ to Universal Credit and Working Tax Credit</a>, now <a href="https://www.gov.uk/government/news/budget-2021-what-you-need-to-know">scheduled for removal in April 2022</a> is modelled as already removed.</li>
+            </ul>
+            <p>Poverty and Inequality: * based on <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/household-income-definition/">equivalised before housing costs income</a>. * uses 60% of <em>Scottish</em> (not UK) median income as poverty line (official target uses the UK median). * poverty line is <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/poverty-definition/">relative</a> - so may be different after your changes.</p>
+            <h4 id="key-assumptions">Key Assumptions</h4>
+            <ul>
+            <li><em>No behavioural changes</em>: increasing or decreasing taxes doesn’t cause people to change how they work and earn;</li>
+            <li>the model reports <em>entitlements to benefits and liability to taxes</em>, not receipts and payments - so we may overstate the costs of benefits since some eligible families may not claim the things they’re entitled to. With taxes, some may be paid with a considerable delay, and some evaded or avoided.</li>
+            </ul>
+            <p>See <a href="https://stb-blog.virtual-worlds.scot/">the model blog</a> for more gory details (<em>content warning - very boring and rambling)</em>.</p>
+            <h4 id="known-problems">Known Problems</h4>
+            <p>This is a new model. I’m now reasonably confident of its essential accuracy - it passes an <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/test">extensive test suite</a> but there are some aspects that require investigation in the coming months. Notably:</p>
+            <ul>
+            <li>Income Tax revenues seem to be overstated by around £1bn pa compared to <a href="https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/">official forecasts</a>. Possibly much of this is due to how pension tax relief is treated;</li>
+            <li>measures of inequality seem low compared to official statistics.</li>
+            </ul>
+            <p>I’d very much welcome contributions and suggestions. If you spot anything odd or if you have any ideas for how this can be improved, you can:</p>
+            <ul>
+            <li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/issues">Open an issue on GitHub</a>; or</li>
+            <li><a href="mailto:graham.stark@virtual-worlds.biz">email me</a>.</li>
+            </ul>
+            <h3 id="to-find-out-more">To Find Out More</h3>
+            <p>You’ll have to do some reading, I’m afraid. Some links:</p>
+            <ul>
+            <li><p><strong>Tax Benefit Models</strong>: <a href="https://stb.virtual-worlds.scot/intro.html">A short introduction to microsimulation and tax benefit models</a>. Originally written for the Open University, it covers all the essential ideas. | <a href="https://stb-blog.virtual-worlds.scot/">Blog Posts about the Model</a>;</p></li>
+            <li><p><strong>Poverty and Inequality</strong>: <a href="https://stb.virtual-worlds.scot/poverty.html">My Notes</a> | <a href="http://documents.worldbank.org/curated/en/488081468157174849/Handbook-on-poverty-and-inequality">World Bank Handbook</a> | <a href="https://data.gov.scot/poverty/">Official Figures for Scotland</a>;</p></li>
+            <li><p><strong>Scotland’s Finances</strong>: <a href="https://www.fiscalcommission.scot/publications/scotlands-economic-and-fiscal-forecasts-august-2021/">Scottish Fiscal Commission</a> | <a href="https://www.gov.scot/budget/">Scottish Government Budget Documents</a>.</p></li>
+            <li><p>Created with <a href="https://julialang.org/">Julia</a> | <a href="https://dash-julia.plotly.com/">Dash</a> | <a href="https://plotly.com/julia/">Plotly</a> | <a href="https://github.com/grahamstark/PovertyAndInequalityMeasures.jl">Poverty and Inequality Measures</a>;</p></li>
+            <li><p>Part of the <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl">Scottish Tax Benefit Model</a>;<br />
+            </p></li>
+            <li><p>Open Source software released under the <a href="https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE">MIT Licence</a>. <a href="https://github.com/grahamstark/Visualisations.jl">Source Code</a>.</p></li>
+            </ul>
         </footer>
+
+
     </div>
 </body>
 </html>

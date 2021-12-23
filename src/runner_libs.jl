@@ -4,21 +4,6 @@
 # import everything we might reasonably need.#
 #
 # fixme extend to multiple systems
-struct ParamsAndSettings 
-	uuid         :: UUID
-	cache_key    :: String
-	sys          :: TaxBenefitSystem
-	settings     :: Settings
-end
-
-struct AllOutput
-	uuid         :: UUID
-	cache_key    :: String 
-	results     
-	summary    
-	gain_lose
-	examples
-end
 
 PROGRESS = Dict{UUID,Any}()
 
