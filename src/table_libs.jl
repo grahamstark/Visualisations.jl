@@ -1,4 +1,3 @@
-
 const COST_ITEMS = [
     :income_tax,
     :national_insurance,
@@ -10,7 +9,6 @@ const COST_ITEMS = [
     :means_tested_bens,
     :legacy_mtbs,
     :universal_credit,
-
     :non_means_tested_bens,
     :sickness_illness,
     :scottish_benefits] 
@@ -26,7 +24,6 @@ const COST_LABELS = [
     "All Means Tested Benefits",
     "Legacy Means-Tested Benefits",
     "Universal Credit",
-
     "Non Means Tested Benefits",
     "Disability, Sickness-Related Benefits",
     "Scottish Benefits" ]
@@ -66,14 +63,12 @@ function f2( n :: Number ) :: String
 	# , autoscale=:finance
 end
 
-
 function costs_dataframe(  incs1 :: DataFrame, incs2 :: DataFrame ) :: DataFrame
     pre = extract_incs( incs1, COST_ITEMS ) ./ 1_000_000
     post = extract_incs( incs2, COST_ITEMS ) ./ 1_000_000
     diff = post-pre
     return DataFrame( Item=COST_LABELS, Before=pre, After=post, Change=diff )
 end
-
 
 function mr_dataframe( mr1::Histogram, mr2::Histogram, mean1::Real, mean2 :: Real ) :: DataFrame
     println( "mr1.weights=$(mr1.weights) mean1=$mean1")
@@ -84,7 +79,6 @@ function mr_dataframe( mr1::Histogram, mr2::Histogram, mean1::Real, mean2 :: Rea
     return df
 end
 
-
 function ineq_dataframe( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasures )
     names = ["Gini", "Palma", "Atkinson(ϵ=0.5)", "Atkinson(ϵ=1)", "Atkinson(ϵ=2)", "Hoover"]
     v1 = [ineq1.gini, ineq1.palma, ineq1.atkinson[2], ineq1.atkinson[4], ineq1.atkinson[8], ineq1.hoover] .* 100
@@ -92,7 +86,6 @@ function ineq_dataframe( ineq1 :: InequalityMeasures, ineq2 :: InequalityMeasure
     diff = v2 -v1
     return DataFrame( Item=names, Before=v1, After=v2, Change=diff)
 end
-
 
 function pov_dataframe( 
     pov1 :: PovertyMeasures, 
@@ -107,6 +100,3 @@ function pov_dataframe(
     diff = v2 - v1    
     return DataFrame( Item=names, Before=v1, After=v2, Change=diff)
 end
-
-
-

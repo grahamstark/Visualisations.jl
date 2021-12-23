@@ -35,23 +35,6 @@ CACHED_RESULTS = Dict{String,Any}()
 
 IN_QUEUE = Channel{ParamsAndSettings}(QSIZE)
 
-"""
-Wait to pull a job off the job queue and sent it
-to the calculator. FIXME should also just generate text output.
-"""
-function calc_one()
-	while true
-		@debug "calc_one entered"
-		params = take!( IN_QUEUE )
-		@debug "params taken from IN_QUEUE; got params uuid=$(params.settings.uuid)"
-		aout = do_run_a( params.cache_key, params.sys, params.settings )
-		@debug "model run OK; putting results into STASHED_RESULTS"		
-		res_text = results_to_html( aout.uuid, aout )
-		STASHED_RESULTS[ aout.uuid ] = res_text
-		CACHED_RESULTS[ aout.cache_key ] = res_text
-	end
-end
-
 function load_system()::TaxBenefitSystem
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 	#

@@ -43,6 +43,7 @@ include( "table_libs.jl")
 include( "text_html_libs.jl")
 include( "runner_libs.jl" )
 include( "base_results.jl")
+include( "queue_libs.jl")
 
 # example for json3 StructTypes.@Struct T
 
@@ -210,10 +211,3 @@ end
    page("/bi/run/", req -> submit_model( req )),
    Mux.notfound(),
 )
-
-#
-# Set up job queues 
-#
-for i in 1:NUM_HANDLERS # start n tasks to process requests in parallel
-   errormonitor(@async calc_one())
-end
