@@ -48,13 +48,16 @@ end
     println( msys )
 end
 
+
 @testset "Queuing" begin
 
-        for i in 1:10
-            uuid = submit_job( sys, settings )
+        for i in 1:1
+            uuid = submit_job( "run$i", sys, settings )
+            #=
             @info "iter $i; submitted job $uuid "
             @info "iter $i IN_QUEUE=$IN_QUEUE"
             @info "iter $i OUT_QUEUE=$OUT_QUEUE"
+            =#
         end
 
 end

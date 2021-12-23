@@ -37,11 +37,12 @@ const NUM_HANDLERS = 4
 include( "uses.jl")
 include( "logger.jl")
 include( "examples.jl")
-include( "runner_libs.jl" )
 include( "display_constants.jl")
 include( "static_texts.jl")
 include( "table_libs.jl")
 include( "text_html_libs.jl")
+include( "runner_libs.jl" )
+include( "base_results.jl")
 
 # example for json3 StructTypes.@Struct T
 
@@ -163,9 +164,10 @@ function get_progress( u :: AbstractString ) :: Dict
       p = PROGRESS[uuid]
       @debug "phase is $(p.progress.phase)"
       if p.progress.phase == "end"
-         res = STASHED_RESULTS[uuid]
-         state = results_to_html( uuid, res )
+         @debug "get_progress: phase end"
+         state = STASHED_RESULTS[uuid]
          delete!( PROGRESS, uuid )
+         @debug "caching results with key $(res.cache_key)"
          CACHED_RESULTS[res.cache_key]= state
       else
          state = ( uuid=p.progress.uuid, phase=p.progress.phase, count=p.progress.count, total=11_000 )
@@ -177,13 +179,16 @@ function get_progress( u :: AbstractString ) :: Dict
 end
 
 function submit_model( req :: Dict )
-   if haskey( CACHED_RESULTS, req[:query] )
+   query = req[:query]
+   @debug "submit model entered with query $query"
+   if haskey( CACHED_RESULTS, query )
+      @debug "returning results from cache"
       return CACHED_RESULTS[req[:query]]
    end
-   @debug "submit_model called"
+   @debug "submit_model  - starting mapping params"
    sys = web_map_params( req )
    settings = web_map_settings( req )
-   uuid = submit_job( sys, req[:query], settings )
+   uuid = submit_job( req[:query], sys, settings )
    @debug "submit_model uuid=$uuid"    
    json = add_headers( JSON3.write( uuid ))
    return json

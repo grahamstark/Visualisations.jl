@@ -256,28 +256,30 @@ function make_examples( example_results :: Vector )
 end
 
 
-function results_to_html( uuid :: UUID, results :: AllOutput ) :: NamedTuple
+function results_to_html( uuid :: UUID, base_results :: AllOutput, results :: AllOutput ) :: NamedTuple
+    @debug "results_to_html entered with uuid $uuid"
+
     gain_lose = gain_lose_table( results.gain_lose )
     gains_by_decile = results.summary.deciles[1][:,3] -
-			    BASE_STATE.summary.deciles[1][:,3]
+			    base_results.summary.deciles[1][:,3]
     costs = costs_table( 
-        BASE_STATE.summary.income_summary[1],
+        base_results.summary.income_summary[1],
         results.summary.income_summary[1])
     overall_costs = overall_cost( 
-        BASE_STATE.summary.income_summary[1],
+        base_results.summary.income_summary[1],
         results.summary.income_summary[1])
     mrs = mr_table(
-        BASE_STATE.summary.metrs[1], 
+        base_results.summary.metrs[1], 
         results.summary.metrs[1] )       
     poverty = pov_table(
-        BASE_STATE.summary.poverty[1],
+        base_results.summary.poverty[1],
         results.summary.poverty[1],
-        BASE_STATE.summary.child_poverty[1],
+        base_results.summary.child_poverty[1],
         results.summary.child_poverty[1])
     inequality = ineq_table(
-        BASE_STATE.summary.inequality[1],
+        base_results.summary.inequality[1],
         results.summary.inequality[1])
-    lorenz_pre = BASE_STATE.summary.deciles[1][:,2]
+    lorenz_pre = base_results.summary.deciles[1][:,2]
     lorenz_post = results.summary.deciles[1][:,2]
     example_text = make_examples( results.examples )
     outt = ( 

@@ -833,9 +833,11 @@ stb.runModel = function(){
             ubi_taxable: ubi_taxable  }      
         }).done( 
              function( result ){
-                if( result. ){
-
-                } else {                
+                if( typeof(result) == 'object' ){ // complete thing from cache
+                    console.log( "loading directly from cache");               
+                    stb.createMainOutputs( result );
+                } else { 
+                    console.log( "starting run and timer");               
                     uuid = result;
                     console.log( "stb; call OK "+uuid );
                     console.log( "result " + result );

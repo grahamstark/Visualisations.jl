@@ -27,11 +27,11 @@ PROGRESS = Dict{UUID,Any}()
 
 # FIXME we can simplify this by directly creating the outputs
 # as a string and just saving that in STASHED_RESULTS
-STASHED_RESULTS = Dict{UUID,AllOutput}()
+STASHED_RESULTS = Dict{UUID,Any}()
 
 # Save results by query string & just return that
 # TODO complete this.
-CACHED_RESULTS = Dict{String,String}()
+CACHED_RESULTS = Dict{String,Any}()
 
 IN_QUEUE = Channel{ParamsAndSettings}(QSIZE)
 
@@ -45,10 +45,11 @@ function calc_one()
 		params = take!( IN_QUEUE )
 		@debug "params taken from IN_QUEUE; got params uuid=$(params.settings.uuid)"
 		aout = do_run_a( params.cache_key, params.sys, params.settings )
-		@debug "model run OK; putting results into STASHED_RESULTS"
-		STASHED_RESULTS[ aout.uuid ] = aout
+		@debug "model run OK; putting results into STASHED_RESULTS"		
+		res_text = results_to_html( aout.uuid, aout )
+		STASHED_RESULTS[ aout.uuid ] = res_text
+		CACHED_RESULTS[ aout.cache_key ] = res_text
 	end
-	# put!( OUT_QUEUE, aout )
 end
 
 function load_system()::TaxBenefitSystem
@@ -71,7 +72,9 @@ struct BaseState
 	gain_lose    :: NamedTuple
 end
 
-function initialise()::BaseState
+
+
+function initialise_settings()::Settings
     settings = Settings()
 	settings.uuid = UUIDs.uuid4()
 	settings.means_tested_routing = modelled_phase_in
@@ -80,35 +83,14 @@ function initialise()::BaseState
 	settings.dump_frames = false
 	settings.do_marginal_rates = true
 	settings.requested_threads = 4
-	sys = load_system()
-
-	tot = 0
-	obs = Observable( Progress(settings.uuid,"",0,0,0,0))
-	of = on(obs) do p
-		tot += p.step
-		PROGRESS[p.uuid] = (progress=p,total=tot)
-	end
-	results = do_one_run( settings, [sys], obs )
-	settings.poverty_line = make_poverty_line( results.hh[1], settings )
-	summary = summarise_frames( results, settings )
-	popn = summary.inequality[1].total_population
-	gainlose = ( 
-		gainers=0.0, 
-		losers=0.0,
-		nc=popn, 
-		popn = popn )	
-	delete!( PROGRESS, settings.uuid )
-	return BaseState( sys, settings, results, summary, gainlose )
+	return settings
 end
 
-const BASE_STATE = initialise()
-
-function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
+function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) :: AllOutput
 	global obs
 	@debug "do_run_a entered"
 	obs = Observable( 
 		Progress(settings.uuid, "",0,0,0,0))
-		# UUID("00000000-0000-0000-0000-000000000000"),"",		
 	tot = 0
 	of = on(obs) do p
 		tot += p.step
@@ -121,6 +103,7 @@ function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
 	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
 	return aout;
 end
+
 
 
 function submit_job( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
@@ -150,3 +133,4 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	delete!( PROGRESS, settings.uuid )	
 	return (results=results, summary=outf,gain_lose=gl  )
 end 
+
