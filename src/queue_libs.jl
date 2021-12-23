@@ -1,6 +1,8 @@
 const NUM_HANDLERS = 4
 const QSIZE = 32
 
+IN_QUEUE = Channel{ParamsAndSettings}(QSIZE)
+
 """
 Wait to pull a job off the job queue and sent it
 to the calculator. FIXME should also just generate text output.

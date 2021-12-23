@@ -5,18 +5,6 @@
 #
 # fixme extend to multiple systems
 
-PROGRESS = Dict{UUID,Any}()
-
-# FIXME we can simplify this by directly creating the outputs
-# as a string and just saving that in STASHED_RESULTS
-STASHED_RESULTS = Dict{UUID,Any}()
-
-# Save results by query string & just return that
-# TODO complete this.
-CACHED_RESULTS = Dict{String,Any}()
-
-IN_QUEUE = Channel{ParamsAndSettings}(QSIZE)
-
 function load_system()::TaxBenefitSystem
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 	#
@@ -29,20 +17,7 @@ function load_system()::TaxBenefitSystem
 	return sys
 end
 
-function initialise_settings()::Settings
-    settings = Settings()
-	settings.uuid = UUIDs.uuid4()
-	settings.means_tested_routing = modelled_phase_in
-    settings.run_name="run-$(date_string())"
-	settings.income_data_source = ds_frs
-	settings.dump_frames = false
-	settings.do_marginal_rates = true
-	settings.requested_threads = 4
-	return settings
-end
-
 function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) :: AllOutput
-	global obs
 	@debug "do_run_a entered"
 	obs = Observable( 
 		Progress(settings.uuid, "",0,0,0,0))
@@ -52,9 +27,9 @@ function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) ::
 		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
 	results = do_one_run( settings, [sys], obs )
-	outf = summarise_frames( results, BASE_STATE.settings )
-	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], BASE_STATE.settings ) 
-	exres = calc_examples( BASE_STATE.sys, sys, settings )
+	outf = summarise_frames( results, settings )
+	gl = make_gain_lose( BASE_RESULTS.hh[1], results.hh[1], BASE_STATE.settings ) 
+	exres = calc_examples( BASE_PARAMS, sys, settings )
 	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
 	return aout;
 end
