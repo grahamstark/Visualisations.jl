@@ -1,4 +1,5 @@
 const NUM_HANDLERS = 4
+const QSIZE = 32
 
 """
 Wait to pull a job off the job queue and sent it

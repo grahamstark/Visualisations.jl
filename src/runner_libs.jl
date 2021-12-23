@@ -3,9 +3,6 @@
 # Create a base set of results, settings and parameters and
 # import everything we might reasonably need.#
 #
-
-const QSIZE = 32
-
 # fixme extend to multiple systems
 struct ParamsAndSettings 
 	uuid         :: UUID
@@ -76,7 +73,6 @@ function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) ::
 	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
 	return aout;
 end
-
 
 """
 Old runner version used in scotbudg 
