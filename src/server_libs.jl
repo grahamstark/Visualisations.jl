@@ -30,8 +30,6 @@ using .Utils:md_format, qstrtodict
 
 import Base.Threads.@spawn
 
-const NUM_HANDLERS = 4
-
 @debug "server starting up"
 
 include( "uses.jl")

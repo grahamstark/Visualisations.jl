@@ -47,16 +47,6 @@ function load_system()::TaxBenefitSystem
 	return sys
 end
 
-struct BaseState
-	sys          :: TaxBenefitSystem
-	settings     :: Settings
-	results      :: NamedTuple
-	summary      :: NamedTuple
-	gain_lose    :: NamedTuple
-end
-
-
-
 function initialise_settings()::Settings
     settings = Settings()
 	settings.uuid = UUIDs.uuid4()
@@ -88,16 +78,6 @@ function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) ::
 end
 
 
-
-function submit_job( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
-    uuid = UUIDs.uuid4()
-	@debug "submit_job entered uuid=$uuid"
-	settings.uuid = uuid
-    put!( IN_QUEUE, ParamsAndSettings(uuid, cache_key, sys, settings ))
-	@debug "submit exiting queue is now $IN_QUEUE"
-    return uuid
-end
-
 """
 Old runner version used in scotbudg 
 """
@@ -115,5 +95,4 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], settings ) 
 	delete!( PROGRESS, settings.uuid )	
 	return (results=results, summary=outf,gain_lose=gl  )
-end 
-
+end

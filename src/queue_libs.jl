@@ -1,3 +1,5 @@
+const NUM_HANDLERS = 4
+
 """
 Wait to pull a job off the job queue and sent it
 to the calculator. FIXME should also just generate text output.
@@ -13,6 +15,15 @@ function calc_one()
 		STASHED_RESULTS[ results.uuid ] = res_text
 		CACHED_RESULTS[ results.cache_key ] = res_text
 	end
+end
+
+function submit_job( cache_key, sys :: TaxBenefitSystem, settings :: Settings )
+    uuid = UUIDs.uuid4()
+	@debug "submit_job entered uuid=$uuid"
+	settings.uuid = uuid
+    put!( IN_QUEUE, ParamsAndSettings(uuid, cache_key, sys, settings ))
+	@debug "submit exiting queue is now $IN_QUEUE"
+    return uuid
 end
 
 #
