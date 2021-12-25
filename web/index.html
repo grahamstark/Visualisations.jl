@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="keywords" content="Economics, Scotland" />
     <title>ScotBen - Basic Incomes</title>
-    
-    <!---
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="css/journal.css" rel="stylesheet"/>
-    <link href="css/litera.css" rel="stylesheet"/>
-    -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="css/united.css" rel="stylesheet"/>
 </head>
 <body>
@@ -235,31 +230,6 @@
                 </div>
             </div>
         </div>
-        <!-- jquery -->
-        <script type='text/javascript' src='js/jquery.js'></script>
-        <script type='text/javascript' src='js/jquery.periodicalupdater.js'></script>
-        <!-- bootstrap -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
-        <!-- vega graphics -->
-        <script type="text/javascript" src="js/vega-lite.min.js"></script>
-        <script type="text/javascript" src="js/vega.js"></script>
-        <script type="text/javascript" src="js/vega-embed.min.js"></script>
-
-        <!-- templates -->
-        <script type='text/javascript' src="js/stb-support.js"></script>
-        <script type='text/javascript' src="js/mustache.min.js"></script>
-        <script type='text/javascript'>
-
-            $('#runbutton').on( 'click', function(){
-                console.log( "pressed" );
-                stb.runModel();
-            });
-
-            $(document).ready(function(){
-                stb.loadDefaults();
-            });
-        </script>
         <footer>
             <h4 id="notes">Notes</h4>
             <ul>
@@ -300,8 +270,40 @@
             <li><p>Open Source software released under the <a href="https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE">MIT Licence</a>. <a href="https://github.com/grahamstark/Visualisations.jl">Source Code</a>.</li>
             </ul>
         </footer>
-
-
     </div>
 </body>
+        <!-- jquery -->
+    <script type='text/javascript' src='js/jquery.js'></script>
+    <script type='text/javascript' src='js/jquery.periodicalupdater.js'></script>
+    <!-- bootstrap -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- vega graphics -->
+    <script type="text/javascript" src="js/vega-lite.min.js"></script>
+    <script type="text/javascript" src="js/vega.js"></script>
+    <script type="text/javascript" src="js/vega-embed.min.js"></script>
+
+    <!-- templates -->
+    <script type='text/javascript' src="js/stb-support.js"></script>
+    <script type='text/javascript' src="js/mustache.min.js"></script>
+    <script type='text/javascript'>
+
+        $('#runbutton').on( 'click', function(){
+            console.log( "pressed" );
+            stb.runModel();
+        });
+
+        $(document).ready(function(){
+            stb.loadDefaults();
+        });
+    </script>
+    <style>
+        .card{
+            border: border-secondary;
+        }
+        .card:hover{
+            border: border-primary;
+        }
+    </style>
+     
 </html>

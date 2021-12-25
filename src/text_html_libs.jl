@@ -190,44 +190,97 @@ const ARROWS_3 = Dict([
 
 const ARROWS_1 = Dict([
     "nonsig"          => "",
-    "positive_strong" => "&#x1F881;",
-    "positive_med"    => "&#x1F871;",
-    "positive_weak"   => "&#x1F861;",
-    "negative_strong" => "&#x1F883;",
-    "negative_med"    => "&#x1F873;",
-    "negative_weak"   => "&#x1F863;" ])
+    "positive_strong" => "<i class='bi bi-arrow-up-circle-fill'></i>",
+    "positive_med"    => "<i class='bi bi-arrow-up-circle'></i>",
+    "positive_weak"   => "<i class='bi bi-arrow-up'></i>",
+    "negative_strong" => "<i class='bi bi-arrow-down-circle-fill'></i>",
+    "negative_med"    => "<i class='bi bi-arrow-down-circle'></i>",
+    "negative_weak"   => "<i class='bi bi-arrow-down'></i>" ])
     
 function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
     change = res.pres.bhc_net_income - res.bres.bhc_net_income
     ( gnum, glclass, glstr ) = format_and_class( change )
-
     i2sp = inctostr(res.pres.income )
     i2sb = inctostr(res.bres.income )
-
- 
-    changestr = gnum != "" ? "&nbsp;"*ARROWS_3[glstr]*"&nbsp;&pound;"* gnum*"pw" : "No Change"
+    changestr = gnum != "" ? "&nbsp;"*ARROWS_1[glstr]*"&nbsp;&pound;"* gnum*"pw" : "No Change"
     card = "
-    <div class='col'>
-        <div class='card' style='width: 12rem;'>
-            <img src='images/families/$(hh.picture).gif'  alt='Picture of Family' width='100' height='140'>
+
+    <div class='card' 
+        style='width: 12rem;' 
+        data-toggle='modal' 
+        data-target='#$(hh.picture)' >
+            <img src='images/families/$(hh.picture).gif'  
+                alt='Picture of Family' 
+                width='100' 
+                height='140'/>
             <div class='card-body'>
                 <p class='$glclass'><strong>$changestr</strong></p>
                 <h5 class='card-title'>$(hh.label)</h5>
                 <p class='card-text'>$(hh.description)</p>
             </div>
         </div><!-- card -->
-    </div><!-- col -->
 ";
+    @debug "card=$card"
     return card
 end
 
+
+function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
+    modal = """
+<!-- Modal -->
+<div class='modal fade' id='$(hh.picture)' tabindex='-1' role='dialog' aria-labelledby='$(hh.picture)-label' aria-hidden='true'>
+  <div class='modal-dialog' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+      <h5 class='modal-title' id='$(hh.picture)-label'/>$(hh.label)</h5>
+      <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+          <span aria-hidden='true'>&times;</span>
+        </button>
+      </div> <!-- header -->
+      <div class='modal-body'>
+        <img src='images/families/$(hh.picture).gif'  
+            alt='Picture of Family' 
+            width='100' 
+            height='140'/>
+        <table class='table'>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>Change</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <th>Thing</th>
+            <th>88</th>
+            <th>99</th>
+            <th>11</th>
+        </tr>
+
+            </tbody>
+        </table>
+          
+      </div> <!-- body -->
+    </div> <!-- content -->
+  </div> <!-- dialog -->
+</div><!-- modal container -->
+"""
+    @debug modal
+    return modal
+end
+
 function make_examples( example_results :: Vector )
-    cards = "<div class='row'>"
+    cards = "<div class='card-group'>"
     n = size( EXAMPLE_HHS )[1]
     for i in 1:n
         cards *= make_example_card( EXAMPLE_HHS[i], example_results[i])
     end
     cards *= "</div>"
+    for i in 1:n
+        cards *= make_popups( EXAMPLE_HHS[i], example_results[i])
+    end
     return cards;
 end
 
