@@ -17,7 +17,10 @@ function load_system()::TaxBenefitSystem
 	return sys
 end
 
-function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) :: AllOutput
+function do_run_a( 
+	cache_key, 
+	sys :: TaxBenefitSystem, 
+	settings :: Settings ) :: AllOutput
 	@debug "do_run_a entered"
 	obs = Observable( 
 		Progress(settings.uuid, "",0,0,0,0))
@@ -27,18 +30,20 @@ function do_run_a( cache_key, sys :: TaxBenefitSystem, settings :: Settings ) ::
 		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
 	results = do_one_run( settings, [sys], obs )
+	settings.poverty_line = make_poverty_line( results.hh[1], settings )        
+    
 	outf = summarise_frames( results, settings )
-	gl = make_gain_lose( BASE_RESULTS.hh[1], results.hh[1], BASE_STATE.settings ) 
+	gl = make_gain_lose( BASE_RESULTS.results.hh[1], results.hh[1], settings ) 
 	exres = calc_examples( BASE_PARAMS, sys, settings )
 	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
 	return aout;
 end
 
 """
-Old runner version used in scotbudg 
+Runner version used in scotbudg without the caching stuff 
 """
 function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
-	settings = deepcopy( BASE_STATE.settings )
+	settings = deepcopy( BASE_SETTINGS )
 	settings.uuid = UUIDs.uuid4()
 	obs = Observable(Progress(settings.uuid, "",0,0,0,0))
 	tot = 0
@@ -48,7 +53,7 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	end
     results = do_one_run( settings, [sys], obs )
 	outf = summarise_frames( results, settings )
-	gl = make_gain_lose( BASE_STATE.results.hh[1], results.hh[1], settings ) 
+	gl = make_gain_lose( BASE_RESULTS.results.hh[1], results.hh[1], settings ) 
 	delete!( PROGRESS, settings.uuid )	
 	return (results=results, summary=outf,gain_lose=gl  )
 end
