@@ -1,9 +1,17 @@
 
 include( "uses.jl")
+include( "types.jl")
+include( "logger.jl")
+## FIXME either use or replace
+include( "examples.jl")
 include( "display_constants.jl")
 include( "static_texts.jl")
+## FIXME shouldn't be needed
+include( "text_html_libs.jl")
 include( "runner_libs.jl")
 include( "table_libs.jl")
+include( "base_results.jl")
+
 include( "dash_libs.jl")
 
 const PREAMBLE = """
@@ -65,11 +73,10 @@ end # layout
 
 function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, scp, scp_age )
 	results = nothing
-	sys = deepcopy( BASE_STATE.sys )
-	# 21.15, 179.60, 10.0
-
-	# 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0 
-
+	cache_key = "$br, $hr, $tr, $pa, $ni_prim, $ni_sec, $cb, $pen, $uct, $ucs, $wtcb, $scp, $scp_age"
+	sys = deepcopy( BASE_PARAMS )
+	settings = deepcopy( BASE_SETTINGS )
+	settings.uuid = UUIDs.uuid4()
 	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=324.84)||(wtcb!=2_005) || (scp_age != 5)
 		br /= 100.0
 		hr /= 100.0
@@ -115,17 +122,15 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 		sys.scottish_child_payment.maximum_age = scp_age
 		sys.ni.primary_class_1_rates[3] = ni_prim
 		sys.ni.secondary_class_1_rates[2:3] .= ni_sec
-
-		results = do_run( sys )
+		
+		results = do_run_a( cache_key, sys, settings )
 	else
-		results = ( 
-			results = BASE_STATE.results,
-			summary = BASE_STATE.summary, 
-			gain_lose = BASE_STATE.gain_lose )
+		@debug "returning base results"
+		results = BASE_RESULTS
 	end
 	println("sys.it.non_savings_rates $(sys.it.non_savings_rates)")
-	println("BASE_STATE.sys.it.non_savings_rates $(BASE_STATE.sys.it.non_savings_rates)")
-	return make_output_table(results,sys)
+	println("BASE_PARAMS.it.non_savings_rates $(BASE_PARAMS.it.non_savings_rates)")
+	return make_output_table( results, sys )
 end 
 
 function no_nothings( things ...)::Bool

@@ -17,6 +17,8 @@ function initialise_settings()::Settings
 	return settings
 end
 
+const BASE_SETTINGS = initialise_settings()
+
 ## FIXME POVERTY LINE!
 function make_base_results()
     obs = Observable( 
@@ -30,12 +32,14 @@ function make_base_results()
 	results = do_one_run( settings, [BASE_PARAMS], obs )
     println( BASE_PARAMS)
     println( settings )
+    settings.poverty_line = make_poverty_line( results.hh[1], settings )        
     outf = summarise_frames( results, settings )
 	gl = make_gain_lose( results.hh[1], results.hh[1], settings ) 
 	exres = calc_examples( BASE_PARAMS, BASE_PARAMS, settings )
+    println( settings.poverty_line)
 	aout = AllOutput( BASE_SETTINGS.uuid, "DEFAULT", results, outf, gl, exres ) 
 	return aout;
 end
 
 const BASE_RESULTS = make_base_results()
-const BASE_TEXT_OUTPUT = results_to_html( BASE_UUID, BASE_OUTPUT, BASE_OUTPUT )
+const BASE_TEXT_OUTPUT = results_to_html( BASE_UUID, BASE_RESULTS, BASE_RESULTS )

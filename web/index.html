@@ -257,18 +257,22 @@
             });
 
             $(document).ready(function(){
-                $( "#input-fields").load( "includes/bi-input.html");
+                stb.loadDefaults();
             });
         </script>
         <footer>
             <h4 id="notes">Notes</h4>
             <ul>
             <li>Scotland actually has 3 lower rates of income tax rather than the single 20% basic rate shown - currently 19%,20% and 21%. Changing the 20% ‘basic rate’ causes all three to move in sync.</li>
-            <li>Likewise, changing the <em>Universal Credit: single 25+ adult</em> field changes the rates for young people and couples.</li>
             <li>Scotland is <a href="https://commonslibrary.parliament.uk/constituency-data-universal-credit-roll-out/">in the process of switching working-age families to Universal Credit from ‘Legacy Benefits’ (Income Support, Housing Benefit, etc.)</a>. I’ve written a <a href="https://stb-blog.virtual-worlds.scot/articles/2021/11/12/uc-legacy.html">note on how this is modelled</a> - the code is <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl">here</a>;</li>
             <li>the <a href="https://www.legislation.gov.uk/uksi/2021/313/pdfs/uksiem_20210313_en.pdf">£20pw ‘uplift’ to Universal Credit and Working Tax Credit</a>, now <a href="https://www.gov.uk/government/news/budget-2021-what-you-need-to-know">scheduled for removal in April 2022</a> is modelled as already removed.</li>
             </ul>
-            <p>Poverty and Inequality: * based on <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/household-income-definition/">equivalised before housing costs income</a>. * uses 60% of <em>Scottish</em> (not UK) median income as poverty line (official target uses the UK median). * poverty line is <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/poverty-definition/">relative</a> - so may be different after your changes.</p>
+            <p>Poverty and Inequality:</p> 
+            <ul>
+                <li>based on <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/household-income-definition/">equivalised before housing costs income</a>.</li>
+                <li><uses 60% of <em>Scottish</em> (not UK) median income as poverty line (official target uses the UK median).</li>
+                <li>poverty line is <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/poverty-definition/">relative</a> - so may be different after your changes.</li>
+            </ul>
             <h4 id="key-assumptions">Key Assumptions</h4>
             <ul>
             <li><em>No behavioural changes</em>: increasing or decreasing taxes doesn’t cause people to change how they work and earn;</li>

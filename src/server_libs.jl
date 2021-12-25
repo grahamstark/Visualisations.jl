@@ -2,33 +2,6 @@
 # see: https://github.com/JuliaWeb/Mux.jl
 # and:
 #
-using HTTP
-using Mux
-import Mux.WebSockets
-using JSON3
-using HttpCommon
-using Logging, LoggingExtras
-using UUIDs
-
-using ScottishTaxBenefitModel
-using .BCCalcs
-using .ModelHousehold
-using .Utils
-using .Definitions
-using .SingleHouseholdCalculations
-using .RunSettings
-using .FRSHouseholdGetter
-using .STBParameters
-using .STBIncomes
-using .STBOutput
-using .Monitor
-using .ExampleHelpers
-using .Runner
-using .SimplePovertyCounts: GroupPoverty
-using .GeneralTaxComponents: WEEKS_PER_YEAR, WEEKS_PER_MONTH
-using .Utils:md_format, qstrtodict
-
-import Base.Threads.@spawn
 
 @debug "server starting up"
 
@@ -83,7 +56,7 @@ end
 
 function web_map_params( req  :: Dict ) :: TaxBenefitSystem
    querydict = req[:parsed_querystring]
-   sys = deepcopy( BASE_STATE.sys )
+   sys = deepcopy( BASE_PARAMS )
    d = req[:parsed_querystring]
 
    sys.ubi.abolished = false 
@@ -125,7 +98,7 @@ end
 
 function web_map_settings( req  :: Dict ) :: Settings
    querydict = req[:parsed_querystring]
-   settings = deepcopy( BASE_STATE.settings )
+   settings = deepcopy( BASE_SETTINGS )
    # ...
    return settings
 end
@@ -173,9 +146,9 @@ function get_progress( u :: AbstractString ) :: Dict
       if p.progress.phase == "end"
          @debug "get_progress: phase end"
          state = STASHED_RESULTS[uuid]
+         @debug "got state for STASHED_RESULTS; uuid=$uuid"
          delete!( PROGRESS, uuid )
-         @debug "caching results with key $(state.cache_key)"
-         CACHED_RESULTS[state.cache_key]= state
+         @debug( "deleted $uuid progress")
       else
          state = ( uuid=p.progress.uuid, phase=p.progress.phase, count=p.progress.count, total=11_000 )
       end
@@ -185,15 +158,20 @@ function get_progress( u :: AbstractString ) :: Dict
    return add_headers( json )    
 end
 
+function get_base( req :: Dict )
+   @debug "returning base results"
+   return add_headers( JSON3.write(BASE_TEXT_OUTPUT))
+ end
+
 function submit_model( req :: Dict )
    query = req[:query]
    @debug "submit model entered with query $query"
    if haskey( CACHED_RESULTS, query )
       @debug "returning results from cache"
-      return CACHED_RESULTS[req[:query]]
+      return add_headers( JSON3.write(CACHED_RESULTS[query]))
    end
-   @debug "submit_model  - starting mapping params"
    sys = web_map_params( req )
+   @debug "submit_model  - starting mapping params"
    settings = web_map_settings( req )
    uuid = submit_job( req[:query], sys, settings )
    @debug "submit_model uuid=$uuid"    
@@ -215,5 +193,6 @@ end
    # page("/stb", req -> web_do_one_run_cached( req )),
    page( "/bi/progress/:uuid", req -> get_progress((req[:params][:uuid]))), # note no Headers
    page("/bi/run/", req -> submit_model( req )),
+   page("/bi/base/", req -> get_base( req )),
    Mux.notfound(),
 )

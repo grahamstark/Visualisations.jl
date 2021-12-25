@@ -849,6 +849,7 @@ stb.runModel = function(){
             console.log( "jqXHR.statusCode" + jqXHR.status + " text" + jqXHR.statusText );
 
         });
+
         /*
         }, 
          error: function( xq, textStatus, errorThrown ){
@@ -856,4 +857,24 @@ stb.runModel = function(){
          }
          */
      // });
+}
+
+stb.loadDefaults = function(){
+    $.ajax(
+        // make the UBI bit a variable
+        { url: "/bi/base/",
+         method: 'get',
+         dataType: 'json',
+         data: {}
+        }).done( 
+            function( result ){
+                stb.createMainOutputs( result );
+            }
+        ).fail(
+            function( jqXHR, textStatus, errorThrown ){
+                console.log( "failed with " + textStatus + " errorThrown "+errorThrown );
+                console.log( "jqXHR.statusCode" + jqXHR.status + " text" + jqXHR.statusText );
+            }
+        );
+    
 }

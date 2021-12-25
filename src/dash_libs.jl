@@ -313,14 +313,14 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
 			gain_lose_table( results.gain_lose)),
 		html_td(dcc_graph(figure=drawDeciles( 
 			results.summary.deciles[1][:,3],
-			BASE_STATE.summary.deciles[1][:,3]))),
+			BASE_RESULTS.summary.deciles[1][:,3]))),
         html_td(
              costs_table(
-                BASE_STATE.summary.income_summary[1],
+                BASE_RESULTS.summary.income_summary[1],
                 results.summary.income_summary[1])),
         html_td( 
             [mr_table( 
-                    BASE_STATE.summary.metrs[1], 
+                    BASE_RESULTS.summary.metrs[1], 
                     results.summary.metrs[1] )
             ],style=TAB_CENTRE )
         ])
@@ -333,15 +333,15 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
 	row2 = html_tr([		
         html_td(
 			pov_table(
-				BASE_STATE.summary.poverty[1],
+				BASE_RESULTS.summary.poverty[1],
 				results.summary.poverty[1],
-                BASE_STATE.child_poverty[1],
+                BASE_RESULTS.results.child_poverty[1],
                 results.summary.child_poverty[1])),
         html_td( ineq_table(
-            BASE_STATE.summary.inequality[1],
+            BASE_RESULTS.summary.inequality[1],
             results.summary.inequality[1])),
         html_td( dcc_graph(figure=draw_lorenz(
-                BASE_STATE.summary.deciles[1][:,2],
+                BASE_RESULTS.summary.deciles[1][:,2],
                 results.summary.deciles[1][:,2]))),
         html_td() # spacer
     ]) # TR
@@ -353,7 +353,9 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
 end
 
 # as bootstrap rows
-function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
+function make_output_table(
+    results :: AllOutput, 
+    sys     :: TaxBenefitSystem )
     row1 = dbc_row([
         dbc_col([
             html_h4("Gainers and Losers"),
@@ -363,7 +365,7 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
                     dcc_graph(
                         figure=drawDeciles( 
                             results.summary.deciles[1][:,3],
-                            BASE_STATE.summary.deciles[1][:,3])
+                            BASE_RESULTS.summary.deciles[1][:,3])
                         )
                     )
             ]) # inner row for chart & table
@@ -371,14 +373,16 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
         dbc_col([
             html_h4(" Revenues and Costs"),
             costs_table(
-                BASE_STATE.summary.income_summary[1],
+                BASE_RESULTS.summary.income_summary[1],
                 results.summary.income_summary[1]),
-            overall_cost( BASE_STATE.summary.income_summary[1], results.summary.income_summary[1])
+            overall_cost( 
+                BASE_RESULTS.summary.income_summary[1], 
+                results.summary.income_summary[1])
         ]), # row1 col2
         dbc_col([      
                 html_h4("Incentives - Marginal Effective Tax Rates.")
                 mr_table( 
-                    BASE_STATE.summary.metrs[1], 
+                    BASE_RESULTS.summary.metrs[1], 
                     results.summary.metrs[1] )
         ]) # row1 col3
     ]) # row 1
@@ -387,22 +391,22 @@ function make_output_table( results::NamedTuple, sys::TaxBenefitSystem )
         dbc_col([
             html_h4("Poverty"),
 			pov_table(
-				BASE_STATE.summary.poverty[1],
+				BASE_RESULTS.summary.poverty[1],
 				results.summary.poverty[1],
-				BASE_STATE.summary.child_poverty[1],
+				BASE_RESULTS.summary.child_poverty[1],
 				results.summary.child_poverty[1]
                 )
         ]), # row2 col 1
         dbc_col( [
             html_h4("Inequality"),
             ineq_table(
-                BASE_STATE.summary.inequality[1],
+                BASE_RESULTS.summary.inequality[1],
                 results.summary.inequality[1])
         ]), # row2 col 2
         dbc_col( [
                 dcc_graph(
                     figure=draw_lorenz(
-                        BASE_STATE.summary.deciles[1][:,2],
+                        BASE_RESULTS.summary.deciles[1][:,2],
                         results.summary.deciles[1][:,2]) 
                 )
         ]) # row 2 col 3

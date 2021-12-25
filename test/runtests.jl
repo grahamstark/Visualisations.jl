@@ -11,7 +11,7 @@ include( "../src/text_html_libs.jl")
 include( "../src/server_libs.jl")
 
 sys = load_system()
-settings = BASE_STATE.settings
+settings = deepcopy(BASE_SETTINGS)
 
 
 @testset "Examples" begin    

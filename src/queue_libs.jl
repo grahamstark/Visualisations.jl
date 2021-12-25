@@ -15,7 +15,9 @@ function calc_one()
 		results = do_run_a( params.cache_key, params.sys, params.settings )
 		@debug "model run OK; putting results into STASHED_RESULTS"		
 		res_text = results_to_html( results.uuid, BASE_RESULTS, results )
+		@debug "calc_one; stashing to uuid=$(results.uuid)"
 		STASHED_RESULTS[ results.uuid ] = res_text
+		@debug "calc_one; caching to to cache_key=$(results.cache_key)"
 		CACHED_RESULTS[ results.cache_key ] = res_text
 	end
 end
