@@ -207,8 +207,8 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
 
     <div class='card' 
         style='width: 12rem;' 
-        data-toggle='modal' 
-        data-target='#$(hh.picture)' >
+        data-bs-toggle='modal' 
+        data-bs-target='#$(hh.picture)' >
             <img src='images/families/$(hh.picture).gif'  
                 alt='Picture of Family' 
                 width='100' 
@@ -224,8 +224,23 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
     return card
 end
 
+function pers_inc_table( res :: NamedTuple ) :: String
+    df = two_incs_to_frame( res.bres, res.pres )
+    n = size(df1)[1]
+    up_is_good = zeros(Int, n )  
+    df.Item = fill("",n)
+    for i in 1:n
+        df[i,:Item] = iname( df[i,:Inc] )
+        upisgood[i] =  (df[i,:Inc] in DIRECT_TAXES_AND_DEDUCTIONS) ? -1 : 1
+    end
+    return frame_to_table( df, prec=2, up_is_good=up_is_good, 
+        caption="Household incomes £pw" )    
+end
 
 function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
+
+    pit = pers_inc_table( res )
+
     modal = """
 <!-- Modal -->
 <div class='modal fade' id='$(hh.picture)' tabindex='-1' role='dialog' aria-labelledby='$(hh.picture)-label' aria-hidden='true'>
@@ -233,34 +248,16 @@ function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
     <div class='modal-content'>
       <div class='modal-header'>
       <h5 class='modal-title' id='$(hh.picture)-label'/>$(hh.label)</h5>
-      <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-          <span aria-hidden='true'>&times;</span>
-        </button>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         
       </div> <!-- header -->
       <div class='modal-body'>
         <img src='images/families/$(hh.picture).gif'  
             alt='Picture of Family' 
             width='100' 
             height='140'/>
-        <table class='table'>
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Before</th>
-                    <th>After</th>
-                    <th>Change</th>
-                </tr>
-            </thead>
-            <tbody>
-            <tr>
-            <th>Thing</th>
-            <th>88</th>
-            <th>99</th>
-            <th>11</th>
-        </tr>
-
-            </tbody>
-        </table>
+        
+        $pit
           
       </div> <!-- body -->
     </div> <!-- content -->
