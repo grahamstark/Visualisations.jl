@@ -225,22 +225,50 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
 end
 
 function pers_inc_table( res :: NamedTuple ) :: String
-    df = two_incs_to_frame( res.bres, res.pres )
-    n = size(df1)[1]
+    df = two_incs_to_frame( res.bres.income, res.pres.income )
+    n = size(df)[1]
     up_is_good = zeros(Int, n )  
     df.Item = fill("",n)
+    df.Change = df.After - df.Before
+    df.Item = iname.(df.Inc)
     for i in 1:n
-        df[i,:Item] = iname( df[i,:Inc] )
-        upisgood[i] =  (df[i,:Inc] in DIRECT_TAXES_AND_DEDUCTIONS) ? -1 : 1
+       up_is_good[i] =  (df[i,:Inc] in DIRECT_TAXES_AND_DEDUCTIONS) ? -1 : 1
     end
     return frame_to_table( df, prec=2, up_is_good=up_is_good, 
         caption="Household incomes £pw" )    
 end
 
+function hhsummary( hh :: Household )
+    caption = ""
+    ten = pretty(hh.tenure)
+    rm = "Rent"
+    hc = format( hh.gross_rent, commas=true, precision=2)
+    if is_owner_occupier( hh.tenure )
+        hc = format(hh.mortgage_payment, commas=true, precision=2)
+        rm = "Mortgage"
+    end
+    table = "<table class='table table-sm'>"
+    table *= "<thead>
+        <tr>
+            <th></th><th style='text-align:right'></th>
+        </tr>";
+    table *= "<caption>$caption</caption>"
+    table *= "
+        </thead>
+        <tbody>"
+    table *= "<tr><th>Tenure</th><td style='text-align:right'>$ten</td></tr>"
+    table *= "<tr><th>$rm</th><td style='text-align:right'>$hc</td></tr>"
+    # ... and so on
+    table *= "</tbody></table>"
+    table
+end
+
+
+
 function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
 
     pit = pers_inc_table( res )
-
+    hhtab = hhsummary( hh.hh )
     modal = """
 <!-- Modal -->
 <div class='modal fade' id='$(hh.picture)' tabindex='-1' role='dialog' aria-labelledby='$(hh.picture)-label' aria-hidden='true'>
@@ -252,10 +280,17 @@ function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
          
       </div> <!-- header -->
       <div class='modal-body'>
-        <img src='images/families/$(hh.picture).gif'  
-            alt='Picture of Family' 
-            width='100' 
-            height='140'/>
+        <div class='row'>
+            <div class='col'>
+            <img src='images/families/$(hh.picture).gif'  
+                alt='Picture of Family' 
+                width='100' 
+                height='140'/>
+            </div>
+            <div class='col'>
+                $hhtab
+            </div>
+        </div>
         
         $pit
           

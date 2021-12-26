@@ -153,14 +153,13 @@ const EXAMPLE_HHS = [
 				chu5 = 1 )),
 		ExampleHH("family8","Single female pensioner, aged 80", "A single pensioner, aged 80, with no private pension.",
 			make_hh(
-				tenure  = Mortgaged_Or_Shared,
-				hcost = 150.0,
+				hcost = 100,
 				head_age = 80,
 				marrstat = Single )),
 		ExampleHH("family9","Pensioner couple, both aged 80", "A pensioner couple, both aged 80, with £100pw private pension.",
 			make_hh(
-				tenure  = Mortgaged_Or_Shared,
-				hcost = 150.0,
+				tenure  = Owned_outright,
+				hcost = 0.0,
 				head_private_pens = 100.0,
 				head_age = 80,
 				spouse_age = 80,
