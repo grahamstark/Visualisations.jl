@@ -209,10 +209,8 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
         style='width: 12rem;' 
         data-bs-toggle='modal' 
         data-bs-target='#$(hh.picture)' >
-            <img src='images/families/$(hh.picture).gif'  
-                alt='Picture of Family' 
-                width='100' 
-                height='140'/>
+            <img src='images/families/kieko/$(hh.picture).png'  
+                alt='Picture of Family' />
             <div class='card-body'>
                 <p class='$glclass'><strong>$changestr</strong></p>
                 <h5 class='card-title'>$(hh.label)</h5>
@@ -264,6 +262,8 @@ function hhsummary( hh :: Household )
 end
 
 
+# width='100' 
+# height='140'
 
 function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
 
@@ -282,10 +282,9 @@ function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
       <div class='modal-body'>
         <div class='row'>
             <div class='col'>
-            <img src='images/families/$(hh.picture).gif'  
-                alt='Picture of Family' 
-                width='100' 
-                height='140'/>
+            <img src='images/families/kieko/$(hh.picture).png'  
+                alt='Picture of Family' width="200" height="40" 
+              />
             </div>
             <div class='col'>
                 $hhtab
