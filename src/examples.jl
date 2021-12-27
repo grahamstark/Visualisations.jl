@@ -99,11 +99,11 @@ end
 const EXAMPLE_HHS = [
 		ExampleHH("family1","Single Person, £25k", "Single female, aged 25, earning £25,000",
 			make_hh(
-				head_earn = 25_000/52.0,
+				head_earn = 25_000/WEEKS_PER_YEAR,
 				head_hours = 40 )),
 		ExampleHH("family2","Single Parent, £25k", "Working single parent, earning £25,000, with one 3-year old daughter",
 			make_hh(
-				head_earn = 25_000/52.0,
+				head_earn = 25_000/WEEKS_PER_YEAR,
 				head_hours = 40,
 				chu5 = 1 )),
 		ExampleHH("family3","Unemployed Couple, 2 children", "Couple, neither currently working, with 2 children aged 7 and 9",
@@ -118,7 +118,7 @@ const EXAMPLE_HHS = [
 				ch5p = 2 )),
 		ExampleHH("family4","Working Family £12k, 2 children", "Couple, on low wages, with 2 children aged 6 and 10. She works, he says at home with the kids",
 			make_hh(
-				head_earn = 12_000/52.0,
+				head_earn = 12_000/WEEKS_PER_YEAR,
 				head_hours = 30,
 				head_age = 35,
 				spouse_earn = 0.0,
@@ -130,7 +130,7 @@ const EXAMPLE_HHS = [
 			make_hh(
 				tenure  = Mortgaged_Or_Shared,
 				hcost = 220.0,
-				head_earn = 35_000/52.0,
+				head_earn = 35_000/WEEKS_PER_YEAR,
 				head_hours = 40,
 				head_age = 35,
 				spouse_earn = 0.0,
@@ -142,10 +142,10 @@ const EXAMPLE_HHS = [
 			make_hh(
 				tenure  = Mortgaged_Or_Shared,
 				hcost = 320.0,
-				head_earn = 50_000/52.0,
+				head_earn = 50_000/WEEKS_PER_YEAR,
 				head_hours = 40,
 				head_age = 35,
-				spouse_earn = 50_000.0/52,
+				spouse_earn = 50_000.0/WEEKS_PER_YEAR,
 				spouse_hours = 40,
 				spouse_age = 35,
 				marrstat = Married_or_Civil_Partnership,
