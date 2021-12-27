@@ -31,6 +31,62 @@ function thing_table(
     return table
 end
 
+function costs_frame_to_table(
+    df :: DataFrame )
+    caption = "Values in £m pa; numbers of individuals paying or receiving."
+    table = "<table class='table table-sm'>"
+    table *= "<thead>
+        <tr>
+            <th></th><th colspan='2'>Before</th><th colspan='2'>After</th><th colspan=2>Change</th>            
+        </tr>
+        <tr>
+            <th></th><th style='text-align:right'>Costs £m</th><th style='text-align:right'>(Counts)</th>
+            <th style='text-align:right'>Costs £m</th><th style='text-align:right'>(Counts)</th>
+            <th style='text-align:right'>Costs £m</th><th style='text-align:right'>(Counts)</th>
+        </tr>
+        </thead>"
+    table *= "<caption>$caption</caption>"
+    i = 0
+    for r in eachrow( df )
+        i += 1
+        #=
+        colour = ""
+        if (up_is_good[i] !== 0) && (! (r.Change ≈ 0))
+            if r.Change > 0
+                colour = up_is_good[i] == 1 ? "text-success" : "text-danger"
+             else
+                colour = up_is_good[i] == 1 ? "text-danger" : "text-success"
+            end # neg diff   
+        end # non zero diff
+        =#
+        # fixme to a function
+        dv = r.dval ≈ 0 ? "-" : format(r.dval, commas=true, precision=1 )
+        if dv != "-" && r.dval > 0
+            dv = "+$(dv)"
+        end 
+        dc = r.dcount ≈ 0 ? "-" : format(r.dcount, commas=true, precision=0 )
+        if dc != "-" && r.dcount > 0
+            dc = "+$(dc)"
+        end 
+        v1 = format(r.value1, commas=true, precision=1)
+        c1 = format(r.count1, commas=true, precision=0)
+        v2 = format(r.value2, commas=true, precision=1)
+        c2 = format(r.count2, commas=true, precision=0)
+        row = "<tr><th class='text-left'>$(r.Item)</th>
+                  <td style='text-align:right'>$v1</td>
+                  <td style='text-align:right'>($c1)</td>
+                  <td style='text-align:right'>$v2</td>
+                  <td style='text-align:right'>($c2)</td>
+                  <td style='text-align:right'>$dv</td>
+                  <td style='text-align:right'>($dc)</td>
+                </tr>"
+        table *= row
+    end
+    table *= "</tbody></table>"
+    return table
+end
+
+
 function frame_to_table(
     df :: DataFrame;
     up_is_good :: Vector{Int},
@@ -72,6 +128,7 @@ function frame_to_table(
     table *= "</tbody></table>"
     return table
 end
+
 
 function costs_table( incs1 :: DataFrame, incs2 :: DataFrame )
     df = costs_dataframe( incs1, incs2 )
@@ -345,6 +402,10 @@ function results_to_html(
     lorenz_pre = base_results.summary.deciles[1][:,2]
     lorenz_post = results.summary.deciles[1][:,2]
     example_text = make_examples( results.examples )
+    big_costs = costs_frame_to_table( 
+        detailed_cost_dataframe( 
+            base_results.summary.income_summary[1],
+            results.summary.income_summary[1] )) 
     outt = ( 
         phase = "end", 
         uuid = uuid,
@@ -357,6 +418,7 @@ function results_to_html(
         inequality=inequality, 
         lorenz_pre=lorenz_pre, 
         lorenz_post=lorenz_post,
-        examples = example_text )
+        examples = example_text,
+        big_costs_table = big_costs )
     return outt
 end

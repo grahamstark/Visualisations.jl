@@ -100,3 +100,21 @@ function pov_dataframe(
     diff = v2 - v1    
     return DataFrame( Item=names, Before=v1, After=v2, Change=diff)
 end
+
+function detailed_cost_dataframe( inc1 :: DataFrame, inc2 :: DataFrame )
+    i1 = collect(values(inc1[1,1:98])) ./ 1_000_000
+    c1 = collect(values(inc1[2,1:98]))
+    i2 = collect(values(inc2[1,1:98])) ./ 1_000_000
+    c2 = collect(values(inc2[2,1:98])) # fixme parameterise 98
+    dc = c2 - c1
+    di = i2 - i1
+    names = pretty.(collect((keys(inc1[end,1:98]))))
+    return  DataFrame( 
+        :Item=>names, 
+        :value1=>i1, 
+        :count1=>c1,
+        :value2=>i2, 
+        :count2=>c2,
+        :dval => di,
+        :dcount => dc)
+end

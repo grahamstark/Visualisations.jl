@@ -733,6 +733,7 @@ stb.createMainOutputs = function( result ){
     $("#mr-table").html( result.mrs );
     $("#pov-table").html( result.poverty );
     $("#ineq-table").html( result.inequality );
+    $("#big-costs-table").html( result.big_costs_table );
     stb.createLorenzCurve( 
         "#lorenz", 
         result,

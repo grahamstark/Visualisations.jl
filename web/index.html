@@ -208,7 +208,11 @@
                             </div>
                             <div class='col'>
                                 <h4>Revenues and Costs</h4>
-                                <div id="costs-table"></div>
+                                <div
+                                    data-bs-toggle='modal' 
+                                    data-bs-target='#big-costs-popup'>
+                                    <div id="costs-table"></div>
+                                </div>
                                 <div id="overall-costs"></div>
                             </div>                            
                             <div class='col'>
@@ -233,6 +237,20 @@
                 </div>
             </div>
         </div>
+
+        <div class='modal fade' id='big-costs-popup' tabindex='-1' role='dialog' aria-labelledby='$(hh.picture)-label' aria-hidden='true'>
+            <div class='modal-dialog modal-lg'  role='document'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title' id='big-costs-table-label'/>Detailed Costs and Counts</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div> <!-- header -->
+                    <div class='modal-body'>
+                        <div id='big-costs-table'></div>
+                    </div>
+                </div><!-- content -->
+            </div> <!--dialog -->
+        </div> <!-- big-table modal -->
         <footer>
             <h4 id="notes">Notes</h4>
             <ul>
