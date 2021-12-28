@@ -126,7 +126,7 @@ const EXAMPLE_HHS = [
 				spouse_age = 35,
 				marrstat = Married_or_Civil_Partnership,
 				ch5p = 2 )),
-		ExampleHH("family5","Working Family £30k, 2 children", "Couple, with 3 year old twins. He works, she says at home with the kids",
+		ExampleHH("family5","Working Family £35k, 2 children", "A couple with 3 year old twins. He works, she says at home with the kids",
 			make_hh(
 				tenure  = Mortgaged_Or_Shared,
 				hcost = 220.0,
