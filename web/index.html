@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="keywords" content="Economics, Scotland" />
     <title>ScotBen - Basic Incomes</title>
+    
+    <style>
+        .card{
+            border: border-secondary;
+        }
+        .card:hover{
+            border: border-primary;
+        }
+    </style>
 
     <link href="css/bootstrap.css" rel="stylesheet" />
     
@@ -97,7 +106,7 @@
                                         <div class='col'>
                                             <p>What do with means-tested benefits?</p>
                                             <div class='form-check'>
-                                                <label for='ubi-mtbens-keep-as-is'class='form-check-label'>Keep As-Is</label>
+                                                <label for='ubi-mtbens-keep-as-is' class='form-check-label'>Keep As-Is</label>
                                                 <input class="form-check-input"  type='radio'  aria-label="Default select example"  name='ubi-mtbens' id='ubi-mtbens-keep-as-is'/>
                                             </div>
                                             <div class='form-check'>
@@ -162,12 +171,11 @@
                             </div><!-- row -->
                             <div class='row p-3'>
                                 <div class="col-12">
-                                    <input type='button' class="btn btn-primary" type="submit" id='runbutton' value='Run the Model'/>
+                                    <input type='button' class="btn btn-primary" id='runbutton' value='Run the Model'/>
                                 </div>
-
                             </div>
-                        </form>
-                    </div><!-- container -->
+                        </div><!-- container -->
+                    </form>
                 </div>
             </div>
             <div class='row'>
@@ -261,7 +269,7 @@
             <p>Poverty and Inequality:</p> 
             <ul>
                 <li>based on <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/household-income-definition/">equivalised before housing costs income</a>.</li>
-                <li><uses 60% of <em>Scottish</em> (not UK) median income as poverty line (official target uses the UK median).</li>
+                <li>The model uses 60% of <em>Scottish</em> (not UK) median income as poverty line (official target uses the UK median).</li>
                 <li>poverty line is <a href="https://www.gov.scot/publications/poverty-in-scotland-methodology/pages/poverty-definition/">relative</a> - so may be different after your changes.</li>
             </ul>
             <h4 id="key-assumptions">Key Assumptions</h4>
@@ -317,13 +325,6 @@
             stb.loadDefaults();
         });
     </script>
-    <style>
-        .card{
-            border: border-secondary;
-        }
-        .card:hover{
-            border: border-primary;
-        }
-    </style>
+  
     </body> 
 </html>
