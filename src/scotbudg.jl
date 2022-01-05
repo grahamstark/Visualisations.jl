@@ -77,6 +77,7 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 	sys = deepcopy( BASE_PARAMS )
 	settings = deepcopy( BASE_SETTINGS )
 	settings.uuid = UUIDs.uuid4()
+	# settings.dump_frames = true
 	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=324.84)||(wtcb!=2_005) || (scp_age != 5)
 		br /= 100.0
 		hr /= 100.0
@@ -116,7 +117,9 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 			sys.uc.couple_oldest_25_plus = max(0.0,sys.uc.couple_oldest_25_plus+ucsd)
 		end
 
+		@debug "sys.nmt_bens.child_benefit.first_child was $(sys.nmt_bens.child_benefit.first_child) now $cb"
 		sys.nmt_bens.child_benefit.first_child = cb
+		@debug "sys.nmt_bens.pensions.new_state_pension was $(sys.nmt_bens.pensions.new_state_pension) now $pen"
 		sys.nmt_bens.pensions.new_state_pension = pen
 		sys.scottish_child_payment.amount = scp
 		sys.scottish_child_payment.maximum_age = scp_age
