@@ -270,7 +270,7 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
         data-bs-toggle='modal' 
         data-bs-target='#$(hh.picture)' >
             <img src='images/families/$(FAMDIR)/$(hh.picture).png'  
-                alt='Picture of Family'  width="100" height="140" />
+                alt='Picture of Family'  width='100' height='140' />
             <div class='card-body'>
                 <p class='$glclass'><strong>$changestr</strong></p>
                 <h5 class='card-title'>$(hh.label)</h5>
@@ -343,7 +343,7 @@ function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
         <div class='row'>
             <div class='col'>
             <img src='images/families/$(FAMDIR)/$(hh.picture).png'  
-                width="100" height="140"
+                width='100' height='140'
                 alt='Picture of Family'
               />
             </div>
