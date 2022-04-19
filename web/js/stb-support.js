@@ -581,18 +581,17 @@ stb.createOneLorenz = function( targetId, lorenz_pre, lorenz_post, thumbnail ){
                     "color": {"value":"blue"}
                 } // encoding
             }, // pre layer line
-          { // diagonal in grey
-               "mark": "line",
-               "encoding":{
+            { // diagonal in grey
+                "mark": "line",
+                "encoding":{
                    "x": { "type": "quantitative",
                           "field": "popn_tot" },
                    "y": { "type": "quantitative",
                           "field": "income_tot" },
                    "color": {"value":"#ccc"},
                    "strokeWidth": {"value": 1.0}
-                   // "strokeDash":
                } // encoding
-           },
+            },
         ]
     }
     vegaEmbed( targetId, gini_vg );
