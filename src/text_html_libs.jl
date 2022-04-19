@@ -1,3 +1,6 @@
+
+const FAMDIR = "budget" # old budget images; alternative is 'keiko' for VE images
+
 function thing_table(
     names::Vector{String}, 
     v1::Vector, 
@@ -266,7 +269,7 @@ function make_example_card( hh :: ExampleHH, res :: NamedTuple ) :: String
         style='width: 12rem;' 
         data-bs-toggle='modal' 
         data-bs-target='#$(hh.picture)' >
-            <img src='images/families/kieko/$(hh.picture).png'  
+            <img src='images/families/$(FAMDIR)/$(hh.picture).png'  
                 alt='Picture of Family' />
             <div class='card-body'>
                 <p class='$glclass'><strong>$changestr</strong></p>
@@ -339,7 +342,7 @@ function make_popups( hh :: ExampleHH, res :: NamedTuple ) :: String
       <div class='modal-body'>
         <div class='row'>
             <div class='col'>
-            <img src='images/families/kieko/$(hh.picture).png'  
+            <img src='images/families/$(FAMDIR)/$(hh.picture).png'  
                 alt='Picture of Family' width="200" height="40" 
               />
             </div>
