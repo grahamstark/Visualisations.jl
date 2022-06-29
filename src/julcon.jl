@@ -10,7 +10,8 @@ begin
 	# Load scotben
 	#
 	using Pkg
-	Pkg.develop( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
+	# Pkg.develop( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
+	Pkg.develop( path="/home/graham_s/julia/vw/ScottishTaxBenefitModel")
 	Pkg.add( "Plots")
 	Pkg.add( "DataFrames")
 	Pkg.add( "PlutoUI" )
@@ -23,7 +24,7 @@ begin
 	Pkg.add("SurveyDataWeighting")
 	Pkg.add("PovertyAndInequalityMeasures")
 	Pkg.add( "CSV" )
-	Pkg.update()
+	# Pkg.update()
 end
 
 # ╔═╡ 38953460-94b3-4a57-aee9-40dbc67b6b68
@@ -149,8 +150,7 @@ md"""
 
 # ╔═╡ 335bdcce-014b-4c26-ba75-9c86ea5bb83a
 begin
-	settings2 = Settings()
-	settings2
+	Settings()
 end
 
 # ╔═╡ 911522b2-2f5f-4678-a324-8e765d026130
@@ -158,7 +158,7 @@ end
 begin
 	# housekeeping stuff
 	const DEFAULT_NUM_TYPE = Float64
-	settings = RunSettings.Settings()
+	settings = Settings()
 	settings.requested_threads = 4
 	settings.data_dir = "/home/graham_s/julia/vw/ScottishTaxBenefitModel/data"
 	
@@ -205,9 +205,9 @@ end
 # ╟─6d54f8cc-025a-4693-8069-ee2e35048e77
 # ╟─4ddafeec-da63-43ad-95c7-25e0440d6b71
 # ╠═b8ebf72d-3b12-485b-9f28-847cfa6f61b3
-# ╠═402c1e02-3278-4678-b52f-295dfca4d99b
-# ╠═871a6142-6ecc-4021-85fa-57189ffa1762
-# ╠═d879b6bf-768e-4dce-96fc-187792932380
+# ╟─402c1e02-3278-4678-b52f-295dfca4d99b
+# ╟─871a6142-6ecc-4021-85fa-57189ffa1762
+# ╟─d879b6bf-768e-4dce-96fc-187792932380
 # ╠═335bdcce-014b-4c26-ba75-9c86ea5bb83a
 # ╠═911522b2-2f5f-4678-a324-8e765d026130
 # ╠═5cd6bfaa-0d89-4e0c-843e-ea60ed297655
