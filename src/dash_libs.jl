@@ -56,7 +56,7 @@ function drawDeciles( pre::Vector, post :: Vector )
         yaxis_title="£pw",
         width=350, 
         height=350)
-    return PlotlyJS.Plot( bar( x=1:11, y=v), layout )
+    return PlotlyJS.Plot( bar( x=1:10, y=v), layout )
 end
 
 """

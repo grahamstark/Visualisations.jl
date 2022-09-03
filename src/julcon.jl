@@ -5,6 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 82cff020-f7c5-11ec-058b-adcf730aecd1
+
 begin
 	#
 	# Load scotben
@@ -13,16 +14,19 @@ begin
 	# Pkg.develop( url="https://github.com/grahamstark/ScottishTaxBenefitModel.jl")
 	Pkg.develop( path="/home/graham_s/julia/vw/ScottishTaxBenefitModel")
 	Pkg.add( "Plots")
-	Pkg.add( "DataFrames")
+	Pkg.add( "Observers" )
+	Pkg.add( "Observables" )
+	Pkg.add( "PrettyTables")
+	Pkg.add( "DataFrames" )
 	Pkg.add( "PlutoUI" )
-	Pkg.add("Colors")
-	Pkg.add("ColorVectorSpace")
-	Pkg.add("ImageShow")
-	Pkg.add("FileIO")
-	Pkg.add("ImageIO")
-	Pkg.add("BudgetConstraints")
-	Pkg.add("SurveyDataWeighting")
-	Pkg.add("PovertyAndInequalityMeasures")
+	Pkg.add( "Colors" )
+	Pkg.add( "ColorVectorSpace" )
+	Pkg.add( "ImageShow" )
+	Pkg.add( "FileIO" )
+	Pkg.add( "ImageIO" )
+	Pkg.add( "BudgetConstraints" )
+	Pkg.add( "SurveyDataWeighting" )
+	Pkg.add( "PovertyAndInequalityMeasures" )
 	Pkg.add( "CSV" )
 	# Pkg.update()
 end
@@ -37,17 +41,21 @@ begin
 	using .STBParameters
 	using .BCCalcs
 	using .ModelHousehold
+	using ScottishTaxBenefitModel.Runner: do_one_run
 	import .FRSHouseholdGetter
 	using .Utils
 	using .Definitions
+	using .Monitor
 	using .SingleHouseholdCalculations
 	using .RunSettings
 
-	
+	using Observers
+	using Observables
 	using Plots
 	using PlutoUI
 	using CSV
 	using DataFrames
+	using PrettyTables
 	#
 	# Image stuff
 	#
@@ -64,6 +72,9 @@ end
 begin
 	PlutoUI.TableOfContents(aside=true)
 end
+
+# ╔═╡ ecc7a9ef-1d4a-47b6-b3aa-bf09755465bf
+p = STBParameters.TaxBenefitSystem{Float64}()
 
 # ╔═╡ c75e6664-dd0b-49e3-b085-7064314696c3
 md"""
@@ -154,7 +165,6 @@ begin
 end
 
 # ╔═╡ 911522b2-2f5f-4678-a324-8e765d026130
-
 begin
 	# housekeeping stuff
 	const DEFAULT_NUM_TYPE = Float64
@@ -172,14 +182,14 @@ begin
 	end
 	
 
-	function load_system()::TaxBenefitSystem
+	function load_system()::STBParameters.TaxBenefitSystem
 		sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
 		#
 		# Note that as of Budget21 removing these doesn't actually happen till May 2022.
 		#
-		load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
+		STBParameters.load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 		# uc taper to 55
-		load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "budget_2021_uc_changes.jl"))
+		STBParameters.load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "budget_2021_uc_changes.jl"))
 		weeklyise!( sys )
 		return sys
 	end
@@ -195,10 +205,54 @@ begin
 	people = CSV.File( "$(settings.data_dir)/model_people_scotland.tab" )|>DataFrame
 end
 
+# ╔═╡ 674bd7aa-1f54-4138-bf65-218ca5e1a5ae
+begin
+	prog = Monitor.Progress(settings.uuid,"",0,0,0,0)
+end
+
+# ╔═╡ 83674bf7-c2b7-4fbd-8679-79bd93c052e9
+Utils.date_string()
+
+# ╔═╡ 3c93e3b6-b625-4058-8fb1-740cb6f39117
+begin
+
+# observer = Observer(Progress("",0,0,0))
+
+tot = 0
+obs = Observable( prog )
+of = on(obs) do p
+    global tot
+    # println(p)
+    tot += p.step
+    # println(tot)
+end
+	
+function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing )
+    settings.means_tested_routing = mtrouting
+    settings.run_name="run-$(mtrouting)-$(Utils.date_string())"
+    sys = [load_system(), load_system()]
+    tot = 0
+    results = do_one_run( settings, sys, obs )
+    h1 = results.hh[1]
+    pretty_table( h1[:,[:weighted_people,:bhc_net_income,:eq_bhc_net_income,:ahc_net_income,:eq_ahc_net_income]] )
+    settings.poverty_line = make_poverty_line( results.hh[1], settings )
+    dump_frames( settings, results )
+    # println( "poverty line = $(settings.poverty_line)")
+    outf = summarise_frames( results, settings )
+    # println( outf )
+    gl = make_gain_lose( results.hh[1], results.hh[2], settings )
+    # println(gl)
+end 
+
+basic_run( print_test=false, mtrouting = uc_full )
+
+end
+
 # ╔═╡ Cell order:
 # ╠═82cff020-f7c5-11ec-058b-adcf730aecd1
 # ╠═38953460-94b3-4a57-aee9-40dbc67b6b68
 # ╠═47e47829-f21a-4473-b9f8-0f3f76fecaa8
+# ╠═ecc7a9ef-1d4a-47b6-b3aa-bf09755465bf
 # ╟─c75e6664-dd0b-49e3-b085-7064314696c3
 # ╟─64a59389-d29b-45b4-9958-a9aa89fbb5de
 # ╟─51a1df57-1d49-4267-af4a-b8569273bd3d
@@ -211,3 +265,6 @@ end
 # ╠═335bdcce-014b-4c26-ba75-9c86ea5bb83a
 # ╠═911522b2-2f5f-4678-a324-8e765d026130
 # ╠═5cd6bfaa-0d89-4e0c-843e-ea60ed297655
+# ╠═674bd7aa-1f54-4138-bf65-218ca5e1a5ae
+# ╠═83674bf7-c2b7-4fbd-8679-79bd93c052e9
+# ╠═3c93e3b6-b625-4058-8fb1-740cb6f39117

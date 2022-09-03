@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.7
+# v0.19.9
 
 using Markdown
 using InteractiveUtils
@@ -16,6 +16,8 @@ begin
 	using SurveyDataWeighting
 	using PovertyAndInequalityMeasures
 	using Plots,CSV,DataFrames,PlutoUI
+	using PrettyTables
+	using Observables
 end
 
 # ╔═╡ b6b22dd4-bbb3-4c29-a27f-521cf14fc1d6
@@ -30,6 +32,7 @@ begin
 	using .Definitions
 	using .SingleHouseholdCalculations
 	using .RunSettings
+	using .Monitor: Progress
 end
 
 # ╔═╡ 9ba57d28-9f19-43c6-b64b-79416ca8a12a
@@ -274,10 +277,42 @@ finally, you can download this presentation from [https://virtual-worlds.scot/im
 
 """
 
+# ╔═╡ ed11b677-72dc-448e-970e-a2b1d871b360
+begin
+	tot = 0	
+	# observer = Observer(Progress("",0,0,0))
+	obs = Observable( Monitor.Progress(settings.uuid,"",0,0,0,0))
+	of = on(obs) do p
+	    global tot
+	    # println(p)	
+	    tot += p.step
+	    # println(tot)
+	end
+end
+
+# ╔═╡ 6a023861-c224-46ff-83b5-38e49aee7ecb
+
+function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing )
+    settings.means_tested_routing = mtrouting
+    settings.run_name="run-$(mtrouting)-$(date_string())"
+    sys = [get_system(scotland=false), get_system( scotland=true )]
+    tot = 0
+    results = do_one_run( settings, sys, obs )
+    h1 = results.hh[1]
+    pretty_table( h1[:,[:weighted_people,:bhc_net_income,:eq_bhc_net_income,:ahc_net_income,:eq_ahc_net_income]] )
+end 
+
+
+
+# ╔═╡ 3483fe7d-2f91-4a44-bdfa-2d2cee3bfc44
+begin
+	basic_run( print_test=true, mtrouting = mt )
+end
+
 # ╔═╡ Cell order:
-# ╟─53c06a7e-4f02-11ec-1109-65224850d083
-# ╟─3dce1b1e-9756-48f2-a7dc-45363d1e3995
-# ╟─b6b22dd4-bbb3-4c29-a27f-521cf14fc1d6
+# ╠═53c06a7e-4f02-11ec-1109-65224850d083
+# ╠═3dce1b1e-9756-48f2-a7dc-45363d1e3995
+# ╠═b6b22dd4-bbb3-4c29-a27f-521cf14fc1d6
 # ╟─9ba57d28-9f19-43c6-b64b-79416ca8a12a
 # ╟─7d0dcf51-deb9-4b74-98a8-e5e457e8e270
 # ╟─38beba12-681c-4d02-a247-8388e0b7df9b
@@ -296,3 +331,6 @@ finally, you can download this presentation from [https://virtual-worlds.scot/im
 # ╟─43eaea11-1764-4dee-af79-05aa264937c4
 # ╟─47148425-e812-4ec3-ab40-49603b5d53ee
 # ╟─285cdbf5-1e73-428a-bc1d-88ea8a731ce0
+# ╠═ed11b677-72dc-448e-970e-a2b1d871b360
+# ╠═6a023861-c224-46ff-83b5-38e49aee7ecb
+# ╠═3483fe7d-2f91-4a44-bdfa-2d2cee3bfc44
