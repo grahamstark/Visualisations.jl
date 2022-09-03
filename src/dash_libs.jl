@@ -49,6 +49,7 @@ end
 
 function drawDeciles( pre::Vector, post :: Vector )
     v = pre-post;
+    @debug "drawDeciles pre=$pre post=$post diff=$v"
     println( "v=$v")
     layout = Layout(
         title="Gain/Loss by decile",
