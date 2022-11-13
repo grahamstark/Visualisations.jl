@@ -131,7 +131,7 @@ end
 
 function get_results( u :: AbstractString ):: Dict
    uuid = UUID(u)
-   if haskey( CACHED_RESULTS[res.cache_key])
+   if haskey( CACHED_RESULTS, res.cache_key )
 
    end
 end
