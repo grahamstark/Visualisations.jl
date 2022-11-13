@@ -47,4 +47,7 @@ You'll have to do some reading, I'm afraid. Some links:
 * Part of the [Scottish Tax Benefit Model](https://github.com/grahamstark/ScottishTaxBenefitModel.jl);	
 * Open Source software released under the [MIT Licence](https://github.com/grahamstark/Visualisations.jl/blob/main/LICENSE). [Source Code](https://github.com/grahamstark/Visualisations.jl).
 
+
+Written by [Graham Stark](https://virtual-worlds.scot) | email: [graham.stark@virtual-worlds.scot](mailto:graham.stark@virtual-worlds.scot) | [Mastodon](@graham_s@mastodon.social)  
+
 """
