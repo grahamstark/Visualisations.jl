@@ -11,6 +11,7 @@ include( "text_html_libs.jl")
 include( "runner_libs.jl")
 include( "table_libs.jl")
 include( "base_results.jl")
+include( "param_constants.jl")
 
 include( "dash_libs.jl")
 
@@ -78,7 +79,7 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 	settings = deepcopy( BASE_SETTINGS )
 	settings.uuid = UUIDs.uuid4()
 	# settings.dump_frames = true
-	if (br != 20) || (hr !=41)||(tr !=46)||(uct != 55 )||(cb != 21.15)||(pen!= 179.60)||(scp!=10)||(pa!=12_570)||(ni_prim!=12)||(ni_sec!=13.8)||(ucs!=324.84)||(wtcb!=2_005) || (scp_age != 5)
+	if (br != BASIC_RATE) || (hr !=HIGHER_RATE)||(tr !=TOP_RATE)||(uct != UC_TAPER )||(cb != CHILD_BENEFIT)||(pen!= PENSION)||(scp!=SCOTTISH_CHILD_PAYMENT)||(pa!=PERSONAL_ALLOWANCE)||(ni_prim!=NI_A)||(ni_sec!=NI_B)||(ucs!=UC_SINGLE)||(wtcb!=WTC_BASIC) || (scp_age != SCP_AGE)
 		br /= 100.0
 		hr /= 100.0
 		tr /= 100.0
@@ -178,7 +179,10 @@ callback!(
 		return [nothing, do_output( basic_rate, higher_rate, top_rate, pa, ni_prim, ni_sec, cb, pen, uctaper, ucs, wtcb, scp, scp_age )]
 	end
 	println( "doing the do-nothing version")
-	[nothing, do_output( 20, 41, 46, 12_570, 12, 13.8, 21.15, 179.60, 55, 324.84, 2_005, 10.0, 5 )]
+	[nothing, do_output( 
+		BASIC_RATE, HIGHER_RATE,  TOP_RATE,  PERSONAL_ALLOWANCE, 
+		NI_A, NI_B, 21.15, 179.60, 
+		55, 324.84, 2_005, 10.0, 5 )]
 end
 
 run_server( app, "0.0.0.0", 8052; debug=true )

@@ -430,7 +430,7 @@ function it_fieldset()
                     min = 0,
                     max = 100,
                     size = "4",
-                    value = 20.0,
+                    value = BASIC_RATE,
                     step = 0.5 )
             ) # col
         ]),
@@ -445,7 +445,7 @@ function it_fieldset()
                     min = 0,
                     max = 100,
                     size = "4",
-                    value = 41.0,
+                    value = HIGHER_RATE,
                     step = 0.5 )
             ) # col
         ]), # row
@@ -460,7 +460,7 @@ function it_fieldset()
                     min = 0,
                     max = 100,
                     size = "4",
-                    value = 46.0,
+                    value = TOP_RATE,
                     step = 0.5 )
             ) # col
         ]), # row
@@ -475,7 +475,7 @@ function it_fieldset()
                     min = 0,
                     max = 50_000.0,
                     size = "4",
-                    value = 12_570,
+                    value = PERSONAL_ALLOWANCE,
                     step = 1,
                     style=RESERVED )
             ) # col
@@ -498,7 +498,7 @@ function ni_fieldset()
                     min = 0,
                     max = 50,
                     size = "4",
-                    value = 12.0,
+                    value = NI_A,
                     step = 0.1,
                     style=RESERVED )
             ) # col
@@ -515,7 +515,7 @@ function ni_fieldset()
                     min = 0,
                     max = 50,
                     size = "4",
-                    value = 13.8,
+                    value = NI_B,
                     step = 0.1,
                     style=RESERVED )
             ) # col
@@ -539,7 +539,7 @@ function ben_fieldset()
                     min = 0,
                     max = 100,
                     size = "4",
-                    value = 21.15,
+                    value = CHILD_BENEFIT,
                     step = 0.05,
                     style=RESERVED )
             ) # col
@@ -555,7 +555,7 @@ function ben_fieldset()
                     min = 0,
                     max = 500,
                     size = "4",
-                    value = 179.60,
+                    value = PENSION,
                     step = 0.10,
                     style=RESERVED )
             ) # col
@@ -571,7 +571,7 @@ function ben_fieldset()
                     min = 0,
                     max = 100,
                     size = "4",
-                    value = 55.0,
+                    value = UC_TAPER,
                     step = 0.5,
                     style=RESERVED )
             ) # col
@@ -587,7 +587,7 @@ function ben_fieldset()
                     min = 0,
                     max = 1000,
                     size = "4",
-                    value = 324.84,
+                    value = UC_SINGLE,
                     step = 0.01,
                     style=RESERVED )
             ) # col
@@ -603,7 +603,7 @@ function ben_fieldset()
                     min = 0,
                     max = 10_000,
                     size = "6",
-                    value = 2_005,
+                    value = WTC_BASIC,
                     step = 0.50,
                     style=RESERVED )
             ) # col
@@ -619,7 +619,7 @@ function ben_fieldset()
                     min = 0,
                     max = 100,
                     size = "4",
-                    value = 10.0,
+                    value = SCOTTISH_CHILD_PAYMENT,
                     step = 0.05 )
             ) # col
         ]),
@@ -633,7 +633,7 @@ function ben_fieldset()
 					min = 1,
 					max = 15,
 					marks = Dict([Symbol("$v") => Symbol("$v") for v in 0:15]),
-					value = 5,
+					value = SCP_AGE,
 					step = 1
 				)
             ) # col
