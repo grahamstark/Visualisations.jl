@@ -556,7 +556,7 @@ function ben_fieldset()
                     max = 500,
                     size = "4",
                     value = PENSION,
-                    step = 0.10,
+                    step = 0.01,
                     style=RESERVED )
             ) # col
         ]),
