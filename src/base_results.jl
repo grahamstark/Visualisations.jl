@@ -14,7 +14,6 @@ function initialise_settings()::Settings
 	settings.dump_frames = false
 	settings.do_marginal_rates = true
 	settings.requested_threads = 4
-	settings.dump_frames = true
 	return settings
 end
 

@@ -78,7 +78,6 @@ function do_output( br, hr, tr, pa, ni_prim, ni_sec, cb, pen, uct, ucs, wtcb, sc
 	sys = deepcopy( BASE_PARAMS )
 	settings = deepcopy( BASE_SETTINGS )
 	settings.uuid = UUIDs.uuid4()
-	# settings.dump_frames = true
 	if (br != BASIC_RATE) || (hr !=HIGHER_RATE)||(tr !=TOP_RATE)||(uct != UC_TAPER )||(cb != CHILD_BENEFIT)||(pen!= PENSION)||(scp!=SCOTTISH_CHILD_PAYMENT)||(pa!=PERSONAL_ALLOWANCE)||(ni_prim!=NI_A)||(ni_sec!=NI_B)||(ucs!=UC_SINGLE)||(wtcb!=WTC_BASIC) || (scp_age != SCP_AGE)
 		br /= 100.0
 		hr /= 100.0

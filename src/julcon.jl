@@ -236,7 +236,9 @@ function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing )
     h1 = results.hh[1]
     pretty_table( h1[:,[:weighted_people,:bhc_net_income,:eq_bhc_net_income,:ahc_net_income,:eq_ahc_net_income]] )
     settings.poverty_line = make_poverty_line( results.hh[1], settings )
-    dump_frames( settings, results )
+    if settings.dump_frames
+		dump_frames( settings, results )
+	end
     # println( "poverty line = $(settings.poverty_line)")
     outf = summarise_frames( results, settings )
     # println( outf )
