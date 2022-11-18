@@ -446,8 +446,9 @@ function generate_table(df :: DataFrame)
         html_tbody(rows)])
 end
 
-sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021_22.jl" ))
-load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
+# FIXME TO CONSTANT use library version 
+sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23.jl" ))
+# load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 weeklyise!( sys )
 
 app = dash(external_stylesheets=[dbc_themes.UNITED], 
