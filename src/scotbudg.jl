@@ -180,8 +180,9 @@ callback!(
 	println( "doing the do-nothing version")
 	[nothing, do_output( 
 		BASIC_RATE, HIGHER_RATE,  TOP_RATE,  PERSONAL_ALLOWANCE, 
-		NI_A, NI_B, 21.15, 179.60, 
-		55, 324.84, 2_005, 10.0, 5 )]
+		NI_A, NI_B, CHILD_BENEFIT, PENSION, 
+		UC_TAPER, UC_SINGLE, WTC_BASIC, SCOTTISH_CHILD_PAYMENT, SCP_AGE )]
+
 end
 
 run_server( app, "0.0.0.0", 8052; debug=true )
