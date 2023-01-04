@@ -30,7 +30,8 @@ For simplicity, we assume:
 
 * only one person in the household works;
 * the adults are of working age;
-* there are no other sources of income, for example savings income or disability benefits; and
+* there are no other sources of income, for example savings income or disability benefits; 
+* no student loans; and
 * the working person faces a fixed hourly wage and can work any hours at that wage.
 
 You'll see that the graphs are complicated enough even with those simplifications.
@@ -248,6 +249,22 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame, ytitle :: String )
 	return p
 end
 
+
+
+function loadsystem(; ruk :: Bool )
+	# FIXME TO CONSTANT use library version 
+	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23.jl" ))
+	if ruk 
+		load_file!( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23_ruk.jl" ))
+	end
+	# load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
+	weeklyise!( sys )
+	return sys
+end
+
+const SCOTSYS = loadsystem(; ruk = false )
+const UKSYS = loadsystem(; ruk = true )
+
 """
 Create the whole plot for the named household. 
 """
@@ -260,7 +277,8 @@ function doplot(
 	chu5::Integer, 
 	ch5p::Integer,
 	view :: AbstractString,
-	target_str :: AbstractString )
+	target_str :: AbstractString,
+	taxsystem :: AbstractString )
 	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
@@ -280,6 +298,7 @@ function doplot(
 		target = total_taxes 
 	end # forgot how to cover
 	settings.target_bc_income = target
+	sys = taxsystem == "scotland" ? SCOTSYS : RUKSYS
 	lbc, ubc = getbc( hh, sys, wage, settings )
 	if view == "l_vs_l"
 		figure=econ_bcplot( lbc, ubc, wage, ytitle )
@@ -422,6 +441,18 @@ function get_input_block()
 							   (value = "total_taxes", label="Total Taxes Paid") ],
 					value = "ahc_hh")
 			)
+		], style=FORM_EXTRA),
+		dbc_row([
+			dbc_col(
+				dbc_label("Which system to use:"; html_for="taxsystem"), width=3
+			),
+			dbc_col(
+				dbc_radioitems(
+					id = "taxsystem",
+					options = [(value = "scotland", label= "Scottish System"),
+					           (value = "ruk", label= "Rest of UK System") ],
+					value = "scotland")
+			)
 		], style=FORM_EXTRA)
 	])
 end 
@@ -445,11 +476,6 @@ function generate_table(df :: DataFrame)
         html_thead(html_tr([html_th("Gross"), html_th("Net"), html_th("Breakdown"), html_th("Breakdown+1p")])),
         html_tbody(rows)])
 end
-
-# FIXME TO CONSTANT use library version 
-sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23.jl" ))
-# load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
-weeklyise!( sys )
 
 app = dash(external_stylesheets=[dbc_themes.UNITED], 
 	url_base_pathname="/bcd/") 
@@ -482,8 +508,9 @@ callback!(
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
 	Input( "view", "value"),
-	Input( "target", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target
-		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target )
+	Input( "scotland", "value")
+	Input( "taxsystem", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target, taxsystem
+		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target, taxsystem )
 	end
 
 run_server(app, "0.0.0.0", debug=true )
