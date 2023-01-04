@@ -255,7 +255,7 @@ function loadsystem(; ruk :: Bool )
 	# FIXME TO CONSTANT use library version 
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23.jl" ))
 	if ruk 
-		load_file!( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23_ruk.jl" ))
+		load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23_ruk.jl" ))
 	end
 	# load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
 	weeklyise!( sys )
@@ -263,7 +263,7 @@ function loadsystem(; ruk :: Bool )
 end
 
 const SCOTSYS = loadsystem(; ruk = false )
-const UKSYS = loadsystem(; ruk = true )
+const RUKSYS = loadsystem(; ruk = true )
 
 """
 Create the whole plot for the named household. 
@@ -508,7 +508,7 @@ callback!(
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
 	Input( "view", "value"),
-	Input( "scotland", "value")
+	Input( "target", "value"),
 	Input( "taxsystem", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target, taxsystem
 		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target, taxsystem )
 	end
