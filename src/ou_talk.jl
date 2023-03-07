@@ -326,7 +326,7 @@ end
 
 # ╔═╡ a520302d-3ad2-4ba7-96e0-63450bedbf36
 begin
-	out = run( 
+	sc_uk_out = run( 
 		people, 
 		ruk_rates./100, 
 		ruk_thresholds./52,
@@ -335,14 +335,14 @@ begin
 		sc_thresholds./52, 
 		pa/52, 
 		WEIGHT )
-	res = analyse(out)
-	display(res)
+	sc_uk_res = analyse(sc_uk_out)
+	display(sc_uk_res)
 	
 end
 
 # ╔═╡ f4e625b7-6544-4af8-b3ae-1e80b53e6714
 begin
-res.charts
+sc_uk_res.charts
 end
 
 # ╔═╡ ae4f59f4-44f0-4bde-bdae-459531b4b122
@@ -394,6 +394,9 @@ begin
 	**gainers:** $(newout.gainers) **losers:** $(newout.losers) **unchanged:** $(newout.nc)
 	"""
 end
+
+# ╔═╡ efcf508e-52c8-4a92-aae2-91b63304d069
+
 
 # ╔═╡ 37e4db5b-b90e-449d-8a66-073b38daf822
 newout.charts
@@ -2146,6 +2149,7 @@ version = "3.5.0+0"
 # ╠═7551ece7-e9ee-4740-8997-3eaa07ce094a
 # ╠═ae4f59f4-44f0-4bde-bdae-459531b4b122
 # ╟─52e1a3ae-1b95-435f-982d-ed887f49bf2f
+# ╠═efcf508e-52c8-4a92-aae2-91b63304d069
 # ╠═37e4db5b-b90e-449d-8a66-073b38daf822
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
