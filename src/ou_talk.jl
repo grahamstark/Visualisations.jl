@@ -35,6 +35,9 @@ Graham STARK
 
 """
 
+# ╔═╡ 00f732d3-c0ba-4edf-8d1e-9785f77a7c2d
+
+
 # ╔═╡ 2dc4e521-0c78-487d-9653-783629869ed2
 md"""
 So, what's this all about? The best way in is probably with some examples.
@@ -149,18 +152,67 @@ begin
 	people = coalesce.(people, 0) # all missing to zero
 end
 
+# ╔═╡ f15139c6-790d-4352-af03-9dc1c5f3a3d7
+md"""
+## Some Constants
+
+* Population of scotland
+* very approximate average inflation from the middle of the sample period till now
+* sample size - number of people in the sample
+* sample weight - multiply each result by this to get an overall total
+
+While we're at it, we'll make a simple measure of taxable income from the fields in our FRS data.
+
+"""
+
 # ╔═╡ 426acad2-d1e8-44fb-b4a7-250b266cbaa0
 begin
-	const POPN = 5_480_000
+	const POPULATION_SCOTLAND = 5_480_000
 	const INFLATION = 1.15
-	const SSIZE = size(people)[1]
-	const WEIGHT = POPN/SSIZE
+	const SAMPLE_SIZE = size(people)[1]
+	const WEIGHT = POPULATION_SCOTLAND/SAMPLE_SIZE
 	people.inc = (people.income_wages + 
 		people.income_state_pension + 
 		people.income_self_employment_income +
 		people.income_private_pensions).*INFLATION
-	WEIGHT
+	"Sample weight is $WEIGHT"
 end
+
+# ╔═╡ 0b19190c-a200-4ab3-883e-e9f1b88ce18c
+md"""
+## The Tax System
+
+... is very complicated, but.. key things are:
+
+* `pa` : personal allowance - amount you get tax-free. Currently £12,570 per year
+* `thresholds` and `rates` - outside of Scotland, the first £37,700 of taxable income is taxed at 20%, taxable income up to £150,000 at 40%, the rest at 45%;
+* Scotland has 5 income tax rates.
+
+(There are lots of caveats to this, of course).
+
+"""
+
+# ╔═╡ 6572062c-21e3-4917-b23e-927b9f037b03
+begin
+	const ruk_rates = [20.0,40.0,45.0]
+	const ruk_thresholds = [37_700, 150_000.0]
+	const sc_rates = [19.0,20.0,21.0,41.0,46.0]
+	const sc_thresholds = [2_162, 13_118, 31_092, 150_000.0]
+	const pa = 12_570
+end
+
+# ╔═╡ b6d96b77-59a2-4265-bd3e-f7198aaa19df
+md"""
+## Our first model
+"""
+
+# ╔═╡ 9bc2b368-d9e0-4326-a02a-c7bfb836383f
+
+
+# ╔═╡ 70e8e5dc-d754-4e77-a227-54b8ba6bd24e
+md"""
+## A slightly fancier model
+"""
 
 # ╔═╡ ba9b111c-9baf-41d8-a70f-4af2a593af46
 begin
@@ -169,13 +221,13 @@ begin
 		ssize = size( people)[1]
 		
 		output = DataFrame( 
-			weight = fill(weight, ssize), 
-			net1=zeros(ssize), 
-			net2=zeros(ssize), 
-			tax1=zeros(ssize), 
-			tax2=zeros(ssize))
+			weight = fill(WEIGHT, SAMPLE_SIZE), 
+			net1=zeros(SAMPLE_SIZE), 
+			net2=zeros(SAMPLE_SIZE), 
+			tax1=zeros(SAMPLE_SIZE), 
+			tax2=zeros(SAMPLE_SIZE))
 		
-		for p in 1:ssize
+		for p in 1:SAMPLE_SIZE
 			pers = people[p,:]
 			out = output[p,:]
 			net1 = max(0.0, pers.inc-pa1)
@@ -194,15 +246,6 @@ begin
 		return output
 	end
 	
-end
-
-# ╔═╡ 6572062c-21e3-4917-b23e-927b9f037b03
-begin
-	const ruk_rates = [20.0,40.0,45.0]
-	const ruk_thresholds = [37_700, 150_000.0]
-	const sc_rates = [19.0,20.0,21.0,41.0,46.0]
-	const sc_thresholds = [2_162, 13_118, 31_092, 150_000.0]
-	const pa = 12570
 end
 
 # ╔═╡ d3ee0942-8e5b-4445-beb2-2fa29a3d26bd
@@ -231,8 +274,15 @@ function display(res)
 	"""
 end
 
-# ╔═╡ 00f732d3-c0ba-4edf-8d1e-9785f77a7c2d
+# ╔═╡ f01907f9-8780-4fba-8263-7571b0013a23
+md"""
+## A Fancy thing to analyse the results
 
+* count gainers and losers
+* simple measure of inequality (Gini coefficient)
+* two pretty-ish pictures
+
+"""
 
 # ╔═╡ 7551ece7-e9ee-4740-8997-3eaa07ce094a
 begin
@@ -379,7 +429,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.0-beta4"
 manifest_format = "2.0"
-project_hash = "8f5eb272bca28c28c8a5567139925945a84b3e47"
+project_hash = "26147ef6e69a1f06ed84ca51eeddc177ddb3af73"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -515,16 +565,6 @@ deps = ["Compat", "LinearAlgebra", "SparseArrays"]
 git-tree-sha1 = "c6d890a52d2c4d55d326439580c3b8d0875a77d9"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 version = "1.15.7"
-
-[[deps.ChangesOfVariables]]
-deps = ["LinearAlgebra", "Test"]
-git-tree-sha1 = "485193efd2176b88e6622a39a246f8c5b600e74e"
-uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
-version = "0.1.6"
-weakdeps = ["ChainRulesCore"]
-
-    [deps.ChangesOfVariables.extensions]
-    ChangesOfVariablesChainRulesCoreExt = "ChainRulesCore"
 
 [[deps.Clustering]]
 deps = ["Distances", "LinearAlgebra", "NearestNeighbors", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase"]
@@ -1244,12 +1284,16 @@ deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "0a1b7c2863e44523180fdb3146534e265a91870b"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
 version = "0.3.23"
-weakdeps = ["ChainRulesCore", "ChangesOfVariables", "InverseFunctions"]
 
     [deps.LogExpFunctions.extensions]
     LogExpFunctionsChainRulesCoreExt = "ChainRulesCore"
     LogExpFunctionsChangesOfVariablesExt = "ChangesOfVariables"
     LogExpFunctionsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.LogExpFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ChangesOfVariables = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -2070,11 +2114,12 @@ version = "3.5.0+0"
 
 # ╔═╡ Cell order:
 # ╟─4e82f5d4-cea4-47ee-9608-5067016c74c7
+# ╠═00f732d3-c0ba-4edf-8d1e-9785f77a7c2d
 # ╟─2dc4e521-0c78-487d-9653-783629869ed2
 # ╟─b9fec640-b91f-11ed-0437-5f25604b69d6
 # ╟─e2e84b78-5a22-4cbf-9892-a049a2aa86c0
 # ╟─57c95408-a8b1-4c1f-8766-63e22070a8a7
-# ╠═d1e403a9-3cbd-4160-89bc-ad2e56a1da44
+# ╟─d1e403a9-3cbd-4160-89bc-ad2e56a1da44
 # ╟─47cb9392-75a7-4743-b834-441aab7fb804
 # ╟─3ac6071f-b746-4a47-9983-84138b9fa925
 # ╟─60ee0a3c-c3c0-4baf-a6c1-156d050cf298
@@ -2085,14 +2130,19 @@ version = "3.5.0+0"
 # ╟─c131b988-51ba-4c8b-9c07-b09b733efcdc
 # ╟─db6d18aa-f9fe-47e0-b50a-3771f6d791a6
 # ╟─bdbec10d-4a73-497c-a1b0-6e294502b289
+# ╟─f15139c6-790d-4352-af03-9dc1c5f3a3d7
 # ╠═426acad2-d1e8-44fb-b4a7-250b266cbaa0
-# ╠═ba9b111c-9baf-41d8-a70f-4af2a593af46
+# ╟─0b19190c-a200-4ab3-883e-e9f1b88ce18c
 # ╠═6572062c-21e3-4917-b23e-927b9f037b03
+# ╟─b6d96b77-59a2-4265-bd3e-f7198aaa19df
+# ╠═9bc2b368-d9e0-4326-a02a-c7bfb836383f
+# ╟─70e8e5dc-d754-4e77-a227-54b8ba6bd24e
+# ╠═ba9b111c-9baf-41d8-a70f-4af2a593af46
 # ╟─d3ee0942-8e5b-4445-beb2-2fa29a3d26bd
-# ╠═473d91a6-9a3e-472f-9116-fd3ccd46b3eb
-# ╠═00f732d3-c0ba-4edf-8d1e-9785f77a7c2d
+# ╟─473d91a6-9a3e-472f-9116-fd3ccd46b3eb
 # ╠═a520302d-3ad2-4ba7-96e0-63450bedbf36
 # ╠═f4e625b7-6544-4af8-b3ae-1e80b53e6714
+# ╟─f01907f9-8780-4fba-8263-7571b0013a23
 # ╠═7551ece7-e9ee-4740-8997-3eaa07ce094a
 # ╠═ae4f59f4-44f0-4bde-bdae-459531b4b122
 # ╟─52e1a3ae-1b95-435f-982d-ed887f49bf2f
