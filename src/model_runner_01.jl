@@ -118,8 +118,8 @@ function do_output( br )
 		BASE_STATE.summary.deciles[1][:,2],
 		results.summary.deciles[1][:,2] )
 	gbd = drawDeciles( 
-		results.summary.deciles[1][:,3],
-		BASE_STATE.summary.deciles[1][:,3] )
+		results.summary.deciles[1][:,4],
+		BASE_STATE.summary.deciles[1][:,4] )
 
 	fig = make_subplots(
 		rows=3, 

@@ -313,8 +313,8 @@ function make_output_table_t( results::NamedTuple, sys::TaxBenefitSystem )
         html_td(
 			gain_lose_table( results.gain_lose)),
 		html_td(dcc_graph(figure=drawDeciles( 
-			results.summary.deciles[1][:,3],
-			BASE_RESULTS.summary.deciles[1][:,3]))),
+			results.summary.deciles[1][:,4],
+			BASE_RESULTS.summary.deciles[1][:,4]))),
         html_td(
              costs_table(
                 BASE_RESULTS.summary.income_summary[1],
@@ -365,8 +365,8 @@ function make_output_table(
                 dbc_col(
                     dcc_graph(
                         figure=drawDeciles( 
-                            results.summary.deciles[1][:,3],
-                            BASE_RESULTS.summary.deciles[1][:,3])
+                            results.summary.deciles[1][:,4],
+                            BASE_RESULTS.summary.deciles[1][:,4])
                         )
                     )
             ]) # inner row for chart & table
