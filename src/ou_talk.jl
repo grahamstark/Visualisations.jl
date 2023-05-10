@@ -300,7 +300,7 @@ begin
 		
 		charts = Figure(; resolution = (800, 400))
 		# gains by decile
-		gain = ineq2.deciles[:,3] .- ineq1.deciles[:,3]
+		gain = ineq2.deciles[:,4] .- ineq1.deciles[:,4]
 		axb = Makie.Axis(charts[1, 1], title ="Gains by decile", xlabel="Decile", ylabel="£s pw")
 		ylims!(axb, [-300,300]) 
 	    barplot!(axb, 1:10, gain)

@@ -1,0 +1,20 @@
+# stolen from: https://www.pragmaticlinux.com/2020/10/start-a-virtualbox-vm-on-boot-with-systemd/
+# start my stb vbox as a service
+[Unit]
+Description=VirtualBox VM STB Start/stop
+After=network.target vboxdrv.service
+Before=runlevel2.target shutdown.target
+[Service]
+User=xxx
+Group=vboxusers
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStart=/usr/bin/VBoxManage startvm stb --type headless
+ExecStop=/usr/bin/VBoxManage controlvm stb acpipowerbutton
+[Install]
+WantedBy=multi-user.target
