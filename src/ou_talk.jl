@@ -324,27 +324,6 @@ begin
 	end
 end
 
-# ╔═╡ a520302d-3ad2-4ba7-96e0-63450bedbf36
-begin
-	sc_uk_out = run( 
-		people, 
-		ruk_rates./100, 
-		ruk_thresholds./52,
-		pa/52,
-		sc_rates./100, 
-		sc_thresholds./52, 
-		pa/52, 
-		WEIGHT )
-	sc_uk_res = analyse(sc_uk_out)
-	display(sc_uk_res)
-	
-end
-
-# ╔═╡ f4e625b7-6544-4af8-b3ae-1e80b53e6714
-begin
-sc_uk_res.charts
-end
-
 # ╔═╡ ae4f59f4-44f0-4bde-bdae-459531b4b122
 begin
 
@@ -371,6 +350,35 @@ begin
 	""
 
 end
+
+# ╔═╡ e38b3081-f357-46f7-83ad-d1ddc17758ed
+md"""
+## Is Scotland's Income Tax More Progressive?
+
+"""
+
+# ╔═╡ a520302d-3ad2-4ba7-96e0-63450bedbf36
+begin
+	sc_uk_out = run( 
+		people, 
+		ruk_rates./100, 
+		ruk_thresholds./52,
+		pa/52,
+		sc_rates./100, 
+		sc_thresholds./52, 
+		pa/52, 
+		WEIGHT )
+	sc_uk_res = analyse(sc_uk_out)
+	nothing
+end
+
+# ╔═╡ f4e625b7-6544-4af8-b3ae-1e80b53e6714
+begin
+sc_uk_res.charts
+end
+
+# ╔═╡ 87124204-9743-41f0-a5ef-305ba60e1a65
+display(sc_uk_res)
 
 # ╔═╡ 52e1a3ae-1b95-435f-982d-ed887f49bf2f
 begin
@@ -430,7 +438,7 @@ PovertyAndInequalityMeasures = "~1.0.9"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.0-beta4"
+julia_version = "1.9.0-rc1"
 manifest_format = "2.0"
 project_hash = "26147ef6e69a1f06ed84ca51eeddc177ddb3af73"
 
@@ -1353,7 +1361,7 @@ version = "0.5.4"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.0+0"
+version = "2.28.2+0"
 
 [[deps.MetaGraphs]]
 deps = ["Graphs", "JLD2", "Random"]
@@ -1428,7 +1436,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+0"
+version = "0.3.21+4"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -2143,11 +2151,13 @@ version = "3.5.0+0"
 # ╠═ba9b111c-9baf-41d8-a70f-4af2a593af46
 # ╟─d3ee0942-8e5b-4445-beb2-2fa29a3d26bd
 # ╟─473d91a6-9a3e-472f-9116-fd3ccd46b3eb
-# ╠═a520302d-3ad2-4ba7-96e0-63450bedbf36
-# ╠═f4e625b7-6544-4af8-b3ae-1e80b53e6714
 # ╟─f01907f9-8780-4fba-8263-7571b0013a23
 # ╠═7551ece7-e9ee-4740-8997-3eaa07ce094a
 # ╠═ae4f59f4-44f0-4bde-bdae-459531b4b122
+# ╟─e38b3081-f357-46f7-83ad-d1ddc17758ed
+# ╠═f4e625b7-6544-4af8-b3ae-1e80b53e6714
+# ╠═87124204-9743-41f0-a5ef-305ba60e1a65
+# ╠═a520302d-3ad2-4ba7-96e0-63450bedbf36
 # ╟─52e1a3ae-1b95-435f-982d-ed887f49bf2f
 # ╠═efcf508e-52c8-4a92-aae2-91b63304d069
 # ╠═37e4db5b-b90e-449d-8a66-073b38daf822
