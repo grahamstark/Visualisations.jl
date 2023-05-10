@@ -31,7 +31,7 @@ StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 [compat]
-Julia="1"
+julia="1"
 ArgCheck="2.3.0, 3"
 CairoMakie="0.10.4, 1"
 Dash="1.2.1, 2"

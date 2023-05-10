@@ -240,7 +240,7 @@ function basic_run( ; print_test :: Bool, mtrouting :: MT_Routing )
 		dump_frames( settings, results )
 	end
     # println( "poverty line = $(settings.poverty_line)")
-    outf = summarise_frames( results, settings )
+    outf = summarise_frames!( results, settings )
     # println( outf )
     gl = make_gain_lose( results.hh[1], results.hh[2], settings )
     # println(gl)

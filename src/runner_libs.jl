@@ -35,7 +35,7 @@ function do_run_a(
 	results = do_one_run( settings, [sys], obs )
 	settings.poverty_line = make_poverty_line( results.hh[1], settings )        
     
-	outf = summarise_frames( results, settings )
+	outf = summarise_frames!( results, settings )
 	gl = make_gain_lose( BASE_RESULTS.results.hh[1], results.hh[1], settings ) 
 	exres = calc_examples( BASE_PARAMS, sys, settings )
 	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
@@ -55,7 +55,7 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 		PROGRESS[p.uuid] = (progress=p,total=tot)
 	end
     results = do_one_run( settings, [sys], obs )
-	outf = summarise_frames( results, settings )
+	outf = summarise_frames!( results, settings )
 	gl = make_gain_lose( BASE_RESULTS.results.hh[1], results.hh[1], settings ) 
 	delete!( PROGRESS, settings.uuid )	
 	return (results=results, summary=outf,gain_lose=gl  )
