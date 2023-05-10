@@ -14,6 +14,7 @@ function initialise_settings()::Settings
 	settings.dump_frames = false
 	settings.do_marginal_rates = true
 	settings.requested_threads = 4
+    settings.data_dir = "/home/graham_s/julia/vw/ScottishTaxBenefitModel/data/"
 	return settings
 end
 
