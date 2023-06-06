@@ -68,9 +68,10 @@ end
 
 """
 Retrieve one of the model's example households & overwrite a few fields
-to make things simpler.
+to make things simpler. FIXME replace with the built-in Scotben one.
 """
 function get_hh( 
+	country   :: AbstractString,
 	tenure    :: AbstractString,
 	bedrooms  :: Integer, 
 	hcost     :: Real, 
@@ -82,6 +83,13 @@ function get_hh(
 	head.age = 30
 	sp = get_spouse(hh)
 	enable!(head) # clear dla stuff from example
+	hh.region = if country == "scotland"
+		Scotland
+	elseif country == "wales" # not actually possible with current interface
+		Wales 
+	else # just pick a random English one.
+		North_East
+	end 
 	hh.tenure = if tenure == "private"
 		Private_Rented_Unfurnished
 	elseif tenure == "council"
@@ -279,7 +287,7 @@ function doplot(
 	view :: AbstractString,
 	target_str :: AbstractString,
 	taxsystem :: AbstractString )
-	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
+	hh = get_hh( taxsystem, tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
 	ytitle = ""
