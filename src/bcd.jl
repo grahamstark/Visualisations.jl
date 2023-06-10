@@ -75,7 +75,7 @@ function get_hh(
 	tenure    :: AbstractString,
 	bedrooms  :: Integer, 
 	hcost     :: Real, 
-	marrstat    :: AbstractString, 
+	marrstat  :: AbstractString, 
 	chu5      :: Integer, 
 	ch5p      :: Integer ) :: Household
 	hh = get_example( single_hh )
