@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.22
+# v0.19.30
 
 using Markdown
 using InteractiveUtils
@@ -12,6 +12,14 @@ macro bind(def, element)
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
+end
+
+# ╔═╡ 00f732d3-c0ba-4edf-8d1e-9785f77a7c2d
+begin
+using Pkg
+# Pkg.update()
+	#Pkg.upgrade_manifest()
+	# Pkg.resolve()
 end
 
 # ╔═╡ b9fec640-b91f-11ed-0437-5f25604b69d6
@@ -34,9 +42,6 @@ md"""
 Graham STARK
 
 """
-
-# ╔═╡ 00f732d3-c0ba-4edf-8d1e-9785f77a7c2d
-
 
 # ╔═╡ 2dc4e521-0c78-487d-9653-783629869ed2
 md"""
@@ -148,8 +153,9 @@ This is the Family Resources Survey. Each year, the UK statistics authority inte
 
 # ╔═╡ bdbec10d-4a73-497c-a1b0-6e294502b289
 begin
-	people = CSV.File("../data/model_people_scotland.tab", delim='\t') |> DataFrame 
-	people = coalesce.(people, 0) # all missing to zero
+	people = CSV.File("../../ScottishTaxBenefitModel/data/model_people_scotland.tab") |> DataFrame 
+	people=coalesce.(people, 0) # all missing to zero
+	# people
 end
 
 # ╔═╡ f15139c6-790d-4352-af03-9dc1c5f3a3d7
@@ -300,7 +306,7 @@ begin
 		
 		charts = Figure(; resolution = (800, 400))
 		# gains by decile
-		gain = ineq2.deciles[:,4] .- ineq1.deciles[:,4]
+		gain = ineq2.deciles[:,3] .- ineq1.deciles[:,3]
 		axb = Makie.Axis(charts[1, 1], title ="Gains by decile", xlabel="Decile", ylabel="£s pw")
 		ylims!(axb, [-300,300]) 
 	    barplot!(axb, 1:10, gain)
@@ -380,6 +386,9 @@ end
 # ╔═╡ 87124204-9743-41f0-a5ef-305ba60e1a65
 display(sc_uk_res)
 
+# ╔═╡ 829fd428-043a-46c7-8d80-91df15ff1c61
+
+
 # ╔═╡ 52e1a3ae-1b95-435f-982d-ed887f49bf2f
 begin
 	newout = runmodel(ratech,newpa)
@@ -419,6 +428,7 @@ CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PovertyAndInequalityMeasures = "582645c0-90fa-497a-98b9-936b80116c29"
 
@@ -438,9 +448,9 @@ PovertyAndInequalityMeasures = "~1.0.9"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.0-rc1"
+julia_version = "1.10.0-beta2"
 manifest_format = "2.0"
-project_hash = "26147ef6e69a1f06ed84ca51eeddc177ddb3af73"
+project_hash = "35e89bc457d7ae6956da2a5d33d674bfd8786f35"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -628,7 +638,7 @@ version = "4.6.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.2+0"
+version = "1.0.5+1"
 
 [[deps.ComputationalResources]]
 git-tree-sha1 = "52cb3ec90e8a8bea0e62e275ba577ad0f74821f7"
@@ -1008,7 +1018,7 @@ uuid = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
 version = "1.2.1"
 
 [[deps.ImageMagick_jll]]
-deps = ["Artifacts", "Ghostscript_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pkg", "Zlib_jll", "libpng_jll"]
+deps = ["Artifacts", "Ghostscript_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "OpenJpeg_jll", "Pkg", "Zlib_jll", "libpng_jll"]
 git-tree-sha1 = "124626988534986113cfd876e3093e4a03890f58"
 uuid = "c73af94c-d91f-53ed-93a7-00f77d67a9d7"
 version = "6.9.12+3"
@@ -1219,12 +1229,12 @@ version = "0.3.1"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-version = "0.6.3"
+version = "0.6.4"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "7.84.0+0"
+version = "8.0.1+1"
 
 [[deps.LibGit2]]
 deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
@@ -1233,7 +1243,7 @@ uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.10.2+0"
+version = "1.11.0+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1283,6 +1293,12 @@ version = "2.36.0+0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[[deps.LittleCMS_jll]]
+deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pkg"]
+git-tree-sha1 = "110897e7db2d6836be22c18bffd9422218ee6284"
+uuid = "d3a379c0-f9a3-5b72-a4c0-6bf4d2e8af0f"
+version = "2.12.0+0"
 
 [[deps.Loess]]
 deps = ["Distances", "LinearAlgebra", "Statistics"]
@@ -1361,7 +1377,7 @@ version = "0.5.4"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.2+1"
 
 [[deps.MetaGraphs]]
 deps = ["Graphs", "JLD2", "Random"]
@@ -1392,7 +1408,7 @@ version = "0.3.4"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2023.1.10"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1436,7 +1452,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.23+2"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -1450,10 +1466,16 @@ git-tree-sha1 = "923319661e9a22712f24596ce81c54fc0366f304"
 uuid = "18a262bb-aa17-5467-a713-aee519bc75cb"
 version = "3.1.1+0"
 
+[[deps.OpenJpeg_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libtiff_jll", "LittleCMS_jll", "Pkg", "libpng_jll"]
+git-tree-sha1 = "76374b6e7f632c130e78100b166e5a48464256f8"
+uuid = "643b3616-a352-519d-856d-80112ee9badc"
+version = "2.4.0+0"
+
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+0"
+version = "0.8.1+2"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1481,7 +1503,7 @@ version = "1.4.1"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+0"
+version = "10.42.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -1534,7 +1556,7 @@ version = "0.40.1+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.PkgVersion]]
 deps = ["Pkg"]
@@ -1628,7 +1650,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[deps.Random]]
-deps = ["SHA", "Serialization"]
+deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeArrays]]
@@ -1783,6 +1805,7 @@ version = "1.1.0"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
@@ -1869,7 +1892,7 @@ uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
+version = "7.2.0+1"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -2045,7 +2068,7 @@ version = "1.4.0+3"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.13+1"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2074,7 +2097,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.4.0+0"
+version = "5.8.0+1"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2103,12 +2126,12 @@ version = "1.3.7+1"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.48.0+0"
+version = "1.52.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
+version = "17.4.0+2"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2139,8 +2162,8 @@ version = "3.5.0+0"
 # ╠═bc352a96-cd2a-4dc8-8f44-6cdd83fed18b
 # ╟─07b596d2-c18e-4ecc-b354-46a94ab9aa00
 # ╟─c131b988-51ba-4c8b-9c07-b09b733efcdc
-# ╟─db6d18aa-f9fe-47e0-b50a-3771f6d791a6
-# ╟─bdbec10d-4a73-497c-a1b0-6e294502b289
+# ╠═db6d18aa-f9fe-47e0-b50a-3771f6d791a6
+# ╠═bdbec10d-4a73-497c-a1b0-6e294502b289
 # ╟─f15139c6-790d-4352-af03-9dc1c5f3a3d7
 # ╠═426acad2-d1e8-44fb-b4a7-250b266cbaa0
 # ╟─0b19190c-a200-4ab3-883e-e9f1b88ce18c
@@ -2152,12 +2175,13 @@ version = "3.5.0+0"
 # ╟─d3ee0942-8e5b-4445-beb2-2fa29a3d26bd
 # ╟─473d91a6-9a3e-472f-9116-fd3ccd46b3eb
 # ╟─f01907f9-8780-4fba-8263-7571b0013a23
-# ╠═7551ece7-e9ee-4740-8997-3eaa07ce094a
-# ╠═ae4f59f4-44f0-4bde-bdae-459531b4b122
+# ╟─7551ece7-e9ee-4740-8997-3eaa07ce094a
+# ╟─ae4f59f4-44f0-4bde-bdae-459531b4b122
 # ╟─e38b3081-f357-46f7-83ad-d1ddc17758ed
 # ╠═f4e625b7-6544-4af8-b3ae-1e80b53e6714
 # ╠═87124204-9743-41f0-a5ef-305ba60e1a65
-# ╠═a520302d-3ad2-4ba7-96e0-63450bedbf36
+# ╟─a520302d-3ad2-4ba7-96e0-63450bedbf36
+# ╠═829fd428-043a-46c7-8d80-91df15ff1c61
 # ╟─52e1a3ae-1b95-435f-982d-ed887f49bf2f
 # ╠═efcf508e-52c8-4a92-aae2-91b63304d069
 # ╠═37e4db5b-b90e-449d-8a66-073b38daf822
