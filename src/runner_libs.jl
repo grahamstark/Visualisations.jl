@@ -39,6 +39,7 @@ function do_run_a(
 	gl = make_gain_lose( BASE_RESULTS.results.hh[1], results.hh[1], settings ) 
 	exres = calc_examples( BASE_PARAMS, sys, settings )
 	aout = AllOutput( settings.uuid, cache_key, results, outf, gl, exres ) 
+	obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
 	return aout;
 end
 
@@ -58,5 +59,6 @@ function do_run( sys :: TaxBenefitSystem, init = false )::NamedTuple
 	outf = summarise_frames!( results, settings )
 	gl = make_gain_lose( BASE_RESULTS.results.hh[1], results.hh[1], settings ) 
 	delete!( PROGRESS, settings.uuid )	
+	obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
 	return (results=results, summary=outf,gain_lose=gl  )
 end
