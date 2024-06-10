@@ -30,7 +30,6 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 Stipple = "4acbeb90-81a0-11ea-1966-bdaff8155998"
 StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
-WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
 ArgCheck = "2.3.0, 3"
@@ -55,7 +54,6 @@ ScottishTaxBenefitModel = "0.1.1,1"
 StatsBase = "0.33.21, 1, 0.34"
 StatsPlots = "0.15.5, 1"
 StructTypes = "1.10.0, 2"
-WGLMakie = "0.8.8, 1"
 julia = "1"
 
 [extras]
