@@ -258,8 +258,9 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame, ytitle :: String )
 end
 
 
-
-function loadsystem(; ruk :: Bool )
+#=
+function loadsystem(; scotland :: Bool )
+	return get_default_system_for_fin_year( 2023, scotland = scotland )
 	# FIXME TO CONSTANT use library version 
 	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23.jl" ))
 	if ruk 
@@ -269,9 +270,10 @@ function loadsystem(; ruk :: Bool )
 	weeklyise!( sys )
 	return sys
 end
+	=#
 
-const SCOTSYS = loadsystem(; ruk = false )
-const RUKSYS = loadsystem(; ruk = true )
+const SCOTSYS = get_default_system_for_fin_year( 2023 ; scotland = true )
+const RUKSYS = get_default_system_for_fin_year( 2023 ; scotland = false )
 
 """
 Create the whole plot for the named household. 
