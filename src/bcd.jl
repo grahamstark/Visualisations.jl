@@ -153,7 +153,6 @@ Plot budget constraints (contained in dataframes) - universal credit.
 """
 function econ_bcplot( ubc :: DataFrame, wage :: Real, ytitle :: String )
 	# legacy
-	gross_to_leisure!(lbc, wage )
 	gross_to_leisure!(ubc, wage )
 	bu = scatter(
 		ubc, 
