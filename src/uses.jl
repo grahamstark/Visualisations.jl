@@ -1,7 +1,7 @@
 using Dash
 using DashBootstrapComponents
 using DataFrames
-using Formatting
+using Format
 using HTTP
 using HttpCommon
 using JSON3

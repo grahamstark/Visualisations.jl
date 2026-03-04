@@ -53,17 +53,14 @@ function getbc(
 	hh  :: Household, 
 	sys :: TaxBenefitSystem, 
 	wage :: Real,
-	settings :: Settings )::Tuple
+	settings :: Settings )
 	defroute = settings.means_tested_routing
 	
-	settings.means_tested_routing = lmt_full 
-	lbc = BCCalcs.makebc( hh, sys, settings, wage )
-
 	settings.means_tested_routing = uc_full 
 	ubc = BCCalcs.makebc( hh, sys, settings, wage )
 
 	settings.means_tested_routing = defroute
-    (lbc,ubc)
+    ubc
 end
 
 """
@@ -161,19 +158,9 @@ end
 """
 Plot two budget constraints (contained in dataframes) - legacy & universal credit.
 """
-function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle :: String )
+function econ_bcplot( ubc :: DataFrame, wage :: Real, ytitle :: String )
 	# legacy
 	gross_to_leisure!(lbc, wage )
-	bl = scatter(
-           lbc, 
-		   x=:leisure, 
-		   y=:net, 
-           mode="line", 
-		   name="Legacy Benefits", 
-		   text=:simplelabel,
-		   hoverinfo="text"
-       )
-	# uc
 	gross_to_leisure!(ubc, wage )
 	bu = scatter(
 		ubc, 
@@ -191,23 +178,10 @@ function econ_bcplot( lbc:: DataFrame, ubc :: DataFrame, wage :: Real, ytitle ::
         yaxis_title=ytitle,
 		xaxis_range=[0, MAX_HRS ],
 		yaxis_range=[0, 1_500],
-		#=
-		xaxis2=attr(
-
-            title="Hours of work", 
-			# titlefont_color="blue",
-            overlaying="x", 
-			side="bottom", 
-			position=0.15, 
-			anchor="free"
-
-        ),
-		=#
-		
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.Plot( [bl, bu], layout)
+	p = PlotlyJS.Plot( [bu], layout)
 	# (typeof(p))
 	return p
 end
@@ -216,18 +190,7 @@ end
 """
 Plot two budget constraints (contained in dataframes) - legacy & universal credit.
 """
-function bcplot( lbc:: DataFrame, ubc :: DataFrame, ytitle :: String )
-	# legacy
-	bl = scatter(
-           lbc, 
-		   x=:gross, 
-		   y=:net, 
-           mode="line", 
-		   name="Legacy Benefits", 
-		   text=:simplelabel,
-		   hoverinfo="text"
-       )
-	# uc
+function bcplot( ubc :: DataFrame, ytitle :: String )
 	bu = scatter(
 		ubc, 
 		x=:gross, 
@@ -252,8 +215,7 @@ function bcplot( lbc:: DataFrame, ubc :: DataFrame, ytitle :: String )
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
-	p = PlotlyJS.Plot( [gn, bl, bu], layout)
-	# (typeof(p))
+	p = PlotlyJS.Plot( [gn, bu], layout)
 	return p
 end
 
@@ -309,11 +271,11 @@ function doplot(
 	end # forgot how to cover
 	settings.target_bc_income = target
 	sys = taxsystem == "scotland" ? SCOTSYS : RUKSYS
-	lbc, ubc = getbc( hh, sys, wage, settings )
+	ubc = getbc( hh, sys, wage, settings )
 	if view == "l_vs_l"
-		figure=econ_bcplot( lbc, ubc, wage, ytitle )
+		figure=econ_bcplot( ubc, wage, ytitle )
 	else
-		figure = bcplot( lbc, ubc, ytitle )
+		figure = bcplot( ubc, ytitle )
 	end
 	return figure 
 end
