@@ -68,7 +68,6 @@ Retrieve one of the model's example households & overwrite a few fields
 to make things simpler. FIXME replace with the built-in Scotben one.
 """
 function get_hh( 
-	country   :: AbstractString,
 	tenure    :: AbstractString,
 	bedrooms  :: Integer, 
 	hcost     :: Real, 
@@ -80,13 +79,7 @@ function get_hh(
 	head.age = 30
 	sp = get_spouse(hh)
 	enable!(head) # clear dla stuff from example
-	hh.region = if country == "scotland"
-		Scotland
-	elseif country == "wales" # not actually possible with current interface
-		Wales 
-	else # just pick a random English one.
-		North_East
-	end 
+	hh.region = Scotland
 	hh.tenure = if tenure == "private"
 		Private_Rented_Unfurnished
 	elseif tenure == "council"
@@ -156,7 +149,7 @@ function gross_to_leisure!( bc :: DataFrame, wage::Real)
 end
 
 """
-Plot two budget constraints (contained in dataframes) - legacy & universal credit.
+Plot budget constraints (contained in dataframes) - universal credit.
 """
 function econ_bcplot( ubc :: DataFrame, wage :: Real, ytitle :: String )
 	# legacy
@@ -173,7 +166,7 @@ function econ_bcplot( ubc :: DataFrame, wage :: Real, ytitle :: String )
 		# ,xaxis="x2"
 	)
 	layout = Layout(
-		title="Budget Constraint: Legacy Benefits vs Universal Credit",
+		title="Budget Constraint",
         xaxis_title="Leisure (hours p.w.)",
         yaxis_title=ytitle,
 		xaxis_range=[0, MAX_HRS ],
@@ -191,12 +184,14 @@ end
 Plot two budget constraints (contained in dataframes) - legacy & universal credit.
 """
 function bcplot( ubc :: DataFrame, ytitle :: String )
+	max_y = max(1_200, maximum( ubc.net))
+	max_x = max_y # keep square
 	bu = scatter(
 		ubc, 
 		x=:gross, 
 		y=:net, 
 		mode="line", 
-		name="Universal Credit", 
+		name="Budget Constraint",
 		text=:simplelabel,
 		hoverinfo="text"
 	)
@@ -207,11 +202,11 @@ function bcplot( ubc :: DataFrame, ytitle :: String )
                         :line => Dict(:color=> "#ccc",
                         :width=> 0.5))
 	layout = Layout(
-		title="Budget Constraint: Legacy Benefits vs Universal Credit",
+		title="Budget Constraint",
         xaxis_title="Household Gross Earnings £p.w.",
         yaxis_title=ytitle,
-		xaxis_range=[0, 1_200],
-		yaxis_range=[0, 1_200],
+		xaxis_range=[0, max_x],
+		yaxis_range=[0, max_y],
 		legend=attr(x=0.01, y=0.95),
 		width=700, 
 		height=700)
@@ -219,23 +214,7 @@ function bcplot( ubc :: DataFrame, ytitle :: String )
 	return p
 end
 
-
-#=
-function loadsystem(; scotland :: Bool )
-	return get_default_system_for_fin_year( 2023, scotland = scotland )
-	# FIXME TO CONSTANT use library version 
-	sys = load_file( joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23.jl" ))
-	if ruk 
-		load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2022-23_ruk.jl" ))
-	end
-	# load_file!( sys, joinpath( Definitions.MODEL_PARAMS_DIR, "sys_2021-uplift-removed.jl"))
-	weeklyise!( sys )
-	return sys
-end
-	=#
-
 const SCOTSYS = get_default_system_for_fin_year( 2026 ; scotland = true )
-const RUKSYS = get_default_system_for_fin_year( 2026 ; scotland = false )
 
 """
 Create the whole plot for the named household. 
@@ -249,9 +228,8 @@ function doplot(
 	chu5::Integer, 
 	ch5p::Integer,
 	view :: AbstractString,
-	target_str :: AbstractString,
-	taxsystem :: AbstractString )
-	hh = get_hh( taxsystem, tenure, bedrooms, hcost, marrstat, chu5, ch5p )
+	target_str :: AbstractString)
+	hh = get_hh( tenure, bedrooms, hcost, marrstat, chu5, ch5p )
 	# println(to_md_table(hh))
 	settings = Settings()
 	ytitle = ""
@@ -270,8 +248,7 @@ function doplot(
 		target = total_taxes 
 	end # forgot how to cover
 	settings.target_bc_income = target
-	sys = taxsystem == "scotland" ? SCOTSYS : RUKSYS
-	ubc = getbc( hh, sys, wage, settings )
+	ubc = getbc( hh, SCOTSYS, wage, settings )
 	if view == "l_vs_l"
 		figure=econ_bcplot( ubc, wage, ytitle )
 	else
@@ -414,6 +391,7 @@ function get_input_block()
 					value = "ahc_hh")
 			)
 		], style=FORM_EXTRA),
+		#= Not really possible because of CT/CTB/Discretionary Housing Payments.
 		dbc_row([
 			dbc_col(
 				dbc_label("Which system to use:"; html_for="taxsystem"), width=3
@@ -426,6 +404,7 @@ function get_input_block()
 					value = "scotland")
 			)
 		], style=FORM_EXTRA)
+		=#
 	])
 end 
 
@@ -453,8 +432,8 @@ app = dash(external_stylesheets=[dbc_themes.UNITED],
 	url_base_pathname="/bcd/") 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
-	html_title( "Scotland's Kinkiest Families: Household Budget Constraints")
-	html_h1("Scotland's Kinkiest Families: Household Budget Constraints"),
+	html_title( "Household Budget Constraints: How Much You Earn vs How Much You Keep.")
+	html_h1("Household Budget Constraints: How Much You Earn vs How Much You Keep."),
 	dbc_row([
 		dbc_col( dcc_markdown( PREAMBLE ), width=10)
 	]),
@@ -480,9 +459,8 @@ callback!(
 	Input( "chu5", "value"),
 	Input( "ch5p", "value"),
 	Input( "view", "value"),
-	Input( "target", "value"),
-	Input( "taxsystem", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target, taxsystem
-		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target, taxsystem )
+	Input( "target", "value")) do wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target
+		return doplot( wage, tenure, bedrooms, hcost, marrstat, chu5, ch5p, view, target)
 	end
 
 run_server(app, "0.0.0.0", debug=true )
