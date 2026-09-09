@@ -4,13 +4,13 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 # Type=forking
-User=graham_s
-EnvironmentFile=/etc/systemd/user/gks_environment
+User=apiuser
+EnvironmentFile=home/apiuser/julia/vw/Visualisations/julia/vw/etc/environment
 # The PID file is optional, but recommended in the manpage
 # "so that systemd can identify the main process of the daemon"
 PIDFile=/run/bcd.pid
 # ExecStart=/home/graham_s/bin/bcd.sh
-ExecStart=/home/graham_s/julia/vw/Visualisations/etc/bcd.sh
+ExecStart=/home/apiuser/.juliaup/bin/julia --project=. --startup-file=no -t auto /home/apiuser/julia/vw/Visualisations/src/bcd.jl
 ExecStop=/bin/kill -WINCH ${MAINPID}
 KillSignal=SIGKILL
 PrivateTmp=true

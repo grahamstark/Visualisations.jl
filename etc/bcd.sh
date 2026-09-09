@@ -1,4 +1,5 @@
 #!/bin/sh
-cd /home/graham_s/julia/vw/Visualisations/
+cd /home/microapi/julia/vw/Visualisations/
+j=`which julia`
 # --procs=auto
-/opt/julia/bin/julia --project=.  src/bcd.jl
+$j --project=.  src/bcd.jl
