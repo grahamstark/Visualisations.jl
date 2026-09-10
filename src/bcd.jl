@@ -444,8 +444,8 @@ app = dash(external_stylesheets=[dbc_themes.UNITED],
 	url_base_pathname="/bcd/") 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
-	dcc_markdown( MAIN_MENU, dangerously_allow_html = true))
-	html_title( "Household Budget Constraints: How Much You Earn vs How Much You Keep.")
+	html_title( "Household Budget Constraints: How Much You Earn vs How Much You Keep."),
+	dcc_markdown( MAIN_MENU, dangerously_allow_html = true),
 	html_h1("Household Budget Constraints: How Much You Earn vs How Much You Keep."),
 	dbc_row([
 		dbc_col( dcc_markdown( PREAMBLE ), width=10)
