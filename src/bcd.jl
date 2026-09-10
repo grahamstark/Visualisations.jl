@@ -4,18 +4,14 @@
 include( "uses.jl")
 
 const MAIN_MENU = """
-
-
-<nav class="nav navbar navbar-expand-lg navbar-light bg-light">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class='nav-link' href='https://sims.virtual-worlds.scot:8444/scotben-2026/' target='__blank'>A Scottish Budget</a></li>
-                <li class="nav-item"><a class="nav-link" href='https://sims.virtual-worlds.scot:8444/bi-2026' target='__blank'>Basic Incomes</a></li>
-                <li class="nav-item">Budget Constraints/li>
-                <li class="nav-item"><a class='nav-link' href='https://stb-blog.virtual-worlds.scot/' target='__blank'>Blog</a></li>
+<nav class='row nav navbar navbar-expand-lg navbar-light bg-light'>
+        <ul class='col navbar-nav me-auto mb-2 mb-lg-0'>
+                <li class='nav-item'><a class='nav-link' href='https://sims.virtual-worlds.scot:8444/scotben-2026/' target='__blank'>A Scottish Budget</a></li>
+                <li class='nav-item'><a class='nav-link' href='https://sims.virtual-worlds.scot:8444/bi-2026' target='__blank'>Basic Incomes</a></li>
+                <li class='nav-item'>Budget Constraints/li>
+                <li class='nav-item'><a class='nav-link' href='https://stb-blog.virtual-worlds.scot/' target='__blank'>Blog</a></li>
         </ul>
 </nav>
-
-
 """
 
 const FORM_EXTRA =Dict(
@@ -448,9 +444,7 @@ app = dash(external_stylesheets=[dbc_themes.UNITED],
 	url_base_pathname="/bcd/") 
 # BOOTSTRAP|SIMPLEX|MINTY|COSMO|SANDSTONE|UNITED|SLATE|SOLAR|UNITED|
 app.layout = dbc_container(fluid=true, className="p-5") do
-	dbc_row([
-		dbc_col( dcc_markdown( MAIN_MENU, dangerously_allow_html = true))
-	]),
+	dcc_markdown( MAIN_MENU, dangerously_allow_html = true))
 	html_title( "Household Budget Constraints: How Much You Earn vs How Much You Keep.")
 	html_h1("Household Budget Constraints: How Much You Earn vs How Much You Keep."),
 	dbc_row([
