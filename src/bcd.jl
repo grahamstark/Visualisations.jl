@@ -1,5 +1,22 @@
 
+
+
 include( "uses.jl")
+
+const MAIN_MENU = """
+
+
+<nav class="nav navbar navbar-expand-lg navbar-light bg-light">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class='nav-link' href='https://sims.virtual-worlds.scot:8444/scotben-2026/' target='__blank'>A Scottish Budget</a></li>
+                <li class="nav-item"><a class="nav-link" href='https://sims.virtual-worlds.scot:8444/bi-2026' target='__blank'>Basic Incomes</a></li>
+                <li class="nav-item">Budget Constraints/li>
+                <li class="nav-item"><a class='nav-link' href='https://stb-blog.virtual-worlds.scot/' target='__blank'>Blog</a></li>
+        </ul>
+</nav>
+
+
+"""
 
 const FORM_EXTRA =Dict(
 	"border-bottom"=>"1px dashed #aaaaaa", 
@@ -433,6 +450,9 @@ app = dash(external_stylesheets=[dbc_themes.UNITED],
 app.layout = dbc_container(fluid=true, className="p-5") do
 	html_title( "Household Budget Constraints: How Much You Earn vs How Much You Keep.")
 	html_h1("Household Budget Constraints: How Much You Earn vs How Much You Keep."),
+	dbc_row([
+		dbc_col( MAIN_MENU, width=10)
+	]),
 	dbc_row([
 		dbc_col( dcc_markdown( PREAMBLE ), width=10)
 	]),
